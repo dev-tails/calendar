@@ -1,0 +1,14 @@
+{
+  "name": "be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "iyriss",
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
