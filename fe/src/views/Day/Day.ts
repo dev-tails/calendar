@@ -12,6 +12,7 @@ import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import { flexAlignItemsCenter } from '../../utils/styles';
 import { Button } from '../../components/elements/Button';
+import { getEventsForDay } from '../../apis/EventApi';
 
 export function Day(date?: string) {
   let today = date ? new Date(date) : new Date();
@@ -57,6 +58,13 @@ export function Day(date?: string) {
   const meetingsList = Div();
 
   // move this to API?
+
+  const init = async () => {
+    const events = await getEventsForDay(today);
+    return events;
+  };
+  init();
+
   const todaysEvents = mettingsObject.filter((meeting) => {
     const eventDate = new Date(meeting.start);
     const inputDate = eventDate.toISOString().split('T')[0];

@@ -7,7 +7,7 @@ import { Input } from '../../components/elements/Input/Input';
 import { Label } from '../../components/elements/Label';
 
 export function DateSelect(
-  eventState: IEvent,
+  eventState: Partial<IEvent>,
   onEventStateChange: (state: Partial<IEvent>) => void
 ) {
   const dateContainer = Div({ styles: { padding: '12px' } });

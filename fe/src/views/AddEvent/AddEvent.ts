@@ -10,9 +10,9 @@ import { Label } from '../../components/elements/Label';
 import { mettingsObject, users } from '../../fakeData/fakeData';
 import { Header } from '../../components/elements/Header';
 import { DateSelect } from './EventDateSelect';
+import { createEvent } from '../../apis/EventApi';
 
 let eventState: IEvent = {
-  id: Math.floor(Math.random() * 100).toString(), // temporary
   title: '',
   description: '',
   start: new Date(),
@@ -154,8 +154,9 @@ export function AddEvent() {
     }
     eventState = { ...eventState, start };
     console.log('new event submitted', eventState);
-    mettingsObject.push(eventState);
-    setURL(`/events/${eventState.id}`);
+    createEvent(eventState);
+    // mettingsObject.push(eventState);
+    setURL(`/`);
   };
 
   return form;

@@ -186,7 +186,21 @@
   ];
 
   // src/apis/EventApi.ts
-  var getEventById = (eventId) => mettingsObject.find((event) => eventId === event.id);
+  var getEventById = (eventId) => mettingsObject.find((event) => eventId === event._id);
+  var createEvent = (event) => {
+    fetch(`/api/events`, {
+      body: JSON.stringify(event),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  };
+  var getEventsForDay = (date) => {
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+    fetch(`api/events?start=${newDate.toISOString()}`, {});
+  };
 
   // src/utils/DOMutils.ts
   function setStyle(el, styles) {
@@ -452,8 +466,6 @@
 
   // src/views/AddEvent/AddEvent.ts
   var eventState = {
-    id: Math.floor(Math.random() * 100).toString(),
-    // temporary
     title: "",
     description: "",
     start: new Date(),
@@ -573,8 +585,8 @@
       }
       eventState = __spreadProps(__spreadValues({}, eventState), { start });
       console.log("new event submitted", eventState);
-      mettingsObject.push(eventState);
-      setURL(`/events/${eventState.id}`);
+      createEvent(eventState);
+      setURL(`/`);
     };
     return form;
   }
@@ -633,6 +645,11 @@
     datesHeader.appendChild(nextDay);
     el.appendChild(datesHeader);
     const meetingsList = Div();
+    const init = () => __async(this, null, function* () {
+      const events = yield getEventsForDay(today);
+      return events;
+    });
+    init();
     const todaysEvents = mettingsObject.filter((meeting) => {
       const eventDate = new Date(meeting.start);
       const inputDate = eventDate.toISOString().split("T")[0];
