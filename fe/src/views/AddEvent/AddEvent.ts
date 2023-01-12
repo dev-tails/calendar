@@ -5,9 +5,7 @@ import { Textarea } from '../../components/elements/Textarea';
 import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import { basics, fonts } from '../../utils/styles';
-import { MultiSelect } from '../../components/MultiSelect';
 import { Label } from '../../components/elements/Label';
-import { mettingsObject, users } from '../../fakeData/fakeData';
 import { Header } from '../../components/elements/Header';
 import { DateSelect } from './EventDateSelect';
 import { createEvent } from '../../apis/EventApi';
@@ -25,7 +23,7 @@ function setEventState(newValue: Partial<IEvent>) {
     ...eventState,
     ...newValue,
   };
-  return modifiedEvent;
+  eventState = modifiedEvent;
 }
 
 export function AddEvent() {
@@ -76,6 +74,7 @@ export function AddEvent() {
   form.appendChild(dateContainer);
 
   //Guests
+  /*
   const guestsContainer = Div({
     styles: { display: 'flex', padding: '12px' },
   });
@@ -105,6 +104,7 @@ export function AddEvent() {
     },
   });
   form.append(guestsLabelInfo);
+  */
 
   //Buttons
   const buttons = Div({
@@ -148,15 +148,14 @@ export function AddEvent() {
     e.preventDefault();
     let start = eventState.start;
     if (eventState.allDay) {
-      const midnightDate = new Date(eventState.start).setUTCHours(0, 0, 0, 0);
-      start = new Date(midnightDate); //.toISOString();
+      const midnightDate = eventState.start;
+      midnightDate.setUTCHours(0, 0, 0, 0);
+      start = midnightDate;
       delete eventState.end;
     }
     eventState = { ...eventState, start };
-    console.log('new event submitted', eventState);
     createEvent(eventState);
-    // mettingsObject.push(eventState);
-    setURL(`/`);
+    setURL('/');
   };
 
   return form;

@@ -285,27 +285,6 @@
     alignItems: "center"
   };
 
-  // src/components/MultiSelect.ts
-  function MultiSelect(optionEntries, onChange) {
-    const selectEl = document.createElement("select");
-    setStyle(selectEl, {
-      minHeight: "228px",
-      minWidth: "100px",
-      fontSize: "14px"
-    });
-    selectEl.multiple = true;
-    selectEl.required = true;
-    optionEntries.forEach(([key, value]) => {
-      const option = document.createElement("option");
-      option.value = key;
-      option.innerText = value;
-      option.style.padding = "8px";
-      option.onchange = onChange;
-      selectEl.appendChild(option);
-    });
-    return selectEl;
-  }
-
   // src/components/elements/Label.ts
   function Label(props) {
     return Element(__spreadValues({
@@ -474,7 +453,7 @@
   };
   function setEventState(newValue) {
     const modifiedEvent = __spreadValues(__spreadValues({}, eventState), newValue);
-    return modifiedEvent;
+    eventState = modifiedEvent;
   }
   function AddEvent() {
     const form = document.createElement("form");
@@ -515,32 +494,6 @@
     form.appendChild(descriptionContainer);
     const dateContainer = DateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
-    const guestsContainer = Div({
-      styles: { display: "flex", padding: "12px" }
-    });
-    const guestsLabel = Label({
-      attr: { innerText: "Guests" },
-      styles: {
-        marginRight: "12px"
-      }
-    });
-    guestsContainer.appendChild(guestsLabel);
-    const usersKeyValuePairs = Object.entries(users);
-    const usersSelectEl = MultiSelect(
-      usersKeyValuePairs,
-      () => onUsersSelectChange(usersSelectEl.selectedOptions)
-    );
-    guestsContainer.appendChild(usersSelectEl);
-    form.appendChild(guestsContainer);
-    const guestsLabelInfo = Label({
-      attr: {
-        innerText: "* Hold down the control (ctrl) button to select multiple options. For Mac: Hold down the command button to select multiple options."
-      },
-      styles: {
-        padding: "12px"
-      }
-    });
-    form.append(guestsLabelInfo);
     const buttons = Div({
       styles: { display: "flex", justifyContent: "flex-end", marginTop: "24px" }
     });
@@ -579,23 +532,16 @@
       e.preventDefault();
       let start = eventState.start;
       if (eventState.allDay) {
-        const midnightDate = new Date(eventState.start).setUTCHours(0, 0, 0, 0);
-        start = new Date(midnightDate);
+        const midnightDate = eventState.start;
+        midnightDate.setUTCHours(0, 0, 0, 0);
+        start = midnightDate;
         delete eventState.end;
       }
       eventState = __spreadProps(__spreadValues({}, eventState), { start });
-      console.log("new event submitted", eventState);
       createEvent(eventState);
-      setURL(`/`);
+      setURL("/");
     };
     return form;
-  }
-  function onUsersSelectChange(selectedOptions) {
-    var _a;
-    const selectedUsersKeys = (_a = Array.from(selectedOptions)) == null ? void 0 : _a.map((selectedUser) => {
-      return selectedUser.value;
-    });
-    setEventState({ users: selectedUsersKeys });
   }
 
   // src/components/elements/Span.ts
