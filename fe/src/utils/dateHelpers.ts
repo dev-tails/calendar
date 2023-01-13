@@ -36,7 +36,7 @@ export const formatSplitDate = (
 ) => {
   const fullYear = date.getFullYear();
   const month = date.getMonth() + 1;
-  const twoDigitsMonth = month[1] ? month : `0${month}`;
+  const twoDigitsMonth = String(month)[1] ? month : `0${month}`;
   const day = date.getDate();
   const twoDigitsDay = day.toString()[1] ? day : `0${day}`;
 
@@ -46,7 +46,7 @@ export const formatSplitDate = (
     dd: twoDigitsDay,
   };
 
-  const dateFormat = format.split('-');
+  const dateFormat = format.split('-') as Array<keyof typeof dateFormatting>;
   const first = dateFormatting[dateFormat[0]];
   const second = dateFormatting[dateFormat[1]];
   const third = dateFormatting[dateFormat[2]];
@@ -57,7 +57,7 @@ export const formatSplitDate = (
 
 // For value of element <input type='datetime-local'/> as 'yyyy-mm-ddThh:mm'
 export const formatDateTimeInputValue = (date: Date) => {
-  const dateString = formatSplitDate(new Date(), '-', 'yyyy-mm-dd');
+  const dateString = formatSplitDate(new Date(date), '-', 'yyyy-mm-dd');
   const hours = date.getHours();
   const twoDigitsHours = hours.toString()[1] ? hours : `0${hours}`;
   const minutes = date.getMinutes();
@@ -65,4 +65,12 @@ export const formatDateTimeInputValue = (date: Date) => {
 
   const dateTimeString = `${dateString}T${twoDigitsHours}:${twoDigitsMinutes}`;
   return dateTimeString;
+};
+
+export const addMinutesToDate = (date: Date, minutes: number) => {
+  const addedMinutes = minutes * 60 * 1000;
+  const time = date.getTime();
+  const newTimeNumber = date.setTime(time + addedMinutes);
+  const dateWithAddedMin = new Date(newTimeNumber);
+  return dateWithAddedMin;
 };

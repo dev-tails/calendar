@@ -1,4 +1,5 @@
 import {
+  addMinutesToDate,
   formatDateTimeInputValue,
   formatSplitDate,
 } from '../../utils/dateHelpers';
@@ -19,8 +20,19 @@ export function DateSelect(
         value,
         required: true,
         onchange: (e) => {
+          const newValue = (e.target as HTMLInputElement).value;
+          const newDate = new Date(newValue);
+
+          const endDateTime = document.getElementById(
+            'end'
+          ) as HTMLInputElement;
+          if (endDateTime) {
+            const newEndDate = addMinutesToDate(newDate, 30);
+            const endDateTimeString = formatDateTimeInputValue(newEndDate);
+            endDateTime.value = endDateTimeString;
+          }
           onEventStateChange({
-            start: new Date((e.target as HTMLInputElement).value),
+            start: newDate,
           });
         },
       },
@@ -54,6 +66,7 @@ export function DateSelect(
     styles: {
       marginRight: '12px',
     },
+    selectors: { id: 'end' },
   });
   dateContainer.appendChild(endTimeInput);
 

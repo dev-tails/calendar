@@ -58,7 +58,7 @@ export function Day(date?: string) {
     headerDate.appendChild(nextDay);
     el.appendChild(headerDate);
 
-    const meetingsList = Div();
+    const eventsList = Div();
     const events = await getEventsForDay(dayView);
 
     if (events.length) {
@@ -66,8 +66,8 @@ export function Day(date?: string) {
         (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
       );
 
-      events.forEach((meeting) => {
-        if (meeting.allDay) {
+      events.forEach((event) => {
+        if (event.allDay) {
           const allDayEventStyles = {
             borderRadius: '4px',
             padding: '12px',
@@ -76,10 +76,10 @@ export function Day(date?: string) {
             backgroundColor: 'papayawhip',
             cursor: 'pointer',
           };
-          const allDayEvents = createEventCard(meeting, allDayEventStyles);
+          const allDayEvents = createEventCard(event, allDayEventStyles);
           el.appendChild(allDayEvents);
         } else {
-          const meetingContainer = Div({
+          const eventContainer = Div({
             styles: {
               borderRadius: '4px',
               margin: '12px 20px',
@@ -103,26 +103,22 @@ export function Day(date?: string) {
               innerText: `${formatDateTime(
                 'en-CA',
                 timeOptions,
-                meeting.start
+                event.start
               )} - `,
             },
           });
           times.appendChild(start);
 
-          if (meeting.end) {
+          if (event.end) {
             const end = Span({
               attr: {
-                innerText: `${formatDateTime(
-                  'en-CA',
-                  timeOptions,
-                  meeting.end
-                )}`,
+                innerText: `${formatDateTime('en-CA', timeOptions, event.end)}`,
               },
             });
             times.appendChild(end);
           }
 
-          meetingContainer.appendChild(times);
+          eventContainer.appendChild(times);
           const eventStyles = {
             borderRadius: '4px',
             padding: '12px',
@@ -130,14 +126,14 @@ export function Day(date?: string) {
             backgroundColor: '#d2e7de',
             cursor: 'pointer',
           };
-          const event = createEventCard(meeting, eventStyles);
+          const eventCard = createEventCard(event, eventStyles);
 
-          meetingContainer.appendChild(event);
-          meetingsList.appendChild(meetingContainer);
+          eventContainer.appendChild(eventCard);
+          eventsList.appendChild(eventContainer);
         }
       });
 
-      el.appendChild(meetingsList);
+      el.appendChild(eventsList);
     } else {
       const noEventsLabel = Div({
         attr: { innerText: 'No events this day' },
@@ -150,22 +146,19 @@ export function Day(date?: string) {
   return el;
 }
 
-function createEventCard(
-  meeting: IEvent,
-  styles: Partial<CSSStyleDeclaration>
-) {
-  const event = Div({ styles });
+function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
+  const eventCard = Div({ styles });
 
-  const title = H3({ attr: { innerText: meeting.title } });
-  event.appendChild(title);
+  const title = H3({ attr: { innerText: event.title } });
+  eventCard.appendChild(title);
 
-  if (meeting.description) {
-    const description = Div({ attr: { innerText: meeting.description } });
-    event.appendChild(description);
+  if (event.description) {
+    const description = Div({ attr: { innerText: event.description } });
+    eventCard.appendChild(description);
   }
 
-  onClick(event, () => setURL(`/events/${meeting._id}`));
-  return event;
+  onClick(eventCard, () => setURL(`/events/${event._id}`));
+  return eventCard;
 }
 
 function goToSelectedDayView(
