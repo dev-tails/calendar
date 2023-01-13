@@ -153,7 +153,6 @@ export function AddEvent() {
     const startDateISO = eventState.start.toISOString();
     const startDate = startDateISO.split('T')[0];
     const dateURLparam = startDate.replace(/-/g, '/');
-    console.log('dateURLparam', dateURLparam);
     setURL(`/day/${dateURLparam}`);
   };
 

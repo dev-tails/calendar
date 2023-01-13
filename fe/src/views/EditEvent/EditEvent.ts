@@ -1,137 +1,111 @@
 import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
-import { CheckboxInput } from '../../components/elements/Input/CheckboxInput';
 import { Input } from '../../components/elements/Input/Input';
 import { Textarea } from '../../components/elements/Textarea';
-import {
-  dateOptions,
-  formatDateTime,
-  timeOptions,
-} from '../../utils/dateHelpers';
 import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import { basics, fonts } from '../../utils/styles';
-import { MultiSelect } from '../../components/MultiSelect';
+import { Label } from '../../components/elements/Label';
+import { createEvent } from '../../apis/EventApi';
+import { H3 } from '../../components/elements/H3';
+import { DateSelect } from '../AddEvent/EventDateSelect';
 
 export function EditEvent(event: IEvent) {
-  let formValues = event;
+  console.log('running');
+  let eventState: IEvent = {
+    title: '',
+    description: '',
+    start: new Date(),
+    allDay: false,
+    // users: [] as string[],
+  };
 
-  const form = document.createElement('form');
-  const eventCard = Div({
+  const setEventState = (newValue: Partial<IEvent>) => {
+    console.log('inside', { newValue });
+    Object.assign(eventState, newValue);
+  };
+
+  const form: HTMLFormElement = document.createElement('form');
+
+  const editEventHeader = H3({ attr: { innerText: 'Edit event' } });
+  form.appendChild(editEventHeader);
+
+  //Title
+  const titleContainer = Div({ styles: { padding: '12px' } });
+  const titleInput = Input({
+    attr: {
+      name: 'title',
+      value: event['title'],
+      onchange: (e) => {
+        setEventState({ title: (e.target as HTMLInputElement).value });
+      },
+      placeholder: 'Title',
+      required: true,
+    },
+  });
+  titleContainer.appendChild(titleInput);
+  form.appendChild(titleContainer);
+
+  //Description
+  const descriptionContainer = Div({
+    styles: { padding: '12px', display: 'flex', flexDirection: 'column' },
+  });
+  const descriptionLabel = Label({ attr: { innerText: 'Description' } });
+  const descriptionInput = Textarea({
+    attr: {
+      name: 'description',
+      value: event['description'],
+      onchange: (e) => {
+        setEventState({
+          description: (e.target as HTMLTextAreaElement).value,
+        });
+      },
+      placeholder: 'Write something...',
+    },
+  });
+  descriptionContainer.appendChild(descriptionLabel);
+  descriptionContainer.appendChild(descriptionInput);
+  form.appendChild(descriptionContainer);
+
+  //Dates
+  const dateContainer = DateSelect(eventState, setEventState.bind(this));
+  form.appendChild(dateContainer);
+
+  //Guests
+  /*
+  const guestsContainer = Div({
+    styles: { display: 'flex', padding: '12px' },
+  });
+  const guestsLabel = Label({
+    attr: { innerText: 'Guests' },
     styles: {
-      backgroundColor: 'papayawhip',
-      borderRadius: '4px',
+      marginRight: '12px',
+    },
+  });
+  guestsContainer.appendChild(guestsLabel);
+
+  const usersKeyValuePairs = Object.entries(users);
+
+  const usersSelectEl = MultiSelect(usersKeyValuePairs, () =>
+    onUsersSelectChange(usersSelectEl.selectedOptions)
+  );
+  guestsContainer.appendChild(usersSelectEl);
+  form.appendChild(guestsContainer);
+
+  const guestsLabelInfo = Label({
+    attr: {
+      innerText:
+        '* Hold down the control (ctrl) button to select multiple options. For Mac: Hold down the command button to select multiple options.',
+    },
+    styles: {
       padding: '12px',
     },
   });
+  form.append(guestsLabelInfo);
+  */
 
-  const title = Input({
-    attr: {
-      value: event.title,
-      name: 'title',
-      onchange: (e) =>
-        onFormValueChange('title', (e.target as HTMLInputElement).value),
-    },
-  });
-  eventCard.appendChild(title);
-
-  if (event.description) {
-    const descriptionContainer = Div({
-      styles: { display: 'flex', padding: '4px 8px' },
-    });
-
-    const descriptionLabel = Div({ attr: { innerText: 'Description:' } });
-    const descriptionInput = Textarea({
-      innerText: event.description,
-      onchange: (e) =>
-        onFormValueChange(
-          'description',
-          (e.target as HTMLTextAreaElement).value
-        ),
-    });
-
-    descriptionContainer.appendChild(descriptionLabel);
-    descriptionContainer.appendChild(descriptionInput);
-    eventCard.appendChild(descriptionContainer);
-  }
-
-  const dates = Div({ styles: { display: 'flex', padding: '4px 8px' } });
-  if (event.allDay) {
-    const day = Div();
-    day.innerText = formatDateTime('en-CA', dateOptions, event.start);
-    dates.appendChild(day);
-  } else {
-    const times = Div({ styles: { display: 'flex' } });
-    const startDateInput = Input({
-      attr: {
-        value: `${formatDateTime('en-CA', dateOptions, event.start)}`,
-        onchange: (e) =>
-          onFormValueChange('start', (e.target as HTMLTextAreaElement).value),
-      },
-    });
-
-    times.appendChild(startDateInput);
-
-    const startTimeInput = Input({
-      attr: {
-        value: `${formatDateTime('en-CA', timeOptions, event.start)}`,
-        onchange: (e) =>
-          onFormValueChange('start', (e.target as HTMLTextAreaElement).value),
-      },
-    });
-    times.appendChild(startTimeInput);
-
-    const to = Div({ attr: { innerText: 'to' } });
-    times.appendChild(to);
-
-    const endDateInput = Input({
-      attr: {
-        value: `${formatDateTime('en-CA', dateOptions, event.end as Date)}`,
-        onchange: (e) =>
-          onFormValueChange('end', (e.target as HTMLTextAreaElement).value),
-      },
-    });
-    times.appendChild(endDateInput);
-
-    const endTimeInput = Input({
-      attr: {
-        value: `${formatDateTime('en-CA', timeOptions, event.end as Date)}`,
-        onchange: (e) =>
-          onFormValueChange('end', (e.target as HTMLTextAreaElement).value),
-      },
-    });
-    times.appendChild(endTimeInput);
-
-    dates.appendChild(times);
-  }
-
-  const allDayContainer = Div({
-    styles: { display: 'flex', padding: '4px 8px' },
-  });
-  const allDayInput = CheckboxInput({
-    id: `allDay_${event.id}`,
-    checked: !!event.allDay,
-    onchange: () => console.log('Changed'),
-  });
-  allDayContainer.appendChild(allDayInput);
-  const allDayLabel = document.createElement('label');
-  allDayLabel.htmlFor = `allDay_${event.id}`;
-  allDayLabel.innerText = 'All day';
-  allDayContainer.appendChild(allDayLabel);
-
-  dates.appendChild(allDayContainer);
-  eventCard.appendChild(dates);
-
-  const guestsContainer = Div({
-    styles: { display: 'flex', padding: '4px 8px' },
-  });
-  const guestsLabel = document.createElement('label');
-  guestsLabel.innerText = 'Guests:';
-  guestsContainer.appendChild(guestsLabel);
-  eventCard.appendChild(guestsContainer);
-  // eventCard.appendChild(UsersSelect(event.users));
-
-  const submit = Div({
+  //Buttons
+  const buttons = Div({
     styles: { display: 'flex', justifyContent: 'flex-end', marginTop: '24px' },
   });
   const buttonStyles = {
@@ -149,32 +123,57 @@ export function EditEvent(event: IEvent) {
     cursor: 'pointer',
   };
   const cancelButton = Button({
-    text: 'Cancel',
+    attr: {
+      textContent: 'Cancel',
+    },
   });
-  onClick(cancelButton, () => setURL(`/events/${event.id}`));
+  onClick(cancelButton, () => setURL(`/`));
   setStyle(cancelButton, buttonStyles);
 
   const saveButton = Button({
-    text: 'Save',
+    attr: {
+      textContent: 'Save',
+      type: 'submit',
+    },
   });
   setStyle(saveButton, buttonStyles);
-  onClick(saveButton, (e) => {
+
+  buttons.appendChild(cancelButton);
+  buttons.appendChild(saveButton);
+  form.appendChild(buttons);
+
+  form.onsubmit = (e) => {
     e.preventDefault();
-    console.log('fv', formValues);
-  });
+    console.log('e', eventState);
+    let start = eventState.start;
 
-  submit.append(cancelButton);
-  submit.append(saveButton);
-
-  form.append(eventCard);
-  form.append(submit);
-
-  function onFormValueChange(name: string, value: any) {
-    formValues = {
-      ...formValues,
-      [name]: value,
-    };
-  }
+    if (eventState.allDay) {
+      const midnightDate = new Date(eventState.start.getTime());
+      midnightDate.setUTCHours(0, 0, 0, 0);
+      start = midnightDate;
+      delete eventState.end;
+    }
+    // eventState = { ...eventState, start };
+    setEventState({ start });
+    // createEvent(eventState);
+    console.log('event State', eventState);
+    const startDateISO = eventState.start.toISOString();
+    const startDate = startDateISO.split('T')[0];
+    const dateURLparam = startDate.replace(/-/g, '/');
+    setURL(`/day/${dateURLparam}`);
+  };
 
   return form;
+  /* ------ */
+
+  function onUsersSelectChange(
+    selectedOptions: HTMLCollectionOf<HTMLOptionElement>
+  ) {
+    const selectedUsersKeys = Array.from(selectedOptions)?.map(
+      (selectedUser) => {
+        return selectedUser.value;
+      }
+    );
+    setEventState({ users: selectedUsersKeys });
+  }
 }

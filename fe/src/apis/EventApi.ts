@@ -55,7 +55,11 @@ export const createEvent = (event: Partial<IEvent>) => {
   });
 };
 
-export const deleteEvent = async (eventId: string) => {
+export const deleteEvent = async (eventId?: string) => {
+  if (!eventId) {
+    throw new Error('Event id must exist.');
+  }
+
   const res = await fetch(`/api/events/${eventId}`, {
     method: 'DELETE',
     headers: {

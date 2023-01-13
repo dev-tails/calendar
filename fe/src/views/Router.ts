@@ -62,7 +62,7 @@ export function Router() {
           router.append(Event(eventObject));
         }
         break;
-      case `/edit/events/${eventObject?._id}`:
+      case `/events/edit/${eventObject?._id}`:
         if (eventObject) {
           router.append(Header('edit'));
           router.append(EditEvent(eventObject));

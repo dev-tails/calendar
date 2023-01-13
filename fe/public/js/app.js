@@ -91,6 +91,9 @@
     });
   };
   var deleteEvent = (eventId) => __async(void 0, null, function* () {
+    if (!eventId) {
+      throw new Error("Event id must exist.");
+    }
     const res = yield fetch(`/api/events/${eventId}`, {
       method: "DELETE",
       headers: {
@@ -258,22 +261,31 @@
   // src/views/AddEvent/EventDateSelect.ts
   function DateSelect(eventState, onEventStateChange) {
     const dateContainer = Div({ styles: { padding: "12px" } });
-    const startTimeInputEl = (type) => Input({
+    const startTimeInputEl = (type, newValue) => Input({
       selectors: { id: "start" },
       attr: {
         type,
+        value: type === "date" ? formatSplitDate(newValue, "-", "yyyy-mm-dd") : formatDateTimeInputValue(newValue),
         required: true,
         onchange: (e) => {
-          const newValue = e.target.value;
-          const newDate = new Date(newValue);
+          const newValue2 = e.target.value;
+          const newDate = new Date(newValue2);
+          console.log("new vlaue", newValue2);
+          console.log("new date", newDate);
           const endDateTime = document.getElementById(
             "end"
           );
           const newEndDate = addMinutesToDate(newDate, 30);
+          console.log(
+            "new end dtae",
+            newEndDate,
+            endDateTime ? newEndDate : void 0
+          );
           if (endDateTime) {
             const endDateTimeString = formatDateTimeInputValue(newEndDate);
             endDateTime.value = endDateTimeString;
           }
+          console.log("on event", onEventStateChange);
           onEventStateChange({
             start: newDate,
             end: endDateTime ? newEndDate : void 0
@@ -284,17 +296,25 @@
         marginRight: "12px"
       }
     });
-    dateContainer.appendChild(startTimeInputEl("datetime-local"));
+    dateContainer.appendChild(
+      startTimeInputEl(
+        eventState.allDay ? "date" : "datetime-local",
+        eventState.start
+      )
+    );
     const toLabel = Label({
       attr: { innerText: "to" },
       styles: {
         marginRight: "12px"
       }
     });
-    dateContainer.appendChild(toLabel);
+    if (!eventState.allDay) {
+      dateContainer.appendChild(toLabel);
+    }
     const endTimeInput = () => Input({
       attr: {
         type: "datetime-local",
+        value: eventState.end ? formatDateTimeInputValue(eventState.end) : formatDateTimeInputValue(new Date()),
         required: true,
         onchange: (e) => {
           onEventStateChange({
@@ -307,12 +327,15 @@
       },
       selectors: { id: "end" }
     });
-    dateContainer.appendChild(endTimeInput());
+    if (!eventState.allDay) {
+      dateContainer.appendChild(endTimeInput());
+    }
     const allDayInput = Input({
       attr: {
         type: "checkbox",
         checked: eventState.allDay,
         onchange: (e) => {
+          console.log("what is event state", eventState);
           const isChecked = e.target.checked;
           onEventStateChange({
             allDay: isChecked,
@@ -329,12 +352,18 @@
             dateContainer.removeChild(dateInput);
             dateContainer.removeChild(toLabel);
             dateContainer.removeChild(endDatetimeInput);
-            const startDate = startTimeInputEl("date");
+            const startDate = startTimeInputEl("date", eventState.start);
             dateContainer.prepend(startDate);
           } else {
             dateContainer.prepend(endTimeInput());
             dateContainer.prepend(toLabel);
-            dateContainer.prepend(startTimeInputEl("datetime-local"));
+            const copiedDate = new Date(eventState.start.getTime());
+            const currentDatetime = new Date().getTime();
+            const newTimeNumber = copiedDate.setTime(currentDatetime);
+            const dateWithCurrentTime = new Date(newTimeNumber);
+            dateContainer.prepend(
+              startTimeInputEl("datetime-local", eventState.start)
+            );
             dateContainer.removeChild(dateInput);
           }
         }
@@ -454,7 +483,6 @@
       const startDateISO = eventState.start.toISOString();
       const startDate = startDateISO.split("T")[0];
       const dateURLparam = startDate.replace(/-/g, "/");
-      console.log("dateURLparam", dateURLparam);
       setURL(`/day/${dateURLparam}`);
     };
     return form;
@@ -627,116 +655,59 @@
     setURL(`/day/${dateString}`);
   }
 
-  // src/components/elements/Input/CheckboxInput.ts
-  function CheckboxInput(props) {
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    if (props) {
-      Object.keys(props).forEach((key) => {
-        const propsKey = key;
-        input[propsKey] = props[propsKey];
-      });
-    }
-    return input;
-  }
-
   // src/views/EditEvent/EditEvent.ts
   function EditEvent(event) {
-    let formValues = event;
+    console.log("running");
+    let eventState = {
+      title: "",
+      description: "",
+      start: new Date(),
+      allDay: false
+      // users: [] as string[],
+    };
+    const setEventState = (newValue) => {
+      console.log("inside", { newValue });
+      Object.assign(eventState, newValue);
+    };
     const form = document.createElement("form");
-    const eventCard = Div({
-      styles: {
-        backgroundColor: "papayawhip",
-        borderRadius: "4px",
-        padding: "12px"
-      }
-    });
-    const title = Input({
+    const editEventHeader = H3({ attr: { innerText: "Edit event" } });
+    form.appendChild(editEventHeader);
+    const titleContainer = Div({ styles: { padding: "12px" } });
+    const titleInput = Input({
       attr: {
-        value: event.title,
         name: "title",
-        onchange: (e) => onFormValueChange("title", e.target.value)
+        value: event["title"],
+        onchange: (e) => {
+          setEventState({ title: e.target.value });
+        },
+        placeholder: "Title",
+        required: true
       }
     });
-    eventCard.appendChild(title);
-    if (event.description) {
-      const descriptionContainer = Div({
-        styles: { display: "flex", padding: "4px 8px" }
-      });
-      const descriptionLabel = Div({ attr: { innerText: "Description:" } });
-      const descriptionInput = Textarea({
-        innerText: event.description,
-        onchange: (e) => onFormValueChange(
-          "description",
-          e.target.value
-        )
-      });
-      descriptionContainer.appendChild(descriptionLabel);
-      descriptionContainer.appendChild(descriptionInput);
-      eventCard.appendChild(descriptionContainer);
-    }
-    const dates = Div({ styles: { display: "flex", padding: "4px 8px" } });
-    if (event.allDay) {
-      const day = Div();
-      day.innerText = formatDateTime("en-CA", dateOptions, event.start);
-      dates.appendChild(day);
-    } else {
-      const times = Div({ styles: { display: "flex" } });
-      const startDateInput = Input({
-        attr: {
-          value: `${formatDateTime("en-CA", dateOptions, event.start)}`,
-          onchange: (e) => onFormValueChange("start", e.target.value)
-        }
-      });
-      times.appendChild(startDateInput);
-      const startTimeInput = Input({
-        attr: {
-          value: `${formatDateTime("en-CA", timeOptions, event.start)}`,
-          onchange: (e) => onFormValueChange("start", e.target.value)
-        }
-      });
-      times.appendChild(startTimeInput);
-      const to = Div({ attr: { innerText: "to" } });
-      times.appendChild(to);
-      const endDateInput = Input({
-        attr: {
-          value: `${formatDateTime("en-CA", dateOptions, event.end)}`,
-          onchange: (e) => onFormValueChange("end", e.target.value)
-        }
-      });
-      times.appendChild(endDateInput);
-      const endTimeInput = Input({
-        attr: {
-          value: `${formatDateTime("en-CA", timeOptions, event.end)}`,
-          onchange: (e) => onFormValueChange("end", e.target.value)
-        }
-      });
-      times.appendChild(endTimeInput);
-      dates.appendChild(times);
-    }
-    const allDayContainer = Div({
-      styles: { display: "flex", padding: "4px 8px" }
+    titleContainer.appendChild(titleInput);
+    form.appendChild(titleContainer);
+    const descriptionContainer = Div({
+      styles: { padding: "12px", display: "flex", flexDirection: "column" }
     });
-    const allDayInput = CheckboxInput({
-      id: `allDay_${event.id}`,
-      checked: !!event.allDay,
-      onchange: () => console.log("Changed")
+    const descriptionLabel = Label({ attr: { innerText: "Description" } });
+    const descriptionInput = Textarea({
+      attr: {
+        name: "description",
+        value: event["description"],
+        onchange: (e) => {
+          setEventState({
+            description: e.target.value
+          });
+        },
+        placeholder: "Write something..."
+      }
     });
-    allDayContainer.appendChild(allDayInput);
-    const allDayLabel = document.createElement("label");
-    allDayLabel.htmlFor = `allDay_${event.id}`;
-    allDayLabel.innerText = "All day";
-    allDayContainer.appendChild(allDayLabel);
-    dates.appendChild(allDayContainer);
-    eventCard.appendChild(dates);
-    const guestsContainer = Div({
-      styles: { display: "flex", padding: "4px 8px" }
-    });
-    const guestsLabel = document.createElement("label");
-    guestsLabel.innerText = "Guests:";
-    guestsContainer.appendChild(guestsLabel);
-    eventCard.appendChild(guestsContainer);
-    const submit = Div({
+    descriptionContainer.appendChild(descriptionLabel);
+    descriptionContainer.appendChild(descriptionInput);
+    form.appendChild(descriptionContainer);
+    const dateContainer = DateSelect(eventState, setEventState.bind(this));
+    form.appendChild(dateContainer);
+    const buttons = Div({
       styles: { display: "flex", justifyContent: "flex-end", marginTop: "24px" }
     });
     const buttonStyles = {
@@ -754,28 +725,49 @@
       cursor: "pointer"
     };
     const cancelButton = Button({
-      text: "Cancel"
+      attr: {
+        textContent: "Cancel"
+      }
     });
-    onClick(cancelButton, () => setURL(`/events/${event.id}`));
+    onClick(cancelButton, () => setURL(`/`));
     setStyle(cancelButton, buttonStyles);
     const saveButton = Button({
-      text: "Save"
+      attr: {
+        textContent: "Save",
+        type: "submit"
+      }
     });
     setStyle(saveButton, buttonStyles);
-    onClick(saveButton, (e) => {
+    buttons.appendChild(cancelButton);
+    buttons.appendChild(saveButton);
+    form.appendChild(buttons);
+    form.onsubmit = (e) => {
       e.preventDefault();
-      console.log("fv", formValues);
-    });
-    submit.append(cancelButton);
-    submit.append(saveButton);
-    form.append(eventCard);
-    form.append(submit);
-    function onFormValueChange(name, value) {
-      formValues = __spreadProps(__spreadValues({}, formValues), {
-        [name]: value
-      });
-    }
+      console.log("e", eventState);
+      let start = eventState.start;
+      if (eventState.allDay) {
+        const midnightDate = new Date(eventState.start.getTime());
+        midnightDate.setUTCHours(0, 0, 0, 0);
+        start = midnightDate;
+        delete eventState.end;
+      }
+      setEventState({ start });
+      console.log("event State", eventState);
+      const startDateISO = eventState.start.toISOString();
+      const startDate = startDateISO.split("T")[0];
+      const dateURLparam = startDate.replace(/-/g, "/");
+      setURL(`/day/${dateURLparam}`);
+    };
     return form;
+    function onUsersSelectChange(selectedOptions) {
+      var _a;
+      const selectedUsersKeys = (_a = Array.from(selectedOptions)) == null ? void 0 : _a.map(
+        (selectedUser) => {
+          return selectedUser.value;
+        }
+      );
+      setEventState({ users: selectedUsersKeys });
+    }
   }
 
   // src/views/Event/Event.ts
@@ -954,7 +946,7 @@
               router.append(Event2(eventObject));
             }
             break;
-          case `/edit/events/${eventObject == null ? void 0 : eventObject._id}`:
+          case `/events/edit/${eventObject == null ? void 0 : eventObject._id}`:
             if (eventObject) {
               router.append(Header("edit"));
               router.append(EditEvent(eventObject));
