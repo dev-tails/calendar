@@ -21,7 +21,7 @@ export function Router() {
 
   window.addEventListener('popstate', handleRouteUpdated);
 
-  function handleRouteUpdated() {
+  async function handleRouteUpdated() {
     router.innerHTML = '';
     const path = window.location.pathname;
     const isHome = path === '/';
@@ -33,7 +33,7 @@ export function Router() {
     if (!isHome && !addNewEventPath && !isDay) {
       const pathSplit = path.split('/');
       const eventId = pathSplit[pathSplit.length - 1]?.toString();
-      eventObject = getEventById(eventId);
+      eventObject = await getEventById(eventId);
       if (!eventObject) {
         setURL('/');
       }
@@ -56,20 +56,19 @@ export function Router() {
         router.append(Header('day'));
         router.append(Day(eventsDate));
         break;
-      case `/events/${eventObject?.id}`:
+      case `/events/${eventObject?._id}`:
         if (eventObject) {
           router.append(Header('event'));
           router.append(Event(eventObject));
         }
         break;
-      case `/edit/events/${eventObject?.id}`:
+      case `/edit/events/${eventObject?._id}`:
         if (eventObject) {
           router.append(Header('edit'));
           router.append(EditEvent(eventObject));
         }
         break;
       case `/new`:
-        console.log('passing as new');
         router.append(Header('new'));
         router.append(AddEvent());
         break;

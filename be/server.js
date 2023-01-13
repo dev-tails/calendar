@@ -65,6 +65,16 @@ async function run() {
     return res.json({ data: events });
   });
 
+  server.get('/api/events/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const event = await Event.findOne({ _id: mongodb.ObjectId(id) });
+      return res.json({ data: event });
+    } catch (err) {
+      return res.sendStatus(400);
+    }
+  });
+
   server.post('/api/events', async (req, res) => {
     console.log('req', req.body);
     const event = await Event.insertOne({

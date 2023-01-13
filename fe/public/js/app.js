@@ -40,153 +40,24 @@
     });
   };
 
-  // src/fakeData/fakeData.ts
-  var users = {
-    ab: "Adam",
-    ac: "Anthony",
-    ew: "Emily",
-    iv: "Iyris",
-    kk: "Keon",
-    km: "Kieran",
-    lp: "Lucas"
-  };
-  var mettingsObject = [
-    {
-      id: "1",
-      title: "Stand up",
-      description: "this is stand up",
-      start: new Date("2023-01-10T17:30:06.000Z"),
-      end: new Date("2023-01-10T18:00:06.000Z"),
-      allDay: false,
-      users: Object.keys(users)
-    },
-    {
-      id: "2",
-      title: "Iyris/Adam",
-      description: "meeting",
-      start: new Date("2023-01-10T19:00:06.000Z"),
-      end: new Date("2023-01-10T19:30:06.000Z"),
-      allDay: false,
-      users: ["ab", "iv"]
-    },
-    {
-      id: "3",
-      title: "Iyris VS Kieran",
-      description: "meeting",
-      start: new Date("2023-01-10T21:00:06.000Z"),
-      end: new Date("2023-01-10T21:30:06.000Z"),
-      allDay: false,
-      users: ["km", "iv"]
-    },
-    {
-      id: "4",
-      title: "Iyris/Emily",
-      description: "meeting",
-      start: new Date("2023-01-10T23:30:06.000Z"),
-      end: new Date("2023-01-11T00:00:06.000Z"),
-      allDay: false,
-      users: ["ew", "iv"]
-    },
-    {
-      id: "5",
-      title: "PJs day",
-      description: "yay",
-      start: new Date("2023-01-10T15:50:00.000Z"),
-      allDay: true,
-      users: Object.keys(users)
-    },
-    {
-      id: "6",
-      title: "Stand up on the eleventh",
-      description: "this is stand up",
-      start: new Date("2023-01-11T17:30:06.000Z"),
-      end: new Date("2023-01-11T18:00:06.000Z"),
-      allDay: false,
-      users: Object.keys(users)
-    },
-    {
-      id: "7",
-      title: "Iyris/Adam on the eleventh",
-      description: "meeting",
-      start: new Date("2023-01-11T19:00:06.000Z"),
-      end: new Date("2023-01-11T19:30:06.000Z"),
-      allDay: false,
-      users: ["ab", "iv"]
-    },
-    {
-      id: "8",
-      title: "Iyris VS Kieran on the eleventh",
-      description: "meeting",
-      start: new Date("2023-01-11T21:00:06.000Z"),
-      end: new Date("2023-01-11T21:30:06.000Z"),
-      allDay: false,
-      users: ["km", "iv"]
-    },
-    {
-      id: "9",
-      title: "Iyris/Emily on the eleventh",
-      description: "meeting",
-      start: new Date("2023-01-11T23:30:06.000Z"),
-      end: new Date("2023-01-12T00:00:06.000Z"),
-      allDay: false,
-      users: ["ew", "iv"]
-    },
-    {
-      id: "10",
-      title: "PJs day again on the eleventh",
-      description: "yay",
-      start: new Date("2023-01-11T15:50:00.000Z"),
-      allDay: true,
-      users: Object.keys(users)
-    },
-    {
-      id: "11",
-      title: "Stand up on the 14",
-      description: "this is stand up",
-      start: new Date("2023-01-14T17:30:06.000Z"),
-      end: new Date("2023-01-14T18:00:06.000Z"),
-      allDay: false,
-      users: Object.keys(users)
-    },
-    {
-      id: "12",
-      title: "Iyris/Adam on the 14",
-      description: "meeting",
-      start: new Date("2023-01-14T19:00:06.000Z"),
-      end: new Date("2023-01-14T19:30:06.000Z"),
-      allDay: false,
-      users: ["ab", "iv"]
-    },
-    {
-      id: "13",
-      title: "Iyris VS Kieran on the 14",
-      description: "meeting",
-      start: new Date("2023-01-14T21:00:06.000Z"),
-      end: new Date("2023-01-14T21:30:06.000Z"),
-      allDay: false,
-      users: ["km", "iv"]
-    },
-    {
-      id: "14",
-      title: "Iyris/Emily on the 14",
-      description: "meeting",
-      start: new Date("2023-01-14T23:30:06.000Z"),
-      end: new Date("2023-01-15T00:00:06.000Z"),
-      allDay: false,
-      users: ["ew", "iv"]
-    },
-    {
-      id: "15",
-      title: "PJs day again on the 13",
-      description: "yay",
-      start: new Date("2023-01-13T15:50:00.000Z"),
-      allDay: true,
-      users: Object.keys(users)
-    }
-  ];
-
   // src/apis/EventApi.ts
-  var getEventById = (eventId) => mettingsObject.find((event) => eventId === event._id);
+  var baseURL = window.location.origin;
+  var getEventById = (eventId) => __async(void 0, null, function* () {
+    const res = yield fetch(`${baseURL}/api/events/${eventId}`);
+    if (res.ok) {
+      const eventsResponse = yield res.json();
+      const eventData = eventsResponse.data;
+      const event = __spreadValues({}, eventData);
+      event.start = new Date(event.start);
+      if (event.end) {
+        event.end = new Date(event.end);
+      }
+      return event;
+    } else {
+      const error = (yield res.json()).error;
+      throw new Error(error || "Events could not be fetched");
+    }
+  });
   var createEvent = (event) => {
     fetch(`/api/events`, {
       body: JSON.stringify(event),
@@ -196,11 +67,29 @@
       }
     });
   };
-  var getEventsForDay = (date) => {
+  var getEventsForDay = (date) => __async(void 0, null, function* () {
     const newDate = new Date(date);
     newDate.setHours(0, 0, 0, 0);
-    fetch(`api/events?start=${newDate.toISOString()}`, {});
-  };
+    const res = yield fetch(
+      `${baseURL}/api/events?start=${newDate.toISOString()}`
+    );
+    if (res.ok) {
+      const eventsResponse = yield res.json();
+      const eventsData = eventsResponse.data;
+      const events = eventsData.map((event) => {
+        const modifiedEvent = __spreadValues({}, event);
+        modifiedEvent.start = new Date(modifiedEvent.start);
+        if (modifiedEvent.end) {
+          modifiedEvent.end = new Date(modifiedEvent.end);
+        }
+        return modifiedEvent;
+      });
+      return events;
+    } else {
+      const error = (yield res.json()).error;
+      throw new Error(error || "Events could not be fetched");
+    }
+  });
 
   // src/utils/DOMutils.ts
   function setStyle(el, styles) {
@@ -448,8 +337,8 @@
     title: "",
     description: "",
     start: new Date(),
-    allDay: false,
-    users: []
+    allDay: false
+    // users: [] as string[],
   };
   function setEventState(newValue) {
     const modifiedEvent = __spreadValues(__spreadValues({}, eventState), newValue);
@@ -558,123 +447,124 @@
   function Day(date) {
     let today = date ? new Date(date) : new Date();
     const el = Div();
-    const datesHeader = Div({
-      styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-        justifyContent: "space-between",
-        margin: "12px 20px"
-      })
-    });
-    const title = Header({
-      text: new Intl.DateTimeFormat("en-US", dateOptions).format(
-        new Date(today)
-      ),
-      headerType: "h1"
-    });
-    setStyle(title, {
-      padding: "12px",
-      margin: "12px 20px"
-    });
-    const prevDay = Button({
-      attr: {
-        textContent: "prev",
-        onclick: () => goToSelectedDayView(today, "previous")
-      }
-    });
-    const nextDay = Button({
-      attr: {
-        textContent: "next",
-        onclick: () => goToSelectedDayView(today, "next")
-      }
-    });
-    datesHeader.appendChild(prevDay);
-    datesHeader.appendChild(title);
-    datesHeader.appendChild(nextDay);
-    el.appendChild(datesHeader);
-    const meetingsList = Div();
-    const init = () => __async(this, null, function* () {
-      const events = yield getEventsForDay(today);
-      return events;
-    });
-    init();
-    const todaysEvents = mettingsObject.filter((meeting) => {
-      const eventDate = new Date(meeting.start);
-      const inputDate = eventDate.toISOString().split("T")[0];
-      const todaysDate = new Date(today).toISOString().split("T")[0];
-      return inputDate == todaysDate;
-    });
-    if (todaysEvents.length) {
-      todaysEvents.sort(
-        (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
-      );
-      todaysEvents.forEach((meeting) => {
-        if (meeting.allDay) {
-          const allDayEventStyles = {
-            borderRadius: "4px",
-            padding: "12px",
-            margin: "12px 20px",
-            width: "auto",
-            backgroundColor: "papayawhip",
-            cursor: "pointer"
-          };
-          const allDayEvents = createEventCard(
-            meeting,
-            allDayEventStyles,
-            () => goToEventPage(meeting.id)
+    function init() {
+      return __async(this, null, function* () {
+        const datesHeader = Div({
+          styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
+            justifyContent: "space-between",
+            margin: "12px 20px"
+          })
+        });
+        const title = Header({
+          text: new Intl.DateTimeFormat("en-US", dateOptions).format(today),
+          headerType: "h1"
+        });
+        setStyle(title, {
+          padding: "12px",
+          margin: "12px 20px"
+        });
+        const prevDay = Button({
+          attr: {
+            textContent: "prev",
+            onclick: () => goToSelectedDayView(today, "previous")
+          }
+        });
+        const nextDay = Button({
+          attr: {
+            textContent: "next",
+            onclick: () => goToSelectedDayView(today, "next")
+          }
+        });
+        datesHeader.appendChild(prevDay);
+        datesHeader.appendChild(title);
+        datesHeader.appendChild(nextDay);
+        el.appendChild(datesHeader);
+        const meetingsList = Div();
+        const events = yield getEventsForDay(today);
+        console.log("events", events);
+        console.log("today is", today);
+        if (events.length) {
+          events.sort(
+            (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
           );
-          el.appendChild(allDayEvents);
-        }
-        if (meeting.start && meeting.end) {
-          const meetingContainer = Div({
-            styles: __spreadValues({
-              borderRadius: "4px",
-              margin: "12px 20px",
-              gridGap: "20px"
-            }, flexAlignItemsCenter)
-          });
-          const times = Div({
-            styles: {
-              display: "flex",
-              justifyContent: "space-around",
-              marginBottom: "auto",
-              maxWidth: "160px",
-              width: "100%"
+          events.forEach((meeting) => {
+            if (meeting.allDay) {
+              const allDayEventStyles = {
+                borderRadius: "4px",
+                padding: "12px",
+                margin: "12px 20px",
+                width: "auto",
+                backgroundColor: "papayawhip",
+                cursor: "pointer"
+              };
+              const allDayEvents = createEventCard(
+                meeting,
+                allDayEventStyles,
+                () => {
+                  console.log("meeting", meeting);
+                  goToEventPage(meeting._id);
+                }
+              );
+              el.appendChild(allDayEvents);
+            } else {
+              const meetingContainer = Div({
+                styles: __spreadValues({
+                  borderRadius: "4px",
+                  margin: "12px 20px",
+                  gridGap: "20px"
+                }, flexAlignItemsCenter)
+              });
+              const times = Div({
+                styles: {
+                  display: "flex",
+                  justifyContent: "space-around",
+                  marginBottom: "auto",
+                  maxWidth: "160px",
+                  width: "100%"
+                }
+              });
+              const start = Span();
+              start.innerText = `${formatDateTime(
+                "en-CA",
+                timeOptions,
+                meeting.start
+              )} - `;
+              times.appendChild(start);
+              const end = Span();
+              end.innerText = ` ${formatDateTime(
+                "en-CA",
+                timeOptions,
+                meeting.end
+              )}`;
+              times.appendChild(end);
+              meetingContainer.appendChild(times);
+              const eventStyles = {
+                borderRadius: "4px",
+                padding: "12px",
+                width: "100%",
+                backgroundColor: "#d2e7de",
+                cursor: "pointer"
+              };
+              const event = createEventCard(
+                meeting,
+                eventStyles,
+                () => goToEventPage(meeting._id)
+              );
+              meetingContainer.appendChild(event);
+              meetingsList.appendChild(meetingContainer);
             }
           });
-          const start = Span();
-          start.innerText = `${formatDateTime(
-            "en-CA",
-            timeOptions,
-            meeting.start
-          )} - `;
-          times.appendChild(start);
-          const end = Span();
-          end.innerText = ` ${formatDateTime("en-CA", timeOptions, meeting.end)}`;
-          times.appendChild(end);
-          meetingContainer.appendChild(times);
-          const eventStyles = {
-            borderRadius: "4px",
-            padding: "12px",
-            width: "100%",
-            backgroundColor: "#d2e7de",
-            cursor: "pointer"
-          };
-          const event = createEventCard(
-            meeting,
-            eventStyles,
-            () => goToEventPage(meeting.id)
-          );
-          meetingContainer.appendChild(event);
-          meetingsList.appendChild(meetingContainer);
+          el.appendChild(meetingsList);
+        } else {
+          const noEventsLabel = Div({
+            attr: { innerText: "No events this day" },
+            styles: { margin: "12px 20px" }
+          });
+          el.appendChild(noEventsLabel);
         }
       });
-      el.appendChild(meetingsList);
-    } else {
-      const noEventsLabel = Div({
-        attr: { innerText: "No events today" },
-        styles: { margin: "12px 20px" }
-      });
-      el.appendChild(noEventsLabel);
     }
+    init();
     return el;
   }
   function createEventCard(meeting, styles, callback) {
@@ -889,12 +779,6 @@
       )}`;
       el.appendChild(end);
     }
-    const guestsIinnerText = "Guests: " + event.users.map((user) => users[user]).join(", ");
-    const guests = Div({
-      attr: { innerText: guestsIinnerText },
-      styles: { padding: "4px 0" }
-    });
-    el.appendChild(guests);
     return el;
   }
 
@@ -966,58 +850,59 @@
     }
     window.addEventListener("popstate", handleRouteUpdated);
     function handleRouteUpdated() {
-      var _a;
-      router.innerHTML = "";
-      const path = window.location.pathname;
-      const isHome = path === "/";
-      const addNewEventPath = path === "/new";
-      const isDay = path.includes("day");
-      let eventObject;
-      let eventsDate = new Date().toDateString();
-      if (!isHome && !addNewEventPath && !isDay) {
-        const pathSplit = path.split("/");
-        const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
-        eventObject = getEventById(eventId);
-        if (!eventObject) {
-          setURL("/");
+      return __async(this, null, function* () {
+        var _a;
+        router.innerHTML = "";
+        const path = window.location.pathname;
+        const isHome = path === "/";
+        const addNewEventPath = path === "/new";
+        const isDay = path.includes("day");
+        let eventObject;
+        let eventsDate = new Date().toDateString();
+        if (!isHome && !addNewEventPath && !isDay) {
+          const pathSplit = path.split("/");
+          const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
+          eventObject = yield getEventById(eventId);
+          if (!eventObject) {
+            setURL("/");
+          }
         }
-      }
-      if (isDay) {
-        const splitDate = path.split("/");
-        const fullYear = splitDate[2];
-        const month = splitDate[3];
-        const day = splitDate[4];
-        eventsDate = isDay ? `/day/${fullYear}/${month}/${day}` : "/";
-      }
-      switch (path) {
-        case "/":
-          router.append(Header2("home"));
-          router.append(Day());
-          break;
-        case eventsDate:
-          router.append(Header2("day"));
-          router.append(Day(eventsDate));
-          break;
-        case `/events/${eventObject == null ? void 0 : eventObject.id}`:
-          if (eventObject) {
-            router.append(Header2("event"));
-            router.append(Event2(eventObject));
-          }
-          break;
-        case `/edit/events/${eventObject == null ? void 0 : eventObject.id}`:
-          if (eventObject) {
-            router.append(Header2("edit"));
-            router.append(EditEvent(eventObject));
-          }
-          break;
-        case `/new`:
-          console.log("passing as new");
-          router.append(Header2("new"));
-          router.append(AddEvent());
-          break;
-        default:
-          break;
-      }
+        if (isDay) {
+          const splitDate = path.split("/");
+          const fullYear = splitDate[2];
+          const month = splitDate[3];
+          const day = splitDate[4];
+          eventsDate = isDay ? `/day/${fullYear}/${month}/${day}` : "/";
+        }
+        switch (path) {
+          case "/":
+            router.append(Header2("home"));
+            router.append(Day());
+            break;
+          case eventsDate:
+            router.append(Header2("day"));
+            router.append(Day(eventsDate));
+            break;
+          case `/events/${eventObject == null ? void 0 : eventObject._id}`:
+            if (eventObject) {
+              router.append(Header2("event"));
+              router.append(Event2(eventObject));
+            }
+            break;
+          case `/edit/events/${eventObject == null ? void 0 : eventObject._id}`:
+            if (eventObject) {
+              router.append(Header2("edit"));
+              router.append(EditEvent(eventObject));
+            }
+            break;
+          case `/new`:
+            router.append(Header2("new"));
+            router.append(AddEvent());
+            break;
+          default:
+            break;
+        }
+      });
     }
     init();
     return router;

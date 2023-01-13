@@ -43,7 +43,6 @@ export function Event(event: IEvent) {
     });
     el.appendChild(start);
 
-    // start or end ??????
     const end = Div({ styles: { padding: '4px 0' } });
     end.innerHTML = `End: ${formatDateTime(
       'en-CA',
@@ -53,6 +52,7 @@ export function Event(event: IEvent) {
     el.appendChild(end);
   }
 
+  /*
   const guestsIinnerText =
     'Guests: ' +
     event.users.map((user) => users[user as keyof typeof users]).join(', ');
@@ -61,6 +61,7 @@ export function Event(event: IEvent) {
     styles: { padding: '4px 0' },
   });
   el.appendChild(guests);
+  */
 
   return el;
 }

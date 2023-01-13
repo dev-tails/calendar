@@ -15,7 +15,7 @@ let eventState: IEvent = {
   description: '',
   start: new Date(),
   allDay: false,
-  users: [] as string[],
+  // users: [] as string[],
 };
 
 function setEventState(newValue: Partial<IEvent>) {

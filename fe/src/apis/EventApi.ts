@@ -1,7 +1,23 @@
-import { mettingsObject } from '../fakeData/fakeData';
+const baseURL = window.location.origin;
 
-export const getEventById = (eventId: string) =>
-  mettingsObject.find((event) => eventId === event._id);
+export const getEventById = async (eventId: string) => {
+  const res = await fetch(`${baseURL}/api/events/${eventId}`);
+  if (res.ok) {
+    const eventsResponse = await res.json();
+    const eventData: IEvent = eventsResponse.data;
+
+    // using new Date here as res returns ISODate strings for event start and end
+    const event: IEvent = { ...eventData };
+    event.start = new Date(event.start);
+    if (event.end) {
+      event.end = new Date(event.end);
+    }
+    return event;
+  } else {
+    const error = (await res.json()).error;
+    throw new Error(error || 'Events could not be fetched');
+  }
+};
 
 export const createEvent = (event: Partial<IEvent>) => {
   fetch(`/api/events`, {
@@ -13,8 +29,28 @@ export const createEvent = (event: Partial<IEvent>) => {
   });
 };
 
-export const getEventsForDay = (date: Date) => {
+export const getEventsForDay = async (date: Date) => {
   const newDate = new Date(date);
   newDate.setHours(0, 0, 0, 0);
-  fetch(`api/events?start=${newDate.toISOString()}`, {});
+  const res = await fetch(
+    `${baseURL}/api/events?start=${newDate.toISOString()}`
+  );
+  if (res.ok) {
+    const eventsResponse = await res.json();
+    const eventsData: IEvent[] = eventsResponse.data;
+
+    // using new Date here as res returns ISODate strings for events start and end
+    const events = eventsData.map((event) => {
+      const modifiedEvent: IEvent = { ...event };
+      modifiedEvent.start = new Date(modifiedEvent.start);
+      if (modifiedEvent.end) {
+        modifiedEvent.end = new Date(modifiedEvent.end);
+      }
+      return modifiedEvent;
+    });
+    return events;
+  } else {
+    const error = (await res.json()).error;
+    throw new Error(error || 'Events could not be fetched');
+  }
 };
