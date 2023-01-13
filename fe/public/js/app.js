@@ -466,7 +466,13 @@
   // src/views/Day/Day.ts
   function Day(date) {
     let dayView = date ? new Date(date) : new Date();
-    const el = Div();
+    const el = Div({
+      styles: {
+        maxWidth: "1200px",
+        marginLeft: "auto",
+        marginRight: "auto"
+      }
+    });
     function init() {
       return __async(this, null, function* () {
         const headerDate = Div({
@@ -561,7 +567,8 @@
                 padding: "12px",
                 width: "100%",
                 backgroundColor: "#d2e7de",
-                cursor: "pointer"
+                cursor: "pointer",
+                maxWidth: "980px"
               };
               const eventCard = createEventCard(event, eventStyles);
               eventContainer.appendChild(eventCard);
@@ -583,10 +590,22 @@
   }
   function createEventCard(event, styles) {
     const eventCard = Div({ styles });
-    const title = H3({ attr: { innerText: event.title } });
+    const textStyles = {
+      overflow: "hidden",
+      width: "100%",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    };
+    const title = H3({
+      attr: { innerText: event.title },
+      styles: textStyles
+    });
     eventCard.appendChild(title);
     if (event.description) {
-      const description = Div({ attr: { innerText: event.description } });
+      const description = Div({
+        attr: { innerText: event.description },
+        styles: textStyles
+      });
       eventCard.appendChild(description);
     }
     onClick(eventCard, () => setURL(`/events/${event._id}`));

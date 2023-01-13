@@ -16,7 +16,13 @@ import { H3 } from '../../components/elements/H3';
 
 export function Day(date?: string) {
   let dayView = date ? new Date(date) : new Date();
-  const el = Div();
+  const el = Div({
+    styles: {
+      maxWidth: '1200px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+  });
 
   async function init() {
     const headerDate = Div({
@@ -125,6 +131,7 @@ export function Day(date?: string) {
             width: '100%',
             backgroundColor: '#d2e7de',
             cursor: 'pointer',
+            maxWidth: '980px',
           };
           const eventCard = createEventCard(event, eventStyles);
 
@@ -149,11 +156,23 @@ export function Day(date?: string) {
 function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
   const eventCard = Div({ styles });
 
-  const title = H3({ attr: { innerText: event.title } });
+  const textStyles = {
+    overflow: 'hidden',
+    width: '100%',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  };
+  const title = H3({
+    attr: { innerText: event.title },
+    styles: textStyles,
+  });
   eventCard.appendChild(title);
 
   if (event.description) {
-    const description = Div({ attr: { innerText: event.description } });
+    const description = Div({
+      attr: { innerText: event.description },
+      styles: textStyles,
+    });
     eventCard.appendChild(description);
   }
 
