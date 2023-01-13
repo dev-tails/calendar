@@ -69,8 +69,10 @@ export const formatDateTimeInputValue = (date: Date) => {
 
 export const addMinutesToDate = (date: Date, minutes: number) => {
   const addedMinutes = minutes * 60 * 1000;
-  const time = date.getTime();
-  const newTimeNumber = date.setTime(time + addedMinutes);
+
+  const copiedDate = new Date(date.getTime());
+  const time = copiedDate.getTime();
+  const newTimeNumber = copiedDate.setTime(time + addedMinutes);
   const dateWithAddedMin = new Date(newTimeNumber);
   return dateWithAddedMin;
 };

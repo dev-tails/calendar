@@ -26,13 +26,14 @@ export function DateSelect(
           const endDateTime = document.getElementById(
             'end'
           ) as HTMLInputElement;
+          const newEndDate = addMinutesToDate(newDate, 30);
           if (endDateTime) {
-            const newEndDate = addMinutesToDate(newDate, 30);
             const endDateTimeString = formatDateTimeInputValue(newEndDate);
             endDateTime.value = endDateTimeString;
           }
           onEventStateChange({
             start: newDate,
+            end: endDateTime ? newEndDate : undefined,
           });
         },
       },

@@ -155,9 +155,10 @@ export function AddEvent() {
       delete eventState.end;
     }
     eventState = { ...eventState, start };
-    createEvent(eventState);
-    const dateString = formatSplitDate(eventState.start, '/', 'yyyy-mm-dd');
-    setURL(`/day/${dateString}`);
+    console.log('submitting', eventState);
+    // createEvent(eventState);
+    // const dateString = formatSplitDate(eventState.start, '/', 'yyyy-mm-dd');
+    // setURL(`/day/${dateString}`);
   };
 
   return form;

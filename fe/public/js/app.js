@@ -58,15 +58,6 @@
       throw new Error(error || "Events could not be fetched");
     }
   });
-  var createEvent = (event) => {
-    fetch(`/api/events`, {
-      body: JSON.stringify(event),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-  };
   var getEventsForDay = (date) => __async(void 0, null, function* () {
     const newDate = new Date(date);
     newDate.setHours(0, 0, 0, 0);
@@ -234,8 +225,9 @@
   };
   var addMinutesToDate = (date, minutes) => {
     const addedMinutes = minutes * 60 * 1e3;
-    const time = date.getTime();
-    const newTimeNumber = date.setTime(time + addedMinutes);
+    const copiedDate = new Date(date.getTime());
+    const time = copiedDate.getTime();
+    const newTimeNumber = copiedDate.setTime(time + addedMinutes);
     const dateWithAddedMin = new Date(newTimeNumber);
     return dateWithAddedMin;
   };
@@ -255,13 +247,14 @@
           const endDateTime = document.getElementById(
             "end"
           );
+          const newEndDate = addMinutesToDate(newDate, 30);
           if (endDateTime) {
-            const newEndDate = addMinutesToDate(newDate, 30);
             const endDateTimeString = formatDateTimeInputValue(newEndDate);
             endDateTime.value = endDateTimeString;
           }
           onEventStateChange({
-            start: newDate
+            start: newDate,
+            end: endDateTime ? newEndDate : void 0
           });
         }
       },
@@ -442,9 +435,7 @@
         delete eventState.end;
       }
       eventState = __spreadProps(__spreadValues({}, eventState), { start });
-      createEvent(eventState);
-      const dateString = formatSplitDate(eventState.start, "/", "yyyy-mm-dd");
-      setURL(`/day/${dateString}`);
+      console.log("submitting", eventState);
     };
     return form;
   }
