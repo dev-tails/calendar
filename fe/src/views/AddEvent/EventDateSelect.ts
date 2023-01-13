@@ -12,12 +12,11 @@ export function DateSelect(
   onEventStateChange: (state: Partial<IEvent>) => void
 ) {
   const dateContainer = Div({ styles: { padding: '12px' } });
-  const startTimeInputEl = (type: 'date' | 'datetime-local', value: string) =>
+  const startTimeInputEl = (type: 'date' | 'datetime-local') =>
     Input({
       selectors: { id: 'start' },
       attr: {
         type,
-        value,
         required: true,
         onchange: (e) => {
           const newValue = (e.target as HTMLInputElement).value;
@@ -41,10 +40,8 @@ export function DateSelect(
         marginRight: '12px',
       },
     });
-  const dateTimeString = formatDateTimeInputValue(eventState.start);
-  const startTimeInput = startTimeInputEl('datetime-local', dateTimeString);
 
-  dateContainer.appendChild(startTimeInput);
+  dateContainer.appendChild(startTimeInputEl('datetime-local'));
 
   const toLabel = Label({
     attr: { innerText: 'to' },
@@ -54,22 +51,23 @@ export function DateSelect(
   });
   dateContainer.appendChild(toLabel);
 
-  const endTimeInput = Input({
-    attr: {
-      type: 'datetime-local',
-      required: true,
-      onchange: (e) => {
-        onEventStateChange({
-          end: new Date((e.target as HTMLInputElement).value),
-        });
+  const endTimeInput = () =>
+    Input({
+      attr: {
+        type: 'datetime-local',
+        required: true,
+        onchange: (e) => {
+          onEventStateChange({
+            end: new Date((e.target as HTMLInputElement).value),
+          });
+        },
       },
-    },
-    styles: {
-      marginRight: '12px',
-    },
-    selectors: { id: 'end' },
-  });
-  dateContainer.appendChild(endTimeInput);
+      styles: {
+        marginRight: '12px',
+      },
+      selectors: { id: 'end' },
+    });
+  dateContainer.appendChild(endTimeInput());
 
   const allDayInput = Input({
     attr: {
@@ -82,7 +80,10 @@ export function DateSelect(
           end: isChecked ? undefined : eventState.end,
         });
 
-        const dateInput = document.getElementById('start');
+        const dateInput = document.getElementById('start') as HTMLInputElement;
+        const endDatetimeInput = document.getElementById(
+          'end'
+        ) as HTMLInputElement;
         if (!dateInput) {
           return;
         }
@@ -90,20 +91,15 @@ export function DateSelect(
         if (isChecked) {
           dateContainer.removeChild(dateInput);
           dateContainer.removeChild(toLabel);
-          dateContainer.removeChild(endTimeInput);
+          dateContainer.removeChild(endDatetimeInput);
 
-          const dateString = formatSplitDate(
-            eventState.start,
-            '-',
-            'yyyy-mm-dd'
-          );
-          const startDate = startTimeInputEl('date', dateString);
+          const startDate = startTimeInputEl('date');
           dateContainer.prepend(startDate);
         } else {
-          dateContainer.removeChild(dateInput);
-          dateContainer.prepend(endTimeInput);
+          dateContainer.prepend(endTimeInput());
           dateContainer.prepend(toLabel);
-          dateContainer.prepend(startTimeInput);
+          dateContainer.prepend(startTimeInputEl('datetime-local'));
+          dateContainer.removeChild(dateInput);
         }
       },
     },

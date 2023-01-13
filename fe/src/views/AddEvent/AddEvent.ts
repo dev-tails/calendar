@@ -11,23 +11,15 @@ import { createEvent } from '../../apis/EventApi';
 import { H3 } from '../../components/elements/H3';
 import { formatSplitDate } from '../../utils/dateHelpers';
 
-let eventState: IEvent = {
-  title: '',
-  description: '',
-  start: new Date(),
-  allDay: false,
-  // users: [] as string[],
-};
-
-function setEventState(newValue: Partial<IEvent>) {
-  const modifiedEvent: IEvent = {
-    ...eventState,
-    ...newValue,
-  };
-  eventState = modifiedEvent;
-}
-
 export function AddEvent() {
+  let eventState: IEvent = {
+    title: '',
+    description: '',
+    start: new Date(),
+    allDay: false,
+    // users: [] as string[],
+  };
+
   const form: HTMLFormElement = document.createElement('form');
 
   const addEventHeader = H3({ attr: { innerText: 'Add event' } });
@@ -156,19 +148,29 @@ export function AddEvent() {
     }
     eventState = { ...eventState, start };
     console.log('submitting', eventState);
-    // createEvent(eventState);
-    // const dateString = formatSplitDate(eventState.start, '/', 'yyyy-mm-dd');
-    // setURL(`/day/${dateString}`);
+    createEvent(eventState);
+    const dateString = formatSplitDate(eventState.start, '/', 'yyyy-mm-dd');
+    setURL(`/day/${dateString}`);
   };
 
   return form;
-}
+  /* ------ */
+  function setEventState(newValue: Partial<IEvent>) {
+    const modifiedEvent: IEvent = {
+      ...eventState,
+      ...newValue,
+    };
+    eventState = modifiedEvent;
+  }
 
-function onUsersSelectChange(
-  selectedOptions: HTMLCollectionOf<HTMLOptionElement>
-) {
-  const selectedUsersKeys = Array.from(selectedOptions)?.map((selectedUser) => {
-    return selectedUser.value;
-  });
-  setEventState({ users: selectedUsersKeys });
+  function onUsersSelectChange(
+    selectedOptions: HTMLCollectionOf<HTMLOptionElement>
+  ) {
+    const selectedUsersKeys = Array.from(selectedOptions)?.map(
+      (selectedUser) => {
+        return selectedUser.value;
+      }
+    );
+    setEventState({ users: selectedUsersKeys });
+  }
 }

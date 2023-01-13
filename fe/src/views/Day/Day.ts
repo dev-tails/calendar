@@ -156,25 +156,13 @@ export function Day(date?: string) {
 function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
   const eventCard = Div({ styles });
 
-  const textStyles = {
-    overflow: 'hidden',
-    width: '100%',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  };
-  const title = H3({
-    attr: { innerText: event.title },
-    styles: textStyles,
-  });
+  const title = H3({ attr: { innerText: event.title } });
   eventCard.appendChild(title);
 
-  if (event.description) {
-    const description = Div({
-      attr: { innerText: event.description },
-      styles: textStyles,
-    });
-    eventCard.appendChild(description);
-  }
+  // if (event.description) {
+  //   const description = Div({ attr: { innerText: event.description } });
+  //   eventCard.appendChild(description);
+  // }
 
   onClick(eventCard, () => setURL(`/events/${event._id}`));
   return eventCard;

@@ -76,7 +76,6 @@ async function run() {
   });
 
   server.post('/api/events', async (req, res) => {
-    console.log('req', req.body);
     const event = await Event.insertOne({
       title: req.body.title,
       description: req.body.description,
