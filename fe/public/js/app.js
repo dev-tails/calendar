@@ -427,18 +427,21 @@
     form.appendChild(buttons);
     form.onsubmit = (e) => {
       e.preventDefault();
+      console.log("e", eventState);
       let start = eventState.start;
       if (eventState.allDay) {
-        const midnightDate = eventState.start;
+        const midnightDate = new Date(eventState.start.getTime());
         midnightDate.setUTCHours(0, 0, 0, 0);
         start = midnightDate;
         delete eventState.end;
       }
       eventState = __spreadProps(__spreadValues({}, eventState), { start });
-      console.log("submitting", eventState);
       createEvent(eventState);
-      const dateString = formatSplitDate(eventState.start, "/", "yyyy-mm-dd");
-      setURL(`/day/${dateString}`);
+      const startDateISO = eventState.start.toISOString();
+      const startDate = startDateISO.split("T")[0];
+      const dateURLparam = startDate.replace(/-/g, "/");
+      console.log("dateURLparam", dateURLparam);
+      setURL(`/day/${dateURLparam}`);
     };
     return form;
     function setEventState(newValue) {
