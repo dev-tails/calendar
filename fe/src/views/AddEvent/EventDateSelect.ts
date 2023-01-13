@@ -6,6 +6,7 @@ import {
 import { Div } from '../../components/elements/Div';
 import { Input } from '../../components/elements/Input/Input';
 import { Label } from '../../components/elements/Label';
+import { byId } from '../../utils/DOMutils';
 
 export function DateSelect(
   eventState: IEvent,
@@ -23,27 +24,25 @@ export function DateSelect(
             : formatDateTimeInputValue(newValue),
         required: true,
         onchange: (e) => {
-          const newValue = (e.target as HTMLInputElement).value;
-          const newDate = new Date(newValue);
-          console.log('new vlaue', newValue);
-          console.log('new date', newDate);
+          const selectedValue = (e.target as HTMLInputElement).value;
+          let newStartDate = new Date(selectedValue);
 
-          const endDateTime = document.getElementById(
-            'end'
-          ) as HTMLInputElement;
-          const newEndDate = addMinutesToDate(newDate, 30);
-          console.log(
-            'new end dtae',
-            newEndDate,
-            endDateTime ? newEndDate : undefined
-          );
+          if (eventState.allDay) {
+            const selectedValueToMidnight = newStartDate
+              .toUTCString()
+              .split('GMT')[0];
+            newStartDate = new Date(selectedValueToMidnight);
+          }
+
+          const endDateTime = byId('end') as HTMLInputElement;
+          const newEndDate = addMinutesToDate(newStartDate, 30);
+
           if (endDateTime) {
             const endDateTimeString = formatDateTimeInputValue(newEndDate);
             endDateTime.value = endDateTimeString;
           }
-          console.log('on event', onEventStateChange);
           onEventStateChange({
-            start: newDate,
+            start: newStartDate,
             end: endDateTime ? newEndDate : undefined,
           });
         },
@@ -98,17 +97,14 @@ export function DateSelect(
       type: 'checkbox',
       checked: eventState.allDay,
       onchange: (e) => {
-        console.log('what is event state', eventState);
         const isChecked = (e.target as HTMLInputElement).checked;
         onEventStateChange({
           allDay: isChecked,
           end: isChecked ? undefined : eventState.end,
         });
 
-        const dateInput = document.getElementById('start') as HTMLInputElement;
-        const endDatetimeInput = document.getElementById(
-          'end'
-        ) as HTMLInputElement;
+        const dateInput = byId('start') as HTMLInputElement;
+        const endDatetimeInput = byId('end') as HTMLInputElement;
         if (!dateInput) {
           return;
         }

@@ -2,35 +2,30 @@ import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
 import { Input } from '../../components/elements/Input/Input';
 import { Textarea } from '../../components/elements/Textarea';
-import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import { basics, fonts } from '../../utils/styles';
 import { Label } from '../../components/elements/Label';
-import { createEvent } from '../../apis/EventApi';
 import { H3 } from '../../components/elements/H3';
 import { DateSelect } from '../AddEvent/EventDateSelect';
+import { Form } from '../../components/elements/Form';
 
 export function EditEvent(event: IEvent) {
-  console.log('running');
   let eventState: IEvent = {
     title: '',
     description: '',
     start: new Date(),
     allDay: false,
-    // users: [] as string[],
   };
 
-  const setEventState = (newValue: Partial<IEvent>) => {
-    console.log('inside', { newValue });
+  function setEventState(newValue: Partial<IEvent>) {
     Object.assign(eventState, newValue);
-  };
+  }
 
-  const form: HTMLFormElement = document.createElement('form');
+  const form = Form();
 
   const editEventHeader = H3({ attr: { innerText: 'Edit event' } });
   form.appendChild(editEventHeader);
 
-  //Title
   const titleContainer = Div({ styles: { padding: '12px' } });
   const titleInput = Input({
     attr: {
@@ -46,7 +41,6 @@ export function EditEvent(event: IEvent) {
   titleContainer.appendChild(titleInput);
   form.appendChild(titleContainer);
 
-  //Description
   const descriptionContainer = Div({
     styles: { padding: '12px', display: 'flex', flexDirection: 'column' },
   });
@@ -67,44 +61,9 @@ export function EditEvent(event: IEvent) {
   descriptionContainer.appendChild(descriptionInput);
   form.appendChild(descriptionContainer);
 
-  //Dates
-  const dateContainer = DateSelect(eventState, setEventState.bind(this));
+  const dateContainer = DateSelect(eventState, setEventState);
   form.appendChild(dateContainer);
 
-  //Guests
-  /*
-  const guestsContainer = Div({
-    styles: { display: 'flex', padding: '12px' },
-  });
-  const guestsLabel = Label({
-    attr: { innerText: 'Guests' },
-    styles: {
-      marginRight: '12px',
-    },
-  });
-  guestsContainer.appendChild(guestsLabel);
-
-  const usersKeyValuePairs = Object.entries(users);
-
-  const usersSelectEl = MultiSelect(usersKeyValuePairs, () =>
-    onUsersSelectChange(usersSelectEl.selectedOptions)
-  );
-  guestsContainer.appendChild(usersSelectEl);
-  form.appendChild(guestsContainer);
-
-  const guestsLabelInfo = Label({
-    attr: {
-      innerText:
-        '* Hold down the control (ctrl) button to select multiple options. For Mac: Hold down the command button to select multiple options.',
-    },
-    styles: {
-      padding: '12px',
-    },
-  });
-  form.append(guestsLabelInfo);
-  */
-
-  //Buttons
   const buttons = Div({
     styles: { display: 'flex', justifyContent: 'flex-end', marginTop: '24px' },
   });
@@ -125,18 +84,18 @@ export function EditEvent(event: IEvent) {
   const cancelButton = Button({
     attr: {
       textContent: 'Cancel',
+      onclick: () => setURL('/'),
     },
+    styles: buttonStyles,
   });
-  onClick(cancelButton, () => setURL(`/`));
-  setStyle(cancelButton, buttonStyles);
 
   const saveButton = Button({
     attr: {
       textContent: 'Save',
       type: 'submit',
     },
+    styles: buttonStyles,
   });
-  setStyle(saveButton, buttonStyles);
 
   buttons.appendChild(cancelButton);
   buttons.appendChild(saveButton);
@@ -144,7 +103,6 @@ export function EditEvent(event: IEvent) {
 
   form.onsubmit = (e) => {
     e.preventDefault();
-    console.log('e', eventState);
     let start = eventState.start;
 
     if (eventState.allDay) {
@@ -153,27 +111,13 @@ export function EditEvent(event: IEvent) {
       start = midnightDate;
       delete eventState.end;
     }
-    // eventState = { ...eventState, start };
-    setEventState({ start });
+    // setEventState({ start });/////
+    eventState = { ...eventState, start };
+
     // createEvent(eventState);
     console.log('event State', eventState);
-    const startDateISO = eventState.start.toISOString();
-    const startDate = startDateISO.split('T')[0];
-    const dateURLparam = startDate.replace(/-/g, '/');
-    setURL(`/day/${dateURLparam}`);
+    setURL(`/events/edit/${event._id}`);
   };
 
   return form;
-  /* ------ */
-
-  function onUsersSelectChange(
-    selectedOptions: HTMLCollectionOf<HTMLOptionElement>
-  ) {
-    const selectedUsersKeys = Array.from(selectedOptions)?.map(
-      (selectedUser) => {
-        return selectedUser.value;
-      }
-    );
-    setEventState({ users: selectedUsersKeys });
-  }
 }

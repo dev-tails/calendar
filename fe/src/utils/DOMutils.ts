@@ -1,3 +1,7 @@
+export function byId(id: string) {
+  return document.getElementById(id);
+}
+
 export function setStyle(
   el: HTMLElement,
   styles: Partial<CSSStyleDeclaration>
