@@ -9,6 +9,7 @@ import { Label } from '../../components/elements/Label';
 import { DateSelect } from './EventDateSelect';
 import { createEvent } from '../../apis/EventApi';
 import { H3 } from '../../components/elements/H3';
+import { formatSplitDate } from '../../utils/dateHelpers';
 
 let eventState: IEvent = {
   title: '',
@@ -155,7 +156,8 @@ export function AddEvent() {
     }
     eventState = { ...eventState, start };
     createEvent(eventState);
-    setURL('/');
+    const dateString = formatSplitDate(eventState.start, '/', 'yyyy-mm-dd');
+    setURL(`/day/${dateString}`);
   };
 
   return form;

@@ -425,7 +425,8 @@
       }
       eventState = __spreadProps(__spreadValues({}, eventState), { start });
       createEvent(eventState);
-      setURL("/");
+      const dateString = formatSplitDate(eventState.start, "/", "yyyy-mm-dd");
+      setURL(`/day/${dateString}`);
     };
     return form;
   }
