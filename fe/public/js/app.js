@@ -431,13 +431,10 @@
   }
 
   // src/components/elements/Span.ts
-  function Span(attributes) {
-    const span = document.createElement("span");
-    for (const attribute in attributes) {
-      const attr = attributes[attribute];
-      attr && span.setAttribute(attribute, attr);
-    }
-    return span;
+  function Span(props) {
+    return Element(__spreadValues({
+      tag: "span"
+    }, props));
   }
 
   // src/components/elements/H1.ts
@@ -449,11 +446,11 @@
 
   // src/views/Day/Day.ts
   function Day(date) {
-    let today = date ? new Date(date) : new Date();
+    let dayView = date ? new Date(date) : new Date();
     const el = Div();
     function init() {
       return __async(this, null, function* () {
-        const datesHeader = Div({
+        const headerDate = Div({
           styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
             justifyContent: "space-between",
             margin: "12px 20px"
@@ -462,7 +459,7 @@
         const title = H1({
           attr: {
             innerText: new Intl.DateTimeFormat("en-US", dateOptions).format(
-              today
+              dayView
             )
           }
         });
@@ -473,21 +470,21 @@
         const prevDay = Button({
           attr: {
             textContent: "prev",
-            onclick: () => goToSelectedDayView(today, "previous")
+            onclick: () => goToSelectedDayView(dayView, "previous")
           }
         });
         const nextDay = Button({
           attr: {
             textContent: "next",
-            onclick: () => goToSelectedDayView(today, "next")
+            onclick: () => goToSelectedDayView(dayView, "next")
           }
         });
-        datesHeader.appendChild(prevDay);
-        datesHeader.appendChild(title);
-        datesHeader.appendChild(nextDay);
-        el.appendChild(datesHeader);
+        headerDate.appendChild(prevDay);
+        headerDate.appendChild(title);
+        headerDate.appendChild(nextDay);
+        el.appendChild(headerDate);
         const meetingsList = Div();
-        const events = yield getEventsForDay(today);
+        const events = yield getEventsForDay(dayView);
         if (events.length) {
           events.sort(
             (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
@@ -521,20 +518,28 @@
                   width: "100%"
                 }
               });
-              const start = Span();
-              start.innerText = `${formatDateTime(
-                "en-CA",
-                timeOptions,
-                meeting.start
-              )} - `;
+              const start = Span({
+                attr: {
+                  innerText: `${formatDateTime(
+                    "en-CA",
+                    timeOptions,
+                    meeting.start
+                  )} - `
+                }
+              });
               times.appendChild(start);
-              const end = Span();
-              end.innerText = ` ${formatDateTime(
-                "en-CA",
-                timeOptions,
-                meeting.end
-              )}`;
-              times.appendChild(end);
+              if (meeting.end) {
+                const end = Span({
+                  attr: {
+                    innerText: `${formatDateTime(
+                      "en-CA",
+                      timeOptions,
+                      meeting.end
+                    )}`
+                  }
+                });
+                times.appendChild(end);
+              }
               meetingContainer.appendChild(times);
               const eventStyles = {
                 borderRadius: "4px",

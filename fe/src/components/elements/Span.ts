@@ -1,12 +1,14 @@
-type Attributes = { id?: string; class?: string };
+import { Element, ElementAttributes, Selectors } from './Element';
 
-export function Span(attributes?: Attributes) {
-  const span = document.createElement('span');
+type SpanProps = {
+  selectors?: Selectors;
+  attr?: ElementAttributes;
+  styles?: Partial<CSSStyleDeclaration>;
+};
 
-  for (const attribute in attributes) {
-    const attr = attributes[attribute as keyof Attributes];
-    attr && span.setAttribute(attribute, attr);
-  }
-
-  return span;
+export function Span(props?: SpanProps) {
+  return Element({
+    tag: 'span',
+    ...props,
+  });
 }

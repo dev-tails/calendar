@@ -1,5 +1,4 @@
-import { Div } from '../../components/elements/Div';
-import { Span } from '../../components/elements//Span';
+import { getEventsForDay } from '../../apis/EventApi';
 import {
   formatDateTime,
   dateOptions,
@@ -9,16 +8,18 @@ import {
 import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import { flexAlignItemsCenter } from '../../utils/styles';
+import { Div } from '../../components/elements/Div';
+import { Span } from '../../components/elements/Span';
 import { Button } from '../../components/elements/Button';
-import { getEventsForDay } from '../../apis/EventApi';
 import { H1 } from '../../components/elements/H1';
 import { H3 } from '../../components/elements/H3';
 
 export function Day(date?: string) {
-  let today = date ? new Date(date) : new Date();
+  let dayView = date ? new Date(date) : new Date();
   const el = Div();
+
   async function init() {
-    const datesHeader = Div({
+    const headerDate = Div({
       styles: {
         ...flexAlignItemsCenter,
         justifyContent: 'space-between',
@@ -29,7 +30,7 @@ export function Day(date?: string) {
     const title = H1({
       attr: {
         innerText: new Intl.DateTimeFormat('en-US', dateOptions as any).format(
-          today
+          dayView
         ),
       },
     });
@@ -41,24 +42,24 @@ export function Day(date?: string) {
     const prevDay = Button({
       attr: {
         textContent: 'prev',
-        onclick: () => goToSelectedDayView(today, 'previous'),
+        onclick: () => goToSelectedDayView(dayView, 'previous'),
       },
     });
 
     const nextDay = Button({
       attr: {
         textContent: 'next',
-        onclick: () => goToSelectedDayView(today, 'next'),
+        onclick: () => goToSelectedDayView(dayView, 'next'),
       },
     });
 
-    datesHeader.appendChild(prevDay);
-    datesHeader.appendChild(title);
-    datesHeader.appendChild(nextDay);
-    el.appendChild(datesHeader);
+    headerDate.appendChild(prevDay);
+    headerDate.appendChild(title);
+    headerDate.appendChild(nextDay);
+    el.appendChild(headerDate);
 
     const meetingsList = Div();
-    const events = await getEventsForDay(today);
+    const events = await getEventsForDay(dayView);
 
     if (events.length) {
       events.sort(
@@ -76,7 +77,6 @@ export function Day(date?: string) {
             cursor: 'pointer',
           };
           const allDayEvents = createEventCard(meeting, allDayEventStyles);
-
           el.appendChild(allDayEvents);
         } else {
           const meetingContainer = Div({
@@ -98,21 +98,29 @@ export function Day(date?: string) {
             },
           });
 
-          const start = Span();
-          start.innerText = `${formatDateTime(
-            'en-CA',
-            timeOptions,
-            meeting.start
-          )} - `;
+          const start = Span({
+            attr: {
+              innerText: `${formatDateTime(
+                'en-CA',
+                timeOptions,
+                meeting.start
+              )} - `,
+            },
+          });
           times.appendChild(start);
 
-          const end = Span();
-          end.innerText = ` ${formatDateTime(
-            'en-CA',
-            timeOptions,
-            meeting.end
-          )}`;
-          times.appendChild(end);
+          if (meeting.end) {
+            const end = Span({
+              attr: {
+                innerText: `${formatDateTime(
+                  'en-CA',
+                  timeOptions,
+                  meeting.end
+                )}`,
+              },
+            });
+            times.appendChild(end);
+          }
 
           meetingContainer.appendChild(times);
           const eventStyles = {
