@@ -58,15 +58,6 @@
       throw new Error(error || "Events could not be fetched");
     }
   });
-  var createEvent = (event) => {
-    fetch(`/api/events`, {
-      body: JSON.stringify(event),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-  };
   var getEventsForDay = (date) => __async(void 0, null, function* () {
     const newDate = new Date(date);
     newDate.setHours(0, 0, 0, 0);
@@ -87,7 +78,30 @@
       return events;
     } else {
       const error = (yield res.json()).error;
-      throw new Error(error || "Events could not be fetched");
+      throw new Error(error || "Events could not be fetched.");
+    }
+  });
+  var createEvent = (event) => {
+    fetch(`/api/events`, {
+      body: JSON.stringify(event),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  };
+  var deleteEvent = (eventId) => __async(void 0, null, function* () {
+    const res = yield fetch(`/api/events/${eventId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    if (res.ok) {
+      const response = yield res.json();
+      return !!response.success;
+    } else {
+      throw new Error(res.statusText || "Event could not be deletedssss.");
     }
   });
 
@@ -804,6 +818,32 @@
       )}`;
       el.appendChild(end);
     }
+    const button = Button({
+      attr: {
+        textContent: "Delete",
+        onclick: (e) => __async(this, null, function* () {
+          e.preventDefault();
+          try {
+            yield deleteEvent(event._id);
+            setURL("/");
+          } catch (e2) {
+            const temporaryError = Div({
+              attr: {
+                innerText: "Could not delete event"
+              }
+            });
+            el.appendChild(temporaryError);
+          }
+        })
+      },
+      styles: {
+        display: "flex",
+        justifyContent: "flex-end",
+        marginTop: "24px",
+        cursor: "pointer"
+      }
+    });
+    el.appendChild(button);
     return el;
   }
 

@@ -75,6 +75,16 @@ async function run() {
     }
   });
 
+  server.delete('/api/events/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const event = await Event.deleteOne({ _id: mongodb.ObjectId(id) });
+      return res.json({ data: event });
+    } catch (err) {
+      return res.sendStatus(400);
+    }
+  });
+
   server.post('/api/events', async (req, res) => {
     const event = await Event.insertOne({
       title: req.body.title,

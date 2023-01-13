@@ -1,3 +1,5 @@
+import { deleteEvent } from '../../apis/EventApi';
+import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
 import { H3 } from '../../components/elements/H3';
 import {
@@ -5,6 +7,7 @@ import {
   dateOptions,
   dateTimeOptions,
 } from '../../utils/dateHelpers';
+import { setURL } from '../../utils/HistoryUtils';
 
 export function Event(event: IEvent) {
   const el = Div({ styles: { padding: '12px' } });
@@ -50,6 +53,34 @@ export function Event(event: IEvent) {
     )}`;
     el.appendChild(end);
   }
+
+  const button = Button({
+    attr: {
+      textContent: 'Delete',
+      onclick: async (e) => {
+        e.preventDefault();
+        try {
+          await deleteEvent(event._id);
+          setURL('/');
+        } catch (e) {
+          const temporaryError = Div({
+            attr: {
+              innerText: 'Could not delete event',
+            },
+          });
+          el.appendChild(temporaryError);
+        }
+      },
+    },
+    styles: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      marginTop: '24px',
+      cursor: 'pointer',
+    },
+  });
+
+  el.appendChild(button);
 
   /*
   const guestsIinnerText =
