@@ -13,15 +13,18 @@ export function DateSelect(
   onEventStateChange: (state: Partial<IEvent>) => void
 ) {
   const dateContainer = Div({ styles: { padding: '12px' } });
-  const startTimeInputEl = (type: 'date' | 'datetime-local', newValue: any) =>
-    Input({
+  const startTimeInputEl = (
+    type: 'date' | 'datetime-local',
+    newValue: Date
+  ) => {
+    return Input({
       selectors: { id: 'start' },
       attr: {
         type,
         value:
           type === 'date'
-            ? formatSplitDate(newValue, '-', 'yyyy-mm-dd')
-            : formatDateTimeInputValue(newValue),
+            ? formatSplitDate(eventState.start, '-', 'yyyy-mm-dd')
+            : formatDateTimeInputValue(eventState.start),
         required: true,
         onchange: (e) => {
           const selectedValue = (e.target as HTMLInputElement).value;
@@ -41,6 +44,7 @@ export function DateSelect(
             const endDateTimeString = formatDateTimeInputValue(newEndDate);
             endDateTime.value = endDateTimeString;
           }
+          console.log('new start date will be', newStartDate);
           onEventStateChange({
             start: newStartDate,
             end: endDateTime ? newEndDate : undefined,
@@ -51,6 +55,7 @@ export function DateSelect(
         marginRight: '12px',
       },
     });
+  };
 
   dateContainer.appendChild(
     startTimeInputEl(
@@ -72,9 +77,7 @@ export function DateSelect(
     Input({
       attr: {
         type: 'datetime-local',
-        value: eventState.end
-          ? formatDateTimeInputValue(eventState.end)
-          : formatDateTimeInputValue(new Date()),
+        value: eventState.end ? formatDateTimeInputValue(eventState.end) : '',
         required: true,
         onchange: (e) => {
           onEventStateChange({
@@ -98,36 +101,34 @@ export function DateSelect(
       checked: eventState.allDay,
       onchange: (e) => {
         const isChecked = (e.target as HTMLInputElement).checked;
-        onEventStateChange({
-          allDay: isChecked,
-          end: isChecked ? undefined : eventState.end,
-        });
 
         const dateInput = byId('start') as HTMLInputElement;
         const endDatetimeInput = byId('end') as HTMLInputElement;
-        if (!dateInput) {
-          return;
-        }
 
         if (isChecked) {
           dateContainer.removeChild(dateInput);
           dateContainer.removeChild(toLabel);
           dateContainer.removeChild(endDatetimeInput);
 
-          const startDate = startTimeInputEl('date', eventState.start);
-          dateContainer.prepend(startDate);
+          // const startDate = startTimeInputEl('date', start);
+          dateContainer.prepend(startTimeInputEl('date', eventState.start));
         } else {
           dateContainer.prepend(endTimeInput());
           dateContainer.prepend(toLabel);
-          const copiedDate = new Date(eventState.start.getTime());
-          const currentDatetime = new Date().getTime();
-          const newTimeNumber = copiedDate.setTime(currentDatetime);
-          const dateWithCurrentTime = new Date(newTimeNumber);
+          // const copiedDate = new Date(start.getTime());
+          // const currentDatetime = new Date().getTime();
+          // const newTimeNumber = copiedDate.setTime(currentDatetime);
+          // const dateWithCurrentTime = new Date(newTimeNumber);
           dateContainer.prepend(
             startTimeInputEl('datetime-local', eventState.start)
           );
           dateContainer.removeChild(dateInput);
         }
+        console.log('start', eventState.start);
+        onEventStateChange({
+          allDay: isChecked,
+          end: isChecked ? undefined : eventState.end,
+        });
       },
     },
     selectors: {

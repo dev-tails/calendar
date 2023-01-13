@@ -264,35 +264,38 @@
   // src/views/AddEvent/EventDateSelect.ts
   function DateSelect(eventState, onEventStateChange) {
     const dateContainer = Div({ styles: { padding: "12px" } });
-    const startTimeInputEl = (type, newValue) => Input({
-      selectors: { id: "start" },
-      attr: {
-        type,
-        value: type === "date" ? formatSplitDate(newValue, "-", "yyyy-mm-dd") : formatDateTimeInputValue(newValue),
-        required: true,
-        onchange: (e) => {
-          const selectedValue = e.target.value;
-          let newStartDate = new Date(selectedValue);
-          if (eventState.allDay) {
-            const selectedValueToMidnight = newStartDate.toUTCString().split("GMT")[0];
-            newStartDate = new Date(selectedValueToMidnight);
+    const startTimeInputEl = (type, newValue) => {
+      return Input({
+        selectors: { id: "start" },
+        attr: {
+          type,
+          value: type === "date" ? formatSplitDate(eventState.start, "-", "yyyy-mm-dd") : formatDateTimeInputValue(eventState.start),
+          required: true,
+          onchange: (e) => {
+            const selectedValue = e.target.value;
+            let newStartDate = new Date(selectedValue);
+            if (eventState.allDay) {
+              const selectedValueToMidnight = newStartDate.toUTCString().split("GMT")[0];
+              newStartDate = new Date(selectedValueToMidnight);
+            }
+            const endDateTime = byId("end");
+            const newEndDate = addMinutesToDate(newStartDate, 30);
+            if (endDateTime) {
+              const endDateTimeString = formatDateTimeInputValue(newEndDate);
+              endDateTime.value = endDateTimeString;
+            }
+            console.log("new start date will be", newStartDate);
+            onEventStateChange({
+              start: newStartDate,
+              end: endDateTime ? newEndDate : void 0
+            });
           }
-          const endDateTime = byId("end");
-          const newEndDate = addMinutesToDate(newStartDate, 30);
-          if (endDateTime) {
-            const endDateTimeString = formatDateTimeInputValue(newEndDate);
-            endDateTime.value = endDateTimeString;
-          }
-          onEventStateChange({
-            start: newStartDate,
-            end: endDateTime ? newEndDate : void 0
-          });
+        },
+        styles: {
+          marginRight: "12px"
         }
-      },
-      styles: {
-        marginRight: "12px"
-      }
-    });
+      });
+    };
     dateContainer.appendChild(
       startTimeInputEl(
         eventState.allDay ? "date" : "datetime-local",
@@ -311,7 +314,7 @@
     const endTimeInput = () => Input({
       attr: {
         type: "datetime-local",
-        value: eventState.end ? formatDateTimeInputValue(eventState.end) : formatDateTimeInputValue(new Date()),
+        value: eventState.end ? formatDateTimeInputValue(eventState.end) : "",
         required: true,
         onchange: (e) => {
           onEventStateChange({
@@ -333,33 +336,26 @@
         checked: eventState.allDay,
         onchange: (e) => {
           const isChecked = e.target.checked;
-          onEventStateChange({
-            allDay: isChecked,
-            end: isChecked ? void 0 : eventState.end
-          });
           const dateInput = byId("start");
           const endDatetimeInput = byId("end");
-          if (!dateInput) {
-            return;
-          }
           if (isChecked) {
             dateContainer.removeChild(dateInput);
             dateContainer.removeChild(toLabel);
             dateContainer.removeChild(endDatetimeInput);
-            const startDate = startTimeInputEl("date", eventState.start);
-            dateContainer.prepend(startDate);
+            dateContainer.prepend(startTimeInputEl("date", eventState.start));
           } else {
             dateContainer.prepend(endTimeInput());
             dateContainer.prepend(toLabel);
-            const copiedDate = new Date(eventState.start.getTime());
-            const currentDatetime = new Date().getTime();
-            const newTimeNumber = copiedDate.setTime(currentDatetime);
-            const dateWithCurrentTime = new Date(newTimeNumber);
             dateContainer.prepend(
               startTimeInputEl("datetime-local", eventState.start)
             );
             dateContainer.removeChild(dateInput);
           }
+          console.log("start", eventState.start);
+          onEventStateChange({
+            allDay: isChecked,
+            end: isChecked ? void 0 : eventState.end
+          });
         }
       },
       selectors: {
@@ -658,15 +654,10 @@
 
   // src/views/EditEvent/EditEvent.ts
   function EditEvent(event) {
-    let eventState = {
-      title: "",
-      description: "",
-      start: new Date(),
-      allDay: false
-    };
-    function setEventState(newValue) {
+    let eventState = __spreadValues({}, event);
+    const setEventState = (newValue) => {
       Object.assign(eventState, newValue);
-    }
+    };
     const form = Form();
     const editEventHeader = H3({ attr: { innerText: "Edit event" } });
     form.appendChild(editEventHeader);
@@ -748,9 +739,8 @@
         start = midnightDate;
         delete eventState.end;
       }
-      eventState = __spreadProps(__spreadValues({}, eventState), { start });
-      console.log("event State", eventState);
-      setURL(`/events/edit/${event._id}`);
+      setEventState({ start });
+      console.log("event State sent", eventState);
     };
     return form;
   }

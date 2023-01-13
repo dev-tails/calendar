@@ -10,16 +10,11 @@ import { DateSelect } from '../AddEvent/EventDateSelect';
 import { Form } from '../../components/elements/Form';
 
 export function EditEvent(event: IEvent) {
-  let eventState: IEvent = {
-    title: '',
-    description: '',
-    start: new Date(),
-    allDay: false,
-  };
+  let eventState: IEvent = { ...event };
 
-  function setEventState(newValue: Partial<IEvent>) {
+  const setEventState = (newValue: Partial<IEvent>) => {
     Object.assign(eventState, newValue);
-  }
+  };
 
   const form = Form();
 
@@ -111,12 +106,12 @@ export function EditEvent(event: IEvent) {
       start = midnightDate;
       delete eventState.end;
     }
-    // setEventState({ start });/////
-    eventState = { ...eventState, start };
+    setEventState({ start }); /////
+    // eventState = { ...eventState, start };
 
     // createEvent(eventState);
-    console.log('event State', eventState);
-    setURL(`/events/edit/${event._id}`);
+    console.log('event State sent', eventState);
+    // setURL(`/events/${event._id}`);
   };
 
   return form;
