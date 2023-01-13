@@ -1,7 +1,5 @@
 import { Div } from '../../components/elements/Div';
-import { Header } from '../../components/elements/Header';
-import { Span } from '../../components/elements/Span';
-import { users } from '../../fakeData/fakeData';
+import { H3 } from '../../components/elements/H3';
 import {
   formatDateTime,
   dateOptions,
@@ -11,9 +9,10 @@ import {
 export function Event(event: IEvent) {
   const el = Div({ styles: { padding: '12px' } });
 
-  const title = Header({
-    text: event.title,
-    headerType: 'h3',
+  const title = H3({
+    attr: {
+      innerText: event.title,
+    },
     styles: { padding: '4px 0' },
   });
   el.appendChild(title);

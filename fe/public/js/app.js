@@ -181,16 +181,6 @@
     }, props));
   }
 
-  // src/components/elements/Header.ts
-  function Header(props) {
-    const headerEl = document.createElement(props.headerType);
-    headerEl.innerText = props.text;
-    if (props.styles) {
-      setStyle(headerEl, props.styles);
-    }
-    return headerEl;
-  }
-
   // src/utils/dateHelpers.ts
   var timeOptions = {
     hour: "numeric",
@@ -332,6 +322,13 @@
     return dateContainer;
   }
 
+  // src/components/elements/H3.ts
+  function H3(props) {
+    return Element(__spreadValues({
+      tag: "h3"
+    }, props));
+  }
+
   // src/views/AddEvent/AddEvent.ts
   var eventState = {
     title: "",
@@ -346,7 +343,7 @@
   }
   function AddEvent() {
     const form = document.createElement("form");
-    const addEventHeader = Header({ text: "Add event", headerType: "h3" });
+    const addEventHeader = H3({ attr: { innerText: "Add event" } });
     form.appendChild(addEventHeader);
     const titleContainer = Div({ styles: { padding: "12px" } });
     const titleInput = Input({
@@ -443,6 +440,13 @@
     return span;
   }
 
+  // src/components/elements/H1.ts
+  function H1(props) {
+    return Element(__spreadValues({
+      tag: "h1"
+    }, props));
+  }
+
   // src/views/Day/Day.ts
   function Day(date) {
     let today = date ? new Date(date) : new Date();
@@ -455,9 +459,12 @@
             margin: "12px 20px"
           })
         });
-        const title = Header({
-          text: new Intl.DateTimeFormat("en-US", dateOptions).format(today),
-          headerType: "h1"
+        const title = H1({
+          attr: {
+            innerText: new Intl.DateTimeFormat("en-US", dateOptions).format(
+              today
+            )
+          }
         });
         setStyle(title, {
           padding: "12px",
@@ -481,8 +488,6 @@
         el.appendChild(datesHeader);
         const meetingsList = Div();
         const events = yield getEventsForDay(today);
-        console.log("events", events);
-        console.log("today is", today);
         if (events.length) {
           events.sort(
             (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
@@ -497,14 +502,7 @@
                 backgroundColor: "papayawhip",
                 cursor: "pointer"
               };
-              const allDayEvents = createEventCard(
-                meeting,
-                allDayEventStyles,
-                () => {
-                  console.log("meeting", meeting);
-                  goToEventPage(meeting._id);
-                }
-              );
+              const allDayEvents = createEventCard(meeting, allDayEventStyles);
               el.appendChild(allDayEvents);
             } else {
               const meetingContainer = Div({
@@ -545,11 +543,7 @@
                 backgroundColor: "#d2e7de",
                 cursor: "pointer"
               };
-              const event = createEventCard(
-                meeting,
-                eventStyles,
-                () => goToEventPage(meeting._id)
-              );
+              const event = createEventCard(meeting, eventStyles);
               meetingContainer.appendChild(event);
               meetingsList.appendChild(meetingContainer);
             }
@@ -567,19 +561,16 @@
     init();
     return el;
   }
-  function createEventCard(meeting, styles, callback) {
+  function createEventCard(meeting, styles) {
     const event = Div({ styles });
-    const title = Header({ text: meeting.title, headerType: "h3" });
+    const title = H3({ attr: { innerText: meeting.title } });
     event.appendChild(title);
     if (meeting.description) {
       const description = Div({ attr: { innerText: meeting.description } });
       event.appendChild(description);
     }
-    onClick(event, callback);
+    onClick(event, () => setURL(`/events/${meeting._id}`));
     return event;
-  }
-  function goToEventPage(eventId) {
-    setURL(`/events/${eventId}`);
   }
   function goToSelectedDayView(currentDayView, direction) {
     const moveDay = direction === "previous" ? currentDayView.getDate() - 1 : currentDayView.getDate() + 1;
@@ -743,9 +734,10 @@
   // src/views/Event/Event.ts
   function Event2(event) {
     const el = Div({ styles: { padding: "12px" } });
-    const title = Header({
-      text: event.title,
-      headerType: "h3",
+    const title = H3({
+      attr: {
+        innerText: event.title
+      },
       styles: { padding: "4px 0" }
     });
     el.appendChild(title);
@@ -791,7 +783,7 @@
     event: "< Back",
     new: "Home"
   };
-  function Header2(view) {
+  function Header(view) {
     var _a;
     const isHome = view === "home";
     const isEvent = view === "event";
@@ -876,27 +868,27 @@
         }
         switch (path) {
           case "/":
-            router.append(Header2("home"));
+            router.append(Header("home"));
             router.append(Day());
             break;
           case eventsDate:
-            router.append(Header2("day"));
+            router.append(Header("day"));
             router.append(Day(eventsDate));
             break;
           case `/events/${eventObject == null ? void 0 : eventObject._id}`:
             if (eventObject) {
-              router.append(Header2("event"));
+              router.append(Header("event"));
               router.append(Event2(eventObject));
             }
             break;
           case `/edit/events/${eventObject == null ? void 0 : eventObject._id}`:
             if (eventObject) {
-              router.append(Header2("edit"));
+              router.append(Header("edit"));
               router.append(EditEvent(eventObject));
             }
             break;
           case `/new`:
-            router.append(Header2("new"));
+            router.append(Header("new"));
             router.append(AddEvent());
             break;
           default:

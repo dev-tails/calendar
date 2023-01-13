@@ -6,9 +6,9 @@ import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import { basics, fonts } from '../../utils/styles';
 import { Label } from '../../components/elements/Label';
-import { Header } from '../../components/elements/Header';
 import { DateSelect } from './EventDateSelect';
 import { createEvent } from '../../apis/EventApi';
+import { H3 } from '../../components/elements/H3';
 
 let eventState: IEvent = {
   title: '',
@@ -29,7 +29,7 @@ function setEventState(newValue: Partial<IEvent>) {
 export function AddEvent() {
   const form: HTMLFormElement = document.createElement('form');
 
-  const addEventHeader = Header({ text: 'Add event', headerType: 'h3' });
+  const addEventHeader = H3({ attr: { innerText: 'Add event' } });
   form.appendChild(addEventHeader);
 
   //Title

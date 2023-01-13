@@ -1,5 +1,4 @@
 import { Div } from '../../components/elements/Div';
-import { Header } from '../../components/elements//Header';
 import { Span } from '../../components/elements//Span';
 import {
   formatDateTime,
@@ -12,6 +11,8 @@ import { setURL } from '../../utils/HistoryUtils';
 import { flexAlignItemsCenter } from '../../utils/styles';
 import { Button } from '../../components/elements/Button';
 import { getEventsForDay } from '../../apis/EventApi';
+import { H1 } from '../../components/elements/H1';
+import { H3 } from '../../components/elements/H3';
 
 export function Day(date?: string) {
   let today = date ? new Date(date) : new Date();
@@ -25,9 +26,12 @@ export function Day(date?: string) {
       },
     });
 
-    const title = Header({
-      text: new Intl.DateTimeFormat('en-US', dateOptions as any).format(today),
-      headerType: 'h1',
+    const title = H1({
+      attr: {
+        innerText: new Intl.DateTimeFormat('en-US', dateOptions as any).format(
+          today
+        ),
+      },
     });
     setStyle(title, {
       padding: '12px',
@@ -56,9 +60,6 @@ export function Day(date?: string) {
     const meetingsList = Div();
     const events = await getEventsForDay(today);
 
-    console.log('events', events);
-    console.log('today is', today);
-
     if (events.length) {
       events.sort(
         (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
@@ -74,14 +75,7 @@ export function Day(date?: string) {
             backgroundColor: 'papayawhip',
             cursor: 'pointer',
           };
-          const allDayEvents = createEventCard(
-            meeting,
-            allDayEventStyles,
-            () => {
-              console.log('meeting', meeting);
-              goToEventPage(meeting._id);
-            }
-          );
+          const allDayEvents = createEventCard(meeting, allDayEventStyles);
 
           el.appendChild(allDayEvents);
         } else {
@@ -128,9 +122,7 @@ export function Day(date?: string) {
             backgroundColor: '#d2e7de',
             cursor: 'pointer',
           };
-          const event = createEventCard(meeting, eventStyles, () =>
-            goToEventPage(meeting._id)
-          );
+          const event = createEventCard(meeting, eventStyles);
 
           meetingContainer.appendChild(event);
           meetingsList.appendChild(meetingContainer);
@@ -152,12 +144,11 @@ export function Day(date?: string) {
 
 function createEventCard(
   meeting: IEvent,
-  styles: Partial<CSSStyleDeclaration>,
-  callback: () => void
+  styles: Partial<CSSStyleDeclaration>
 ) {
   const event = Div({ styles });
 
-  const title = Header({ text: meeting.title, headerType: 'h3' });
+  const title = H3({ attr: { innerText: meeting.title } });
   event.appendChild(title);
 
   if (meeting.description) {
@@ -165,13 +156,8 @@ function createEventCard(
     event.appendChild(description);
   }
 
-  onClick(event, callback);
-
+  onClick(event, () => setURL(`/events/${meeting._id}`));
   return event;
-}
-
-function goToEventPage(eventId: string) {
-  setURL(`/events/${eventId}`);
 }
 
 function goToSelectedDayView(
