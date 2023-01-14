@@ -244,7 +244,7 @@
     return dateString;
   };
   var formatDateTimeInputValue = (date) => {
-    const dateString = formatSplitDate(new Date(date), "-", "yyyy-mm-dd");
+    const dateString = formatSplitDate(date, "-", "yyyy-mm-dd");
     const hours = date.getHours();
     const twoDigitsHours = hours.toString()[1] ? hours : `0${hours}`;
     const minutes = date.getMinutes();
@@ -262,45 +262,10 @@
   };
 
   // src/views/AddEvent/EventDateSelect.ts
-  function DateSelect(eventState, onEventStateChange) {
+  function DateSelect(event, onEventStateChange) {
     const dateContainer = Div({ styles: { padding: "12px" } });
-    const startTimeInputEl = (type, newValue) => {
-      return Input({
-        selectors: { id: "start" },
-        attr: {
-          type,
-          value: type === "date" ? formatSplitDate(eventState.start, "-", "yyyy-mm-dd") : formatDateTimeInputValue(eventState.start),
-          required: true,
-          onchange: (e) => {
-            const selectedValue = e.target.value;
-            let newStartDate = new Date(selectedValue);
-            if (eventState.allDay) {
-              const selectedValueToMidnight = newStartDate.toUTCString().split("GMT")[0];
-              newStartDate = new Date(selectedValueToMidnight);
-            }
-            const endDateTime = byId("end");
-            const newEndDate = addMinutesToDate(newStartDate, 30);
-            if (endDateTime) {
-              const endDateTimeString = formatDateTimeInputValue(newEndDate);
-              endDateTime.value = endDateTimeString;
-            }
-            console.log("new start date will be", newStartDate);
-            onEventStateChange({
-              start: newStartDate,
-              end: endDateTime ? newEndDate : void 0
-            });
-          }
-        },
-        styles: {
-          marginRight: "12px"
-        }
-      });
-    };
     dateContainer.appendChild(
-      startTimeInputEl(
-        eventState.allDay ? "date" : "datetime-local",
-        eventState.start
-      )
+      startTimeInputEl(event.allDay ? "date" : "datetime-local")
     );
     const toLabel = Label({
       attr: { innerText: "to" },
@@ -308,32 +273,16 @@
         marginRight: "12px"
       }
     });
-    if (!eventState.allDay) {
+    if (!event.allDay) {
       dateContainer.appendChild(toLabel);
     }
-    const endTimeInput = () => Input({
-      attr: {
-        type: "datetime-local",
-        value: eventState.end ? formatDateTimeInputValue(eventState.end) : "",
-        required: true,
-        onchange: (e) => {
-          onEventStateChange({
-            end: new Date(e.target.value)
-          });
-        }
-      },
-      styles: {
-        marginRight: "12px"
-      },
-      selectors: { id: "end" }
-    });
-    if (!eventState.allDay) {
+    if (!event.allDay) {
       dateContainer.appendChild(endTimeInput());
     }
     const allDayInput = Input({
       attr: {
         type: "checkbox",
-        checked: eventState.allDay,
+        checked: event.allDay,
         onchange: (e) => {
           const isChecked = e.target.checked;
           const dateInput = byId("start");
@@ -342,19 +291,16 @@
             dateContainer.removeChild(dateInput);
             dateContainer.removeChild(toLabel);
             dateContainer.removeChild(endDatetimeInput);
-            dateContainer.prepend(startTimeInputEl("date", eventState.start));
+            dateContainer.prepend(startTimeInputEl("date"));
           } else {
+            dateContainer.removeChild(dateInput);
             dateContainer.prepend(endTimeInput());
             dateContainer.prepend(toLabel);
-            dateContainer.prepend(
-              startTimeInputEl("datetime-local", eventState.start)
-            );
-            dateContainer.removeChild(dateInput);
+            dateContainer.prepend(startTimeInputEl("datetime-local"));
           }
-          console.log("start", eventState.start);
           onEventStateChange({
             allDay: isChecked,
-            end: isChecked ? void 0 : eventState.end
+            end: isChecked ? void 0 : event.end
           });
         }
       },
@@ -367,6 +313,56 @@
       attr: { innerText: "All day", for: "allDay" }
     });
     dateContainer.appendChild(allDayLabel);
+    function startTimeInputEl(type) {
+      const value = type === "date" ? formatSplitDate(event.start, "-", "yyyy-mm-dd") : formatDateTimeInputValue(event.start);
+      return Input({
+        selectors: { id: "start" },
+        attr: {
+          type,
+          value,
+          required: true,
+          onchange: (e) => {
+            const selectedValue = e.target.value;
+            let newStartDate = new Date(selectedValue);
+            if (event.allDay) {
+              const selectedValueToMidnight = newStartDate.toUTCString().split("GMT")[0];
+              newStartDate = new Date(selectedValueToMidnight);
+            }
+            const endDateTime = byId("end");
+            const newEndDate = addMinutesToDate(newStartDate, 30);
+            if (endDateTime) {
+              const endDateTimeString = formatDateTimeInputValue(newEndDate);
+              endDateTime.value = endDateTimeString;
+            }
+            onEventStateChange({
+              start: newStartDate,
+              end: endDateTime ? newEndDate : void 0
+            });
+          }
+        },
+        styles: {
+          marginRight: "12px"
+        }
+      });
+    }
+    function endTimeInput() {
+      return Input({
+        attr: {
+          type: "datetime-local",
+          value: event.end ? formatDateTimeInputValue(event.end) : "",
+          required: true,
+          onchange: (e) => {
+            onEventStateChange({
+              end: new Date(e.target.value)
+            });
+          }
+        },
+        styles: {
+          marginRight: "12px"
+        },
+        selectors: { id: "end" }
+      });
+    }
     return dateContainer;
   }
 
@@ -654,7 +650,7 @@
 
   // src/views/EditEvent/EditEvent.ts
   function EditEvent(event) {
-    let eventState = __spreadValues({}, event);
+    const eventState = __spreadValues({}, event);
     const setEventState = (newValue) => {
       Object.assign(eventState, newValue);
     };

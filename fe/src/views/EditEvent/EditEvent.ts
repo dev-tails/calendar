@@ -10,7 +10,7 @@ import { DateSelect } from '../AddEvent/EventDateSelect';
 import { Form } from '../../components/elements/Form';
 
 export function EditEvent(event: IEvent) {
-  let eventState: IEvent = { ...event };
+  const eventState: IEvent = { ...event };
 
   const setEventState = (newValue: Partial<IEvent>) => {
     Object.assign(eventState, newValue);

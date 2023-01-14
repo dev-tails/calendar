@@ -57,7 +57,7 @@ export const formatSplitDate = (
 
 // For value of element <input type='datetime-local'/> as 'yyyy-mm-ddThh:mm'
 export const formatDateTimeInputValue = (date: Date) => {
-  const dateString = formatSplitDate(new Date(date), '-', 'yyyy-mm-dd');
+  const dateString = formatSplitDate(date, '-', 'yyyy-mm-dd');
   const hours = date.getHours();
   const twoDigitsHours = hours.toString()[1] ? hours : `0${hours}`;
   const minutes = date.getMinutes();
