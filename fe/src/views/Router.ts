@@ -5,9 +5,8 @@ import {
   formatSplitDate,
 } from '../utils/dateHelpers';
 import { setURL } from '../utils/HistoryUtils';
-import { AddEvent } from './AddEvent/AddEvent';
 import { Day } from './Day/Day';
-import { EditEvent } from './EditEvent/EditEvent';
+import { EventForm } from './Event/EventForm';
 import { Event } from './Event/Event';
 import { Header } from './Header/Header';
 
@@ -25,9 +24,9 @@ export function Router() {
 
     const path = window.location.pathname;
     const home = path === '/';
-    const addNewEventPath = path === '/new';
+    const addEventPath = path === '/add';
     const isDayPath = path.includes('day');
-    const eventsPaths = !home && !addNewEventPath && !isDayPath;
+    const eventsPaths = !home && !addEventPath && !isDayPath;
 
     let eventObject: IEvent | undefined;
     if (eventsPaths) {
@@ -71,12 +70,12 @@ export function Router() {
       case `/events/edit/${eventObject?._id}`:
         if (eventObject) {
           router.append(Header('edit'));
-          router.append(EditEvent(eventObject));
+          router.append(EventForm(eventObject));
         }
         break;
-      case `/new`:
-        router.append(Header('new'));
-        router.append(AddEvent());
+      case `/add`:
+        router.append(Header('add'));
+        router.append(EventForm());
         break;
       default:
         break;

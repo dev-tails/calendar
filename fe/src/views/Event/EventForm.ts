@@ -6,28 +6,38 @@ import { setURL } from '../../utils/HistoryUtils';
 import { basics, fonts } from '../../utils/styles';
 import { Label } from '../../components/elements/Label';
 import { H3 } from '../../components/elements/H3';
-import { EventDateSelect } from '../AddEvent/EventDateSelect';
+import { EventDateSelect } from './EventDateSelect';
 import { Form } from '../../components/elements/Form';
-import { editEvent } from '../../apis/EventApi';
+import { createEvent, editEvent } from '../../apis/EventApi';
+import { formatSplitDate } from '../../utils/dateHelpers';
 
-export function EditEvent(event: IEvent) {
-  const eventState: IEvent = { ...event };
+export function EventForm(event?: IEvent) {
+  let eventTemplate: IEvent = {
+    title: '',
+    description: '',
+    start: new Date(),
+    allDay: false,
+    // users: [] as string[],
+  };
+
+  const eventState: IEvent = event ? { ...event } : { ...eventTemplate };
 
   const setEventState = (newValue: Partial<IEvent>) => {
     Object.assign(eventState, newValue);
-    console.log('~~~~', eventState);
   };
 
   const form = Form();
 
-  const editEventHeader = H3({ attr: { innerText: 'Edit event' } });
+  const editEventHeader = H3({
+    attr: { innerText: eventState._id ? 'Edit event' : 'Add event' },
+  });
   form.appendChild(editEventHeader);
 
   const titleContainer = Div({ styles: { padding: '12px' } });
   const titleInput = Input({
     attr: {
       name: 'title',
-      value: event['title'],
+      value: eventState['title'],
       onchange: (e) => {
         setEventState({ title: (e.target as HTMLInputElement).value });
       },
@@ -45,7 +55,7 @@ export function EditEvent(event: IEvent) {
   const descriptionInput = Textarea({
     attr: {
       name: 'description',
-      value: event['description'],
+      value: eventState['description'],
       onchange: (e) => {
         setEventState({
           description: (e.target as HTMLTextAreaElement).value,
@@ -108,12 +118,16 @@ export function EditEvent(event: IEvent) {
       start = midnightDate;
       delete eventState.end;
     }
-    setEventState({ start }); /////
-    // eventState = { ...eventState, start };
+    setEventState({ start });
 
-    editEvent(eventState);
-    console.log('event State sent submitted', eventState);
-    setURL(`/events/${event._id}`);
+    if (eventState._id) {
+      editEvent(eventState);
+      setURL(`/events/${eventState._id}`);
+    } else {
+      createEvent(eventState);
+      const dateURLparam = formatSplitDate(eventState.start, '/', 'yyyy-mm-dd');
+      setURL(`/day/${dateURLparam}`);
+    }
   };
 
   return form;

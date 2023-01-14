@@ -8,18 +8,18 @@ const headerTopLeftButton = {
   day: 'Go to today',
   edit: '< Back',
   event: '< Back',
-  new: 'Home',
+  add: 'Home',
 };
 
 export function Header(
-  view: 'home' | 'day' | 'edit' | 'event' | 'new',
+  view: 'home' | 'day' | 'edit' | 'event' | 'add',
   dateURL?: string
 ) {
   const isHome = view === 'home';
   const isEvent = view === 'event';
   const isEditEvent = view === 'edit';
-  const newEvent = view === 'new';
-  const showTopRightButton = !newEvent && !isEditEvent;
+  const isAddEvent = view === 'add';
+  const showTopRightButton = !isAddEvent && !isEditEvent;
   const showTopLeftButton = !isHome && !isEditEvent;
   const windowPath = window.location.pathname;
   const pathSplit = windowPath.split('/');
@@ -54,7 +54,7 @@ export function Header(
         onclick: (e) => {
           e.preventDefault();
 
-          const nextURL = isEvent ? `/events/edit/${eventId}` : '/new';
+          const nextURL = isEvent ? `/events/edit/${eventId}` : '/add';
           setURL(nextURL);
         },
       },
@@ -65,7 +65,6 @@ export function Header(
     header.append(rightButton);
   }
 
-  console.log('current view', view, dateURL);
   function onLeftButtonClick() {
     let nextURL = '/';
     if (isEvent) {

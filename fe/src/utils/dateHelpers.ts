@@ -53,7 +53,6 @@ export const formatSplitDate = (
   const third = dateFormatting[dateFormat[2]];
 
   const dateString = `${first}${divider}${second}${divider}${third}`;
-  console.log('date sti', dateString);
   return dateString;
 };
 
@@ -66,7 +65,6 @@ export const formatDateTimeInputValue = (date: Date) => {
   const twoDigitsMinutes = minutes.toString()[1] ? minutes : `0${minutes}`;
 
   const dateTimeString = `${dateString}T${twoDigitsHours}:${twoDigitsMinutes}`;
-  console.log('dateTimeString', dateTimeString);
   return dateTimeString;
 };
 

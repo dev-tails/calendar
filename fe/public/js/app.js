@@ -210,7 +210,6 @@
     const second = dateFormatting[dateFormat[1]];
     const third = dateFormatting[dateFormat[2]];
     const dateString = `${first}${divider}${second}${divider}${third}`;
-    console.log("date sti", dateString);
     return dateString;
   };
   var formatDateTimeInputValue = (date) => {
@@ -220,7 +219,6 @@
     const minutes = date.getMinutes();
     const twoDigitsMinutes = minutes.toString()[1] ? minutes : `0${minutes}`;
     const dateTimeString = `${dateString}T${twoDigitsHours}:${twoDigitsMinutes}`;
-    console.log("dateTimeString", dateTimeString);
     return dateTimeString;
   };
   var convertMidnightUTCToLocalDay = (date) => {
@@ -263,27 +261,6 @@
     window.dispatchEvent(new Event("popstate"));
   }
 
-  // src/components/elements/Button.ts
-  function Button(props) {
-    return Element(__spreadValues({
-      tag: "button"
-    }, props));
-  }
-
-  // src/components/elements/Input/Input.ts
-  function Input(props) {
-    return Element(__spreadValues({
-      tag: "input"
-    }, props));
-  }
-
-  // src/components/elements/Textarea.ts
-  function Textarea(props) {
-    return Element(__spreadValues({
-      tag: "textarea"
-    }, props));
-  }
-
   // src/utils/styles.ts
   var basics = {
     whiteColor: "#fff"
@@ -296,270 +273,6 @@
     alignItems: "center"
   };
 
-  // src/components/elements/Label.ts
-  function Label(props) {
-    return Element(__spreadValues({
-      tag: "label"
-    }, props));
-  }
-
-  // src/views/AddEvent/EventDateSelect.ts
-  function EventDateSelect(event, onEventStateChange) {
-    const dateContainer = Div({ styles: { padding: "12px" } });
-    let dateTimeStringHere = () => formatDateTimeInputValue(event.start);
-    const newStartTimeInput = () => Input({
-      selectors: { id: "start" },
-      attr: {
-        type: "datetime-local",
-        value: event.start ? dateTimeStringHere() : void 0,
-        required: true,
-        onchange: (e) => {
-          const selectedValue = e.target.value;
-          let newStartDate = new Date(selectedValue);
-          const endDateTime = byId("end");
-          const newEndDate = addMinutesToDate(newStartDate, 30);
-          const endDateTimeString = formatDateTimeInputValue(newEndDate);
-          endDateTime.value = endDateTimeString;
-          onEventStateChange({
-            start: newStartDate,
-            end: newEndDate
-          });
-        }
-      },
-      styles: {
-        marginRight: "12px"
-      }
-    });
-    const newStartDateInput = () => Input({
-      selectors: { id: "start" },
-      attr: {
-        type: "date",
-        value: formatSplitDate(
-          convertMidnightUTCToLocalDay(event.start),
-          "-",
-          "yyyy-mm-dd"
-        ),
-        required: true,
-        onchange: (e) => {
-          const selectedValue = e.target.value;
-          let newStartDate = new Date(selectedValue);
-          newStartDate.setUTCHours(0, 0, 0, 0);
-          onEventStateChange({
-            start: newStartDate,
-            end: void 0
-          });
-        }
-      },
-      styles: {
-        marginRight: "12px"
-      }
-    });
-    dateContainer.appendChild(
-      event.allDay ? newStartDateInput() : newStartTimeInput()
-    );
-    const toLabel = Label({
-      attr: { innerText: "to" },
-      styles: {
-        marginRight: "12px"
-      }
-    });
-    if (!event.allDay) {
-      dateContainer.appendChild(toLabel);
-    }
-    if (!event.allDay) {
-      dateContainer.appendChild(endTimeInput());
-    }
-    const allDayInput = Input({
-      attr: {
-        type: "checkbox",
-        checked: event.allDay,
-        onchange: (e) => {
-          const isChecked = e.target.checked;
-          const dateInput = byId("start");
-          const endDatetimeInput = byId("end");
-          if (isChecked) {
-            dateContainer.removeChild(dateInput);
-            dateContainer.removeChild(toLabel);
-            dateContainer.removeChild(endDatetimeInput);
-            const copiedDate = new Date(event.start.getTime());
-            copiedDate.setHours(0, 0, 0, 0);
-            onEventStateChange({
-              start: copiedDate,
-              allDay: isChecked,
-              end: isChecked ? void 0 : event.end
-            });
-            dateContainer.prepend(newStartDateInput());
-          } else {
-            console.log(
-              "Aqui no?",
-              event.start,
-              convertMidnightUTCToLocalDay(event.start)
-            );
-            const currentDate = convertMidnightUTCToLocalDay(event.start);
-            const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
-            dateContainer.removeChild(dateInput);
-            dateContainer.prepend(endTimeInput());
-            dateContainer.prepend(toLabel);
-            onEventStateChange({
-              start: selectedDateWithCurrentTime,
-              allDay: isChecked,
-              end: void 0
-            });
-            dateContainer.prepend(newStartTimeInput());
-          }
-        }
-      },
-      selectors: {
-        id: "allDay"
-      }
-    });
-    dateContainer.appendChild(allDayInput);
-    const allDayLabel = Label({
-      attr: { innerText: "All day", for: "allDay" }
-    });
-    dateContainer.appendChild(allDayLabel);
-    function endTimeInput() {
-      return Input({
-        attr: {
-          type: "datetime-local",
-          value: event.end ? formatDateTimeInputValue(event.end) : "",
-          required: true,
-          onchange: (e) => {
-            onEventStateChange({
-              end: new Date(e.target.value)
-            });
-          }
-        },
-        styles: {
-          marginRight: "12px"
-        },
-        selectors: { id: "end" }
-      });
-    }
-    return dateContainer;
-  }
-
-  // src/components/elements/H3.ts
-  function H3(props) {
-    return Element(__spreadValues({
-      tag: "h3"
-    }, props));
-  }
-
-  // src/views/AddEvent/AddEvent.ts
-  function AddEvent() {
-    let eventState = {
-      title: "",
-      description: "",
-      start: new Date(),
-      allDay: false
-      // users: [] as string[],
-    };
-    const form = document.createElement("form");
-    const addEventHeader = H3({ attr: { innerText: "Add event" } });
-    form.appendChild(addEventHeader);
-    const titleContainer = Div({ styles: { padding: "12px" } });
-    const titleInput = Input({
-      attr: {
-        name: "title",
-        value: eventState["title"],
-        onchange: (e) => {
-          setEventState({ title: e.target.value });
-        },
-        placeholder: "Title",
-        required: true
-      }
-    });
-    titleContainer.appendChild(titleInput);
-    form.appendChild(titleContainer);
-    const descriptionContainer = Div({
-      styles: { padding: "12px", display: "flex", flexDirection: "column" }
-    });
-    const descriptionLabel = Label({ attr: { innerText: "Description" } });
-    const descriptionInput = Textarea({
-      attr: {
-        name: "description",
-        value: eventState["description"],
-        onchange: (e) => {
-          setEventState({
-            description: e.target.value
-          });
-        },
-        placeholder: "Write something..."
-      }
-    });
-    descriptionContainer.appendChild(descriptionLabel);
-    descriptionContainer.appendChild(descriptionInput);
-    form.appendChild(descriptionContainer);
-    const dateContainer = EventDateSelect(eventState, setEventState);
-    form.appendChild(dateContainer);
-    const buttons = Div({
-      styles: { display: "flex", justifyContent: "flex-end", marginTop: "24px" }
-    });
-    const buttonStyles = {
-      borderRadius: "4px",
-      padding: "8px 12px",
-      fontSize: "14px",
-      border: "none",
-      background: "#79B2AF",
-      color: basics.whiteColor,
-      minWidth: "100px",
-      minHeight: "36px",
-      fontFamily: fonts.regular,
-      letterSpacing: "1",
-      marginLeft: "24px",
-      cursor: "pointer"
-    };
-    const cancelButton = Button({
-      attr: {
-        textContent: "Cancel"
-      }
-    });
-    onClick(cancelButton, () => setURL(`/`));
-    setStyle(cancelButton, buttonStyles);
-    const saveButton = Button({
-      attr: {
-        textContent: "Save",
-        type: "submit"
-      }
-    });
-    setStyle(saveButton, buttonStyles);
-    buttons.appendChild(cancelButton);
-    buttons.appendChild(saveButton);
-    form.appendChild(buttons);
-    form.onsubmit = (e) => {
-      e.preventDefault();
-      let start = eventState.start;
-      if (eventState.allDay) {
-        const midnightDate = new Date(eventState.start.getTime());
-        midnightDate.setUTCHours(0, 0, 0, 0);
-        start = midnightDate;
-        delete eventState.end;
-      }
-      eventState = __spreadProps(__spreadValues({}, eventState), { start });
-      createEvent(eventState);
-      console.log("submitting", eventState);
-      const startDateISO = eventState.start.toISOString();
-      const startDate = startDateISO.split("T")[0];
-      const dateURLparam = startDate.replace(/-/g, "/");
-      setURL(`/day/${dateURLparam}`);
-    };
-    return form;
-    function setEventState(newValue) {
-      const modifiedEvent = __spreadValues(__spreadValues({}, eventState), newValue);
-      eventState = modifiedEvent;
-    }
-    function onUsersSelectChange(selectedOptions) {
-      var _a;
-      const selectedUsersKeys = (_a = Array.from(selectedOptions)) == null ? void 0 : _a.map(
-        (selectedUser) => {
-          return selectedUser.value;
-        }
-      );
-      setEventState({ users: selectedUsersKeys });
-    }
-  }
-
   // src/components/elements/Span.ts
   function Span(props) {
     return Element(__spreadValues({
@@ -567,10 +280,24 @@
     }, props));
   }
 
+  // src/components/elements/Button.ts
+  function Button(props) {
+    return Element(__spreadValues({
+      tag: "button"
+    }, props));
+  }
+
   // src/components/elements/H1.ts
   function H1(props) {
     return Element(__spreadValues({
       tag: "h1"
+    }, props));
+  }
+
+  // src/components/elements/H3.ts
+  function H3(props) {
+    return Element(__spreadValues({
+      tag: "h3"
     }, props));
   }
 
@@ -714,6 +441,163 @@
     setURL(`/day/${dateString}`);
   }
 
+  // src/components/elements/Input/Input.ts
+  function Input(props) {
+    return Element(__spreadValues({
+      tag: "input"
+    }, props));
+  }
+
+  // src/components/elements/Textarea.ts
+  function Textarea(props) {
+    return Element(__spreadValues({
+      tag: "textarea"
+    }, props));
+  }
+
+  // src/components/elements/Label.ts
+  function Label(props) {
+    return Element(__spreadValues({
+      tag: "label"
+    }, props));
+  }
+
+  // src/views/Event/EventDateSelect.ts
+  function EventDateSelect(event, onEventStateChange) {
+    const dateContainer = Div({ styles: { padding: "12px" } });
+    dateContainer.appendChild(
+      event.allDay ? newStartDateInput() : newStartTimeInput()
+    );
+    const toLabel = Label({
+      attr: { innerText: "to" },
+      styles: {
+        marginRight: "12px"
+      }
+    });
+    if (!event.allDay) {
+      dateContainer.appendChild(toLabel);
+      dateContainer.appendChild(endTimeInput());
+    }
+    const allDayInput = Input({
+      attr: {
+        type: "checkbox",
+        checked: event.allDay,
+        onchange: onAllDayChange
+      },
+      selectors: {
+        id: "allDay"
+      }
+    });
+    dateContainer.appendChild(allDayInput);
+    const allDayLabel = Label({
+      attr: { innerText: "All day", for: "allDay" }
+    });
+    dateContainer.appendChild(allDayLabel);
+    function dateTimeString() {
+      return formatDateTimeInputValue(event.start);
+    }
+    function newStartTimeInput() {
+      return Input({
+        selectors: { id: "start" },
+        attr: {
+          type: "datetime-local",
+          value: event.start ? dateTimeString() : void 0,
+          required: true,
+          onchange: (e) => {
+            const selectedValue = e.target.value;
+            let newStartDate = new Date(selectedValue);
+            const endDateTime = byId("end");
+            const newEndDate = addMinutesToDate(newStartDate, 30);
+            const endDateTimeString = formatDateTimeInputValue(newEndDate);
+            endDateTime.value = endDateTimeString;
+            onEventStateChange({
+              start: newStartDate,
+              end: newEndDate
+            });
+          }
+        },
+        styles: {
+          marginRight: "12px"
+        }
+      });
+    }
+    function newStartDateInput() {
+      return Input({
+        selectors: { id: "start" },
+        attr: {
+          type: "date",
+          value: formatSplitDate(
+            convertMidnightUTCToLocalDay(event.start),
+            "-",
+            "yyyy-mm-dd"
+          ),
+          required: true,
+          onchange: (e) => {
+            const selectedValue = e.target.value;
+            let newStartDate = new Date(selectedValue);
+            newStartDate.setUTCHours(0, 0, 0, 0);
+            onEventStateChange({
+              start: newStartDate,
+              end: void 0
+            });
+          }
+        },
+        styles: {
+          marginRight: "12px"
+        }
+      });
+    }
+    function endTimeInput() {
+      return Input({
+        attr: {
+          type: "datetime-local",
+          value: event.end ? formatDateTimeInputValue(event.end) : "",
+          required: true,
+          onchange: (e) => {
+            onEventStateChange({
+              end: new Date(e.target.value)
+            });
+          }
+        },
+        styles: {
+          marginRight: "12px"
+        },
+        selectors: { id: "end" }
+      });
+    }
+    function onAllDayChange(e) {
+      const isChecked = e.target.checked;
+      const dateInput = byId("start");
+      const endDatetimeInput = byId("end");
+      if (isChecked) {
+        dateContainer.removeChild(dateInput);
+        dateContainer.removeChild(toLabel);
+        dateContainer.removeChild(endDatetimeInput);
+        const copiedDate = new Date(event.start.getTime());
+        copiedDate.setHours(0, 0, 0, 0);
+        onEventStateChange({
+          start: copiedDate,
+          allDay: isChecked,
+          end: isChecked ? void 0 : event.end
+        });
+        dateContainer.prepend(newStartDateInput());
+      } else {
+        const currentDate = convertMidnightUTCToLocalDay(event.start);
+        const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
+        dateContainer.removeChild(dateInput);
+        dateContainer.prepend(endTimeInput());
+        dateContainer.prepend(toLabel);
+        onEventStateChange({
+          start: selectedDateWithCurrentTime,
+          allDay: isChecked,
+          end: void 0
+        });
+        dateContainer.prepend(newStartTimeInput());
+      }
+    }
+    return dateContainer;
+  }
+
   // src/components/elements/Form.ts
   function Form(props) {
     return Element(__spreadValues({
@@ -721,21 +605,29 @@
     }, props));
   }
 
-  // src/views/EditEvent/EditEvent.ts
-  function EditEvent(event) {
-    const eventState = __spreadValues({}, event);
+  // src/views/Event/EventForm.ts
+  function EventForm(event) {
+    let eventTemplate = {
+      title: "",
+      description: "",
+      start: new Date(),
+      allDay: false
+      // users: [] as string[],
+    };
+    const eventState = event ? __spreadValues({}, event) : __spreadValues({}, eventTemplate);
     const setEventState = (newValue) => {
       Object.assign(eventState, newValue);
-      console.log("~~~~", eventState);
     };
     const form = Form();
-    const editEventHeader = H3({ attr: { innerText: "Edit event" } });
+    const editEventHeader = H3({
+      attr: { innerText: eventState._id ? "Edit event" : "Add event" }
+    });
     form.appendChild(editEventHeader);
     const titleContainer = Div({ styles: { padding: "12px" } });
     const titleInput = Input({
       attr: {
         name: "title",
-        value: event["title"],
+        value: eventState["title"],
         onchange: (e) => {
           setEventState({ title: e.target.value });
         },
@@ -752,7 +644,7 @@
     const descriptionInput = Textarea({
       attr: {
         name: "description",
-        value: event["description"],
+        value: eventState["description"],
         onchange: (e) => {
           setEventState({
             description: e.target.value
@@ -810,9 +702,14 @@
         delete eventState.end;
       }
       setEventState({ start });
-      editEvent(eventState);
-      console.log("event State sent submitted", eventState);
-      setURL(`/events/${event._id}`);
+      if (eventState._id) {
+        editEvent(eventState);
+        setURL(`/events/${eventState._id}`);
+      } else {
+        createEvent(eventState);
+        const dateURLparam = formatSplitDate(eventState.start, "/", "yyyy-mm-dd");
+        setURL(`/day/${dateURLparam}`);
+      }
     };
     return form;
   }
@@ -889,15 +786,15 @@
     day: "Go to today",
     edit: "< Back",
     event: "< Back",
-    new: "Home"
+    add: "Home"
   };
   function Header(view, dateURL) {
     var _a;
     const isHome = view === "home";
     const isEvent = view === "event";
     const isEditEvent = view === "edit";
-    const newEvent = view === "new";
-    const showTopRightButton = !newEvent && !isEditEvent;
+    const isAddEvent = view === "add";
+    const showTopRightButton = !isAddEvent && !isEditEvent;
     const showTopLeftButton = !isHome && !isEditEvent;
     const windowPath = window.location.pathname;
     const pathSplit = windowPath.split("/");
@@ -928,7 +825,7 @@
           textContent: isEvent ? "Edit Event" : "Add Event",
           onclick: (e) => {
             e.preventDefault();
-            const nextURL = isEvent ? `/events/edit/${eventId}` : "/new";
+            const nextURL = isEvent ? `/events/edit/${eventId}` : "/add";
             setURL(nextURL);
           }
         },
@@ -938,7 +835,6 @@
       });
       header.append(rightButton);
     }
-    console.log("current view", view, dateURL);
     function onLeftButtonClick() {
       let nextURL = "/";
       if (isEvent) {
@@ -965,9 +861,9 @@
         router.innerHTML = "";
         const path = window.location.pathname;
         const home = path === "/";
-        const addNewEventPath = path === "/new";
+        const addEventPath = path === "/add";
         const isDayPath = path.includes("day");
-        const eventsPaths = !home && !addNewEventPath && !isDayPath;
+        const eventsPaths = !home && !addEventPath && !isDayPath;
         let eventObject;
         if (eventsPaths) {
           const eventPath = path.split("/");
@@ -1006,12 +902,12 @@
           case `/events/edit/${eventObject == null ? void 0 : eventObject._id}`:
             if (eventObject) {
               router.append(Header("edit"));
-              router.append(EditEvent(eventObject));
+              router.append(EventForm(eventObject));
             }
             break;
-          case `/new`:
-            router.append(Header("new"));
-            router.append(AddEvent());
+          case `/add`:
+            router.append(Header("add"));
+            router.append(EventForm());
             break;
           default:
             break;
