@@ -1,7 +1,6 @@
 import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
-import { basics, flexAlignItemsCenter, fonts } from '../../utils/styles';
-import { onClick } from '../../utils/DOMutils';
+import { basics, flexAlignItemsCenter } from '../../utils/styles';
 import { setURL } from '../../utils/HistoryUtils';
 
 const headerTopLeftButton = {
@@ -21,8 +20,7 @@ export function Header(
   const isEditEvent = view === 'edit';
   const newEvent = view === 'new';
   const showTopRightButton = !newEvent && !isEditEvent;
-  const showTopLeftButton = !isHome;
-  !isHome && !isEditEvent;
+  const showTopLeftButton = !isHome && !isEditEvent;
   const windowPath = window.location.pathname;
   const pathSplit = windowPath.split('/');
   const eventId = pathSplit[pathSplit.length - 1]?.toString();

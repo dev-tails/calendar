@@ -70,36 +70,7 @@ export const formatDateTimeInputValue = (date: Date) => {
   return dateTimeString;
 };
 
-export const addMinutesToDate = (date: Date, minutes: number) => {
-  const addedMinutes = minutes * 60 * 1000;
-
-  const copiedDate = new Date(date.getTime());
-  const time = copiedDate.getTime();
-  const newTimeNumber = copiedDate.setTime(time + addedMinutes);
-  const dateWithAddedMin = new Date(newTimeNumber);
-  return dateWithAddedMin;
-};
-
-// Mainly for all day events
-export const convertToCurrentTZMidnight = (
-  date: Date,
-  from: 'localTZ' | 'UTC'
-) => {
-  const useUTC = from === 'UTC';
-  const utcMidnightDate = date.getUTCDate();
-  const utcMidnightMonth = date.getUTCMonth();
-  const utcMidnightFullYear = useUTC
-    ? date.getUTCFullYear()
-    : date.getUTCFullYear();
-
-  const copiedDate = new Date(date.getTime());
-  copiedDate.setDate(utcMidnightDate);
-  copiedDate.setMonth(utcMidnightMonth);
-  copiedDate.setFullYear(utcMidnightFullYear);
-  copiedDate.setHours(0, 0, 0, 0);
-  return copiedDate;
-};
-
+// For all day events - it will return midnight on current timezone
 export const convertMidnightUTCToLocalDay = (date: Date) => {
   const utcMidnightDate = date.getUTCDate();
   const utcMidnightMonth = date.getUTCMonth();
@@ -110,5 +81,36 @@ export const convertMidnightUTCToLocalDay = (date: Date) => {
   copiedDate.setMonth(utcMidnightMonth);
   copiedDate.setFullYear(utcMidnightFullYear);
   return copiedDate;
-  // will return midnight on current zone
+};
+
+/* 
+Used for datetime input value
+- It will return the date passed but with the current timezone time (the 
+date remains as the passed one, will not change it to current time zone)
+*/
+export const addLocalTimeToDate = (date: Date) => {
+  const currentTime = new Date();
+  const currentTimeHrs = currentTime.getHours();
+  const currentTimeMin = currentTime.getMinutes();
+  const currentTimeSec = currentTime.getSeconds();
+  const currentTimeMs = currentTime.getMilliseconds();
+
+  const copiedDate = new Date(date.getTime());
+  copiedDate.setHours(
+    currentTimeHrs,
+    currentTimeMin,
+    currentTimeSec,
+    currentTimeMs
+  );
+  return copiedDate;
+};
+
+export const addMinutesToDate = (date: Date, minutes: number) => {
+  const addedMinutes = minutes * 60 * 1000;
+
+  const copiedDate = new Date(date.getTime());
+  const time = copiedDate.getTime();
+  const newTimeNumber = copiedDate.setTime(time + addedMinutes);
+  const dateWithAddedMin = new Date(newTimeNumber);
+  return dateWithAddedMin;
 };

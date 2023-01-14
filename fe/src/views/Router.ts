@@ -1,10 +1,9 @@
-import { getEventById } from '../apis/EventApi';
 import { Div } from '../components/elements/Div';
+import { getEventById } from '../apis/EventApi';
 import {
-  convertToCurrentTZMidnight,
+  convertMidnightUTCToLocalDay,
   formatSplitDate,
 } from '../utils/dateHelpers';
-import { setStyle } from '../utils/DOMutils';
 import { setURL } from '../utils/HistoryUtils';
 import { AddEvent } from './AddEvent/AddEvent';
 import { Day } from './Day/Day';
@@ -23,24 +22,25 @@ export function Router() {
 
   async function handleRouteUpdated() {
     router.innerHTML = '';
-    const path = window.location.pathname;
-    const isHome = path === '/';
-    const addNewEventPath = path === '/new';
-    const isDay = path.includes('day');
-    const eventsPath = path.includes('events');
-    let eventObject: IEvent | undefined;
-    let eventsDate = new Date().toDateString();
 
-    if (!isHome && !addNewEventPath && !isDay) {
-      const pathSplit = path.split('/');
-      const eventId = pathSplit[pathSplit.length - 1]?.toString();
+    const path = window.location.pathname;
+    const home = path === '/';
+    const addNewEventPath = path === '/new';
+    const isDayPath = path.includes('day');
+    const eventsPaths = !home && !addNewEventPath && !isDayPath;
+
+    let eventObject: IEvent | undefined;
+    if (eventsPaths) {
+      const eventPath = path.split('/');
+      const eventId = eventPath[eventPath.length - 1]?.toString();
       eventObject = await getEventById(eventId);
       if (!eventObject) {
         setURL('/');
       }
     }
 
-    if (isDay) {
+    let eventsDate = new Date().toDateString();
+    if (isDayPath) {
       const splitDate = path.split('/');
       const fullYear = splitDate[2];
       const month = splitDate[3];
@@ -58,13 +58,8 @@ export function Router() {
         router.append(Day(eventsDate));
         break;
       case `/events/${eventObject?._id}`:
-        if (eventObject?.start) {
-          console.log('event ', eventObject);
-          const allDayDate = convertToCurrentTZMidnight(
-            eventObject.start,
-            'UTC'
-          );
-
+        if (eventObject) {
+          const allDayDate = convertMidnightUTCToLocalDay(eventObject.start);
           const date = eventObject.allDay ? allDayDate : eventObject.start;
           const dateURL = formatSplitDate(date, '/', 'yyyy-mm-dd');
 

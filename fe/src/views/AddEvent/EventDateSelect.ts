@@ -1,7 +1,7 @@
 import {
+  addLocalTimeToDate,
   addMinutesToDate,
   convertMidnightUTCToLocalDay,
-  convertToCurrentTZMidnight,
   formatDateTimeInputValue,
   formatSplitDate,
 } from '../../utils/dateHelpers';
@@ -119,27 +119,14 @@ export function EventDateSelect(
             event.start,
             convertMidnightUTCToLocalDay(event.start)
           );
-          const copiedDate = convertMidnightUTCToLocalDay(
-            new Date(event.start.getTime())
-          );
-          const currentTime = new Date();
-          const currentTimeHrs = currentTime.getHours();
-          const currentTimeMin = currentTime.getMinutes();
-          const currentTimeSec = currentTime.getSeconds();
-          const currentTimeMs = currentTime.getMilliseconds();
+          const currentDate = convertMidnightUTCToLocalDay(event.start);
+          const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
 
-          copiedDate.setHours(
-            currentTimeHrs,
-            currentTimeMin,
-            currentTimeSec,
-            currentTimeMs
-          );
-          console.log('coped date', copiedDate);
           dateContainer.removeChild(dateInput);
           dateContainer.prepend(endTimeInput());
           dateContainer.prepend(toLabel);
           onEventStateChange({
-            start: copiedDate,
+            start: selectedDateWithCurrentTime,
             allDay: isChecked,
             end: undefined,
           });

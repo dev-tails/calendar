@@ -6,7 +6,6 @@ import {
   formatDateTime,
   dateOptions,
   dateTimeOptions,
-  convertToCurrentTZMidnight,
   convertMidnightUTCToLocalDay,
 } from '../../utils/dateHelpers';
 import { setURL } from '../../utils/HistoryUtils';
@@ -30,9 +29,8 @@ export function Event(event: IEvent) {
 
   if (event.allDay) {
     const day = Div({ styles: { padding: '4px 0' } });
-    const date = convertMidnightUTCToLocalDay(event.start);
-    // day.innerText = `${formatDateTime('en-CA', dateOptions, date)}`;
-    day.innerText = date.toString();
+    const localDay = convertMidnightUTCToLocalDay(event.start);
+    day.innerText = `${formatDateTime('en-CA', dateOptions, localDay)}`;
     el.appendChild(day);
   } else {
     const start = Div({
@@ -48,11 +46,10 @@ export function Event(event: IEvent) {
     el.appendChild(start);
 
     const end = Div({ styles: { padding: '4px 0' } });
-    end.innerHTML = `End: ${formatDateTime(
-      'en-CA',
-      dateTimeOptions,
-      event.end
-    )}`;
+    const endDate = event.end
+      ? `${formatDateTime('en-CA', dateTimeOptions, event.end)}`
+      : '';
+    end.innerHTML = `End: ${endDate}`;
     el.appendChild(end);
   }
 

@@ -40,6 +40,53 @@
     });
   };
 
+  // src/utils/DOMutils.ts
+  function byId(id) {
+    return document.getElementById(id);
+  }
+  function setStyle(el, styles) {
+    for (const key of Object.keys(styles)) {
+      const elementKey = key;
+      const stylesKey = styles[key];
+      if (stylesKey)
+        el.style[elementKey] = stylesKey;
+    }
+  }
+  function onClick(el, handler) {
+    return el.addEventListener("click", handler, true);
+  }
+
+  // src/components/elements/Element.ts
+  function Element(props) {
+    const el = document.createElement(props.tag);
+    if (!(props == null ? void 0 : props.selectors) && !(props == null ? void 0 : props.attr) && !(props == null ? void 0 : props.styles)) {
+      return el;
+    }
+    const { selectors, attr, styles } = props;
+    if (selectors) {
+      for (const selector in selectors) {
+        const attr2 = selectors[selector];
+        attr2 && el.setAttribute(selector, attr2);
+      }
+    }
+    if (attr) {
+      Object.keys(attr).forEach((key) => {
+        el[key] = attr[key];
+      });
+    }
+    if (styles) {
+      setStyle(el, styles);
+    }
+    return el;
+  }
+
+  // src/components/elements/Div.ts
+  function Div(props) {
+    return Element(__spreadValues({
+      tag: "div"
+    }, props));
+  }
+
   // src/apis/EventApi.ts
   var baseURL = window.location.origin;
   var getEventById = (eventId) => __async(void 0, null, function* () {
@@ -123,53 +170,6 @@
     }
   });
 
-  // src/utils/DOMutils.ts
-  function byId(id) {
-    return document.getElementById(id);
-  }
-  function setStyle(el, styles) {
-    for (const key of Object.keys(styles)) {
-      const elementKey = key;
-      const stylesKey = styles[key];
-      if (stylesKey)
-        el.style[elementKey] = stylesKey;
-    }
-  }
-  function onClick(el, handler) {
-    return el.addEventListener("click", handler, true);
-  }
-
-  // src/components/elements/Element.ts
-  function Element(props) {
-    const el = document.createElement(props.tag);
-    if (!(props == null ? void 0 : props.selectors) && !(props == null ? void 0 : props.attr) && !(props == null ? void 0 : props.styles)) {
-      return el;
-    }
-    const { selectors, attr, styles } = props;
-    if (selectors) {
-      for (const selector in selectors) {
-        const attr2 = selectors[selector];
-        attr2 && el.setAttribute(selector, attr2);
-      }
-    }
-    if (attr) {
-      Object.keys(attr).forEach((key) => {
-        el[key] = attr[key];
-      });
-    }
-    if (styles) {
-      setStyle(el, styles);
-    }
-    return el;
-  }
-
-  // src/components/elements/Div.ts
-  function Div(props) {
-    return Element(__spreadValues({
-      tag: "div"
-    }, props));
-  }
-
   // src/utils/dateHelpers.ts
   var timeOptions = {
     hour: "numeric",
@@ -223,26 +223,6 @@
     console.log("dateTimeString", dateTimeString);
     return dateTimeString;
   };
-  var addMinutesToDate = (date, minutes) => {
-    const addedMinutes = minutes * 60 * 1e3;
-    const copiedDate = new Date(date.getTime());
-    const time = copiedDate.getTime();
-    const newTimeNumber = copiedDate.setTime(time + addedMinutes);
-    const dateWithAddedMin = new Date(newTimeNumber);
-    return dateWithAddedMin;
-  };
-  var convertToCurrentTZMidnight = (date, from) => {
-    const useUTC = from === "UTC";
-    const utcMidnightDate = date.getUTCDate();
-    const utcMidnightMonth = date.getUTCMonth();
-    const utcMidnightFullYear = useUTC ? date.getUTCFullYear() : date.getUTCFullYear();
-    const copiedDate = new Date(date.getTime());
-    copiedDate.setDate(utcMidnightDate);
-    copiedDate.setMonth(utcMidnightMonth);
-    copiedDate.setFullYear(utcMidnightFullYear);
-    copiedDate.setHours(0, 0, 0, 0);
-    return copiedDate;
-  };
   var convertMidnightUTCToLocalDay = (date) => {
     const utcMidnightDate = date.getUTCDate();
     const utcMidnightMonth = date.getUTCMonth();
@@ -252,6 +232,29 @@
     copiedDate.setMonth(utcMidnightMonth);
     copiedDate.setFullYear(utcMidnightFullYear);
     return copiedDate;
+  };
+  var addLocalTimeToDate = (date) => {
+    const currentTime = new Date();
+    const currentTimeHrs = currentTime.getHours();
+    const currentTimeMin = currentTime.getMinutes();
+    const currentTimeSec = currentTime.getSeconds();
+    const currentTimeMs = currentTime.getMilliseconds();
+    const copiedDate = new Date(date.getTime());
+    copiedDate.setHours(
+      currentTimeHrs,
+      currentTimeMin,
+      currentTimeSec,
+      currentTimeMs
+    );
+    return copiedDate;
+  };
+  var addMinutesToDate = (date, minutes) => {
+    const addedMinutes = minutes * 60 * 1e3;
+    const copiedDate = new Date(date.getTime());
+    const time = copiedDate.getTime();
+    const newTimeNumber = copiedDate.setTime(time + addedMinutes);
+    const dateWithAddedMin = new Date(newTimeNumber);
+    return dateWithAddedMin;
   };
 
   // src/utils/HistoryUtils.ts
@@ -392,26 +395,13 @@
               event.start,
               convertMidnightUTCToLocalDay(event.start)
             );
-            const copiedDate = convertMidnightUTCToLocalDay(
-              new Date(event.start.getTime())
-            );
-            const currentTime = new Date();
-            const currentTimeHrs = currentTime.getHours();
-            const currentTimeMin = currentTime.getMinutes();
-            const currentTimeSec = currentTime.getSeconds();
-            const currentTimeMs = currentTime.getMilliseconds();
-            copiedDate.setHours(
-              currentTimeHrs,
-              currentTimeMin,
-              currentTimeSec,
-              currentTimeMs
-            );
-            console.log("coped date", copiedDate);
+            const currentDate = convertMidnightUTCToLocalDay(event.start);
+            const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
             dateContainer.removeChild(dateInput);
             dateContainer.prepend(endTimeInput());
             dateContainer.prepend(toLabel);
             onEventStateChange({
-              start: copiedDate,
+              start: selectedDateWithCurrentTime,
               allDay: isChecked,
               end: void 0
             });
@@ -844,8 +834,8 @@
     }
     if (event.allDay) {
       const day = Div({ styles: { padding: "4px 0" } });
-      const date = convertMidnightUTCToLocalDay(event.start);
-      day.innerText = date.toString();
+      const localDay = convertMidnightUTCToLocalDay(event.start);
+      day.innerText = `${formatDateTime("en-CA", dateOptions, localDay)}`;
       el.appendChild(day);
     } else {
       const start = Div({
@@ -860,11 +850,8 @@
       });
       el.appendChild(start);
       const end = Div({ styles: { padding: "4px 0" } });
-      end.innerHTML = `End: ${formatDateTime(
-        "en-CA",
-        dateTimeOptions,
-        event.end
-      )}`;
+      const endDate = event.end ? `${formatDateTime("en-CA", dateTimeOptions, event.end)}` : "";
+      end.innerHTML = `End: ${endDate}`;
       el.appendChild(end);
     }
     const button = Button({
@@ -911,8 +898,7 @@
     const isEditEvent = view === "edit";
     const newEvent = view === "new";
     const showTopRightButton = !newEvent && !isEditEvent;
-    const showTopLeftButton = !isHome;
-    !isHome && !isEditEvent;
+    const showTopLeftButton = !isHome && !isEditEvent;
     const windowPath = window.location.pathname;
     const pathSplit = windowPath.split("/");
     const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
@@ -978,21 +964,21 @@
         var _a;
         router.innerHTML = "";
         const path = window.location.pathname;
-        const isHome = path === "/";
+        const home = path === "/";
         const addNewEventPath = path === "/new";
-        const isDay = path.includes("day");
-        const eventsPath = path.includes("events");
+        const isDayPath = path.includes("day");
+        const eventsPaths = !home && !addNewEventPath && !isDayPath;
         let eventObject;
-        let eventsDate = new Date().toDateString();
-        if (!isHome && !addNewEventPath && !isDay) {
-          const pathSplit = path.split("/");
-          const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
+        if (eventsPaths) {
+          const eventPath = path.split("/");
+          const eventId = (_a = eventPath[eventPath.length - 1]) == null ? void 0 : _a.toString();
           eventObject = yield getEventById(eventId);
           if (!eventObject) {
             setURL("/");
           }
         }
-        if (isDay) {
+        let eventsDate = new Date().toDateString();
+        if (isDayPath) {
           const splitDate = path.split("/");
           const fullYear = splitDate[2];
           const month = splitDate[3];
@@ -1009,12 +995,8 @@
             router.append(Day(eventsDate));
             break;
           case `/events/${eventObject == null ? void 0 : eventObject._id}`:
-            if (eventObject == null ? void 0 : eventObject.start) {
-              console.log("event ", eventObject);
-              const allDayDate = convertToCurrentTZMidnight(
-                eventObject.start,
-                "UTC"
-              );
+            if (eventObject) {
+              const allDayDate = convertMidnightUTCToLocalDay(eventObject.start);
               const date = eventObject.allDay ? allDayDate : eventObject.start;
               const dateURL = formatSplitDate(date, "/", "yyyy-mm-dd");
               router.append(Header("event", dateURL));
