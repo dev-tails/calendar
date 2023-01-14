@@ -81,15 +81,30 @@
       throw new Error(error || "Events could not be fetched.");
     }
   });
-  var createEvent = (event) => {
+  var createEvent = (event) => __async(void 0, null, function* () {
     fetch(`/api/events`, {
-      body: JSON.stringify(event),
       method: "POST",
       headers: {
         "Content-Type": "application/json"
-      }
+      },
+      body: JSON.stringify(event)
     });
-  };
+  });
+  var editEvent = (event) => __async(void 0, null, function* () {
+    const res = yield fetch(`/api/events/${event._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id: event._id, body: event })
+    });
+    if (res.ok) {
+      const modifiedEvent = yield res.json();
+      return modifiedEvent;
+    } else {
+      throw new Error(res.statusText || "Event could not be edited.");
+    }
+  });
   var deleteEvent = (eventId) => __async(void 0, null, function* () {
     if (!eventId) {
       throw new Error("Event id must exist.");
@@ -104,7 +119,7 @@
       const response = yield res.json();
       return !!response.success;
     } else {
-      throw new Error(res.statusText || "Event could not be deletedssss.");
+      throw new Error(res.statusText || "Event could not be deleted.");
     }
   });
 
@@ -152,52 +167,6 @@
   function Div(props) {
     return Element(__spreadValues({
       tag: "div"
-    }, props));
-  }
-
-  // src/utils/HistoryUtils.ts
-  function setURL(url) {
-    history.pushState({}, "", url);
-    window.dispatchEvent(new Event("popstate"));
-  }
-
-  // src/components/elements/Button.ts
-  function Button(props) {
-    return Element(__spreadValues({
-      tag: "button"
-    }, props));
-  }
-
-  // src/components/elements/Input/Input.ts
-  function Input(props) {
-    return Element(__spreadValues({
-      tag: "input"
-    }, props));
-  }
-
-  // src/components/elements/Textarea.ts
-  function Textarea(props) {
-    return Element(__spreadValues({
-      tag: "textarea"
-    }, props));
-  }
-
-  // src/utils/styles.ts
-  var basics = {
-    whiteColor: "#fff"
-  };
-  var fonts = {
-    regular: "Outfit"
-  };
-  var flexAlignItemsCenter = {
-    display: "flex",
-    alignItems: "center"
-  };
-
-  // src/components/elements/Label.ts
-  function Label(props) {
-    return Element(__spreadValues({
-      tag: "label"
     }, props));
   }
 
@@ -260,6 +229,63 @@
     const dateWithAddedMin = new Date(newTimeNumber);
     return dateWithAddedMin;
   };
+  var converToCurrentTZMidnight = (utcMidnight) => {
+    const utcMidnightDate = utcMidnight.getUTCDate();
+    const utcMidnightMonth = utcMidnight.getUTCMonth();
+    const utcMidnightFullYear = utcMidnight.getUTCFullYear();
+    const copiedDate = new Date(utcMidnight.getTime());
+    copiedDate.setDate(utcMidnightDate);
+    copiedDate.setMonth(utcMidnightMonth);
+    copiedDate.setFullYear(utcMidnightFullYear);
+    copiedDate.setHours(0, 0, 0, 0);
+    return copiedDate;
+  };
+
+  // src/utils/HistoryUtils.ts
+  function setURL(url) {
+    history.pushState({}, "", url);
+    window.dispatchEvent(new Event("popstate"));
+  }
+
+  // src/components/elements/Button.ts
+  function Button(props) {
+    return Element(__spreadValues({
+      tag: "button"
+    }, props));
+  }
+
+  // src/components/elements/Input/Input.ts
+  function Input(props) {
+    return Element(__spreadValues({
+      tag: "input"
+    }, props));
+  }
+
+  // src/components/elements/Textarea.ts
+  function Textarea(props) {
+    return Element(__spreadValues({
+      tag: "textarea"
+    }, props));
+  }
+
+  // src/utils/styles.ts
+  var basics = {
+    whiteColor: "#fff"
+  };
+  var fonts = {
+    regular: "Outfit"
+  };
+  var flexAlignItemsCenter = {
+    display: "flex",
+    alignItems: "center"
+  };
+
+  // src/components/elements/Label.ts
+  function Label(props) {
+    return Element(__spreadValues({
+      tag: "label"
+    }, props));
+  }
 
   // src/views/AddEvent/EventDateSelect.ts
   function DateSelect(event, onEventStateChange) {
@@ -736,7 +762,9 @@
         delete eventState.end;
       }
       setEventState({ start });
+      editEvent(eventState);
       console.log("event State sent", eventState);
+      setURL(`/events/${event._id}`);
     };
     return form;
   }
@@ -758,7 +786,8 @@
     }
     if (event.allDay) {
       const day = Div({ styles: { padding: "4px 0" } });
-      day.innerText = `${formatDateTime("en-CA", dateOptions, event.start)}`;
+      const date = converToCurrentTZMidnight(event.start);
+      day.innerText = `${formatDateTime("en-CA", dateOptions, date)}`;
       el.appendChild(day);
     }
     if (event.start && event.end) {
@@ -818,12 +847,18 @@
     event: "< Back",
     new: "Home"
   };
-  function Header(view) {
+  function Header(view, dateURL) {
+    var _a;
     const isHome = view === "home";
     const isEvent = view === "event";
     const isEditEvent = view === "edit";
     const newEvent = view === "new";
-    const showRightSideButton = !newEvent && !isEditEvent;
+    const showTopRightButton = !newEvent && !isEditEvent;
+    const showTopLeftButton = !isHome;
+    !isHome && !isEditEvent;
+    const windowPath = window.location.pathname;
+    const pathSplit = windowPath.split("/");
+    const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
     const header = Div({
       styles: __spreadProps(__spreadValues({
         height: "80px",
@@ -843,16 +878,12 @@
         }
       }
     });
-    !isHome && header.append(leftButton);
-    if (showRightSideButton) {
+    showTopLeftButton && header.append(leftButton);
+    if (showTopRightButton) {
       const rightButton = Button({
         attr: {
           textContent: isEvent ? "Edit Event" : "Add Event",
           onclick: (e) => {
-            var _a;
-            const windowPath = window.location.pathname;
-            const pathSplit = windowPath.split("/");
-            const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
             e.preventDefault();
             const nextURL = isEvent ? `/events/edit/${eventId}` : "/new";
             setURL(nextURL);
@@ -864,8 +895,16 @@
       });
       header.append(rightButton);
     }
+    console.log("current view", view, dateURL);
     function onLeftButtonClick() {
-      return isEvent ? () => history.back() : () => setURL(`/`);
+      let nextURL = "/";
+      if (isEvent) {
+        nextURL = `/day/${dateURL}`;
+      }
+      if (isEditEvent) {
+        nextURL = `/events/${eventId}`;
+      }
+      setURL(nextURL);
     }
     return header;
   }
@@ -885,6 +924,7 @@
         const isHome = path === "/";
         const addNewEventPath = path === "/new";
         const isDay = path.includes("day");
+        const eventsPath = path.includes("events");
         let eventObject;
         let eventsDate = new Date().toDateString();
         if (!isHome && !addNewEventPath && !isDay) {
@@ -900,7 +940,7 @@
           const fullYear = splitDate[2];
           const month = splitDate[3];
           const day = splitDate[4];
-          eventsDate = isDay ? `/day/${fullYear}/${month}/${day}` : "/";
+          eventsDate = `/day/${fullYear}/${month}/${day}`;
         }
         switch (path) {
           case "/":
@@ -912,8 +952,10 @@
             router.append(Day(eventsDate));
             break;
           case `/events/${eventObject == null ? void 0 : eventObject._id}`:
-            if (eventObject) {
-              router.append(Header("event"));
+            if (eventObject == null ? void 0 : eventObject.start) {
+              const date = converToCurrentTZMidnight(eventObject.start);
+              const dateURL = formatSplitDate(date, "/", "yyyy-mm-dd");
+              router.append(Header("event", dateURL));
               router.append(Event2(eventObject));
             }
             break;

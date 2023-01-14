@@ -8,6 +8,7 @@ import { Label } from '../../components/elements/Label';
 import { H3 } from '../../components/elements/H3';
 import { DateSelect } from '../AddEvent/EventDateSelect';
 import { Form } from '../../components/elements/Form';
+import { editEvent } from '../../apis/EventApi';
 
 export function EditEvent(event: IEvent) {
   const eventState: IEvent = { ...event };
@@ -109,9 +110,9 @@ export function EditEvent(event: IEvent) {
     setEventState({ start }); /////
     // eventState = { ...eventState, start };
 
-    // createEvent(eventState);
+    editEvent(eventState);
     console.log('event State sent', eventState);
-    // setURL(`/events/${event._id}`);
+    setURL(`/events/${event._id}`);
   };
 
   return form;

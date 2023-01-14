@@ -6,4 +6,5 @@ interface IEvent {
   end?: Date;
   allDay: boolean;
   users?: string[]; //to be User[]
+  updatedAt?: Date;
 }

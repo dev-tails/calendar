@@ -45,14 +45,30 @@ export const getEventsForDay = async (date: Date) => {
   }
 };
 
-export const createEvent = (event: Partial<IEvent>) => {
+export const createEvent = async (event: Partial<IEvent>) => {
   fetch(`/api/events`, {
-    body: JSON.stringify(event),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify(event),
   });
+};
+
+export const editEvent = async (event: IEvent) => {
+  const res = await fetch(`/api/events/${event._id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: event._id, body: event }),
+  });
+  if (res.ok) {
+    const modifiedEvent = await res.json();
+    return modifiedEvent;
+  } else {
+    throw new Error(res.statusText || 'Event could not be edited.');
+  }
 };
 
 export const deleteEvent = async (eventId?: string) => {
@@ -70,6 +86,6 @@ export const deleteEvent = async (eventId?: string) => {
     const response = await res.json();
     return !!response.success;
   } else {
-    throw new Error(res.statusText || 'Event could not be deletedssss.');
+    throw new Error(res.statusText || 'Event could not be deleted.');
   }
 };

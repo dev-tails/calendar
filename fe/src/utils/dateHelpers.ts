@@ -76,3 +76,17 @@ export const addMinutesToDate = (date: Date, minutes: number) => {
   const dateWithAddedMin = new Date(newTimeNumber);
   return dateWithAddedMin;
 };
+
+// Mainly for all day events
+export const converToCurrentTZMidnight = (utcMidnight: Date) => {
+  const utcMidnightDate = utcMidnight.getUTCDate();
+  const utcMidnightMonth = utcMidnight.getUTCMonth();
+  const utcMidnightFullYear = utcMidnight.getUTCFullYear();
+
+  const copiedDate = new Date(utcMidnight.getTime());
+  copiedDate.setDate(utcMidnightDate);
+  copiedDate.setMonth(utcMidnightMonth);
+  copiedDate.setFullYear(utcMidnightFullYear);
+  copiedDate.setHours(0, 0, 0, 0);
+  return copiedDate;
+};

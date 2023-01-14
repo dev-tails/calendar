@@ -1,5 +1,9 @@
 import { getEventById } from '../apis/EventApi';
 import { Div } from '../components/elements/Div';
+import {
+  converToCurrentTZMidnight,
+  formatSplitDate,
+} from '../utils/dateHelpers';
 import { setStyle } from '../utils/DOMutils';
 import { setURL } from '../utils/HistoryUtils';
 import { AddEvent } from './AddEvent/AddEvent';
@@ -23,6 +27,7 @@ export function Router() {
     const isHome = path === '/';
     const addNewEventPath = path === '/new';
     const isDay = path.includes('day');
+    const eventsPath = path.includes('events');
     let eventObject: IEvent | undefined;
     let eventsDate = new Date().toDateString();
 
@@ -40,7 +45,7 @@ export function Router() {
       const fullYear = splitDate[2];
       const month = splitDate[3];
       const day = splitDate[4];
-      eventsDate = isDay ? `/day/${fullYear}/${month}/${day}` : '/';
+      eventsDate = `/day/${fullYear}/${month}/${day}`;
     }
 
     switch (path) {
@@ -53,10 +58,14 @@ export function Router() {
         router.append(Day(eventsDate));
         break;
       case `/events/${eventObject?._id}`:
-        if (eventObject) {
-          router.append(Header('event'));
+        if (eventObject?.start) {
+          const date = converToCurrentTZMidnight(eventObject.start);
+          const dateURL = formatSplitDate(date, '/', 'yyyy-mm-dd');
+
+          router.append(Header('event', dateURL));
           router.append(Event(eventObject));
         }
+
         break;
       case `/events/edit/${eventObject?._id}`:
         if (eventObject) {

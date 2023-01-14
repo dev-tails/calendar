@@ -71,6 +71,40 @@ async function run() {
       const event = await Event.findOne({ _id: mongodb.ObjectId(id) });
       return res.json({ data: event });
     } catch (err) {
+      console.error(err);
+      return res.sendStatus(400);
+    }
+  });
+
+  server.put('/api/events/:id', async (req, res) => {
+    const eventId = mongodb.ObjectId(req.body.id);
+    const { title, description, start, end, allDay } = req.body.body;
+
+    if (!title || !start || !eventId) {
+      throw new Error('Event must include title and start date');
+    }
+
+    try {
+      await Event.updateOne(
+        { _id: eventId },
+        {
+          $set: {
+            title,
+            description,
+            start: new Date(start),
+            end: new Date(end),
+            allDay,
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+      const editedEvent = await Event.findOne({
+        _id: eventId,
+      });
+      return res.json({ data: editedEvent });
+    } catch (err) {
+      console.error(err);
       return res.sendStatus(400);
     }
   });
@@ -81,6 +115,7 @@ async function run() {
       const event = await Event.deleteOne({ _id: mongodb.ObjectId(id) });
       return res.json({ data: event });
     } catch (err) {
+      console.error(err);
       return res.sendStatus(400);
     }
   });
