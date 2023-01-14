@@ -815,20 +815,16 @@
     home: "",
     day: "Go to today",
     edit: "< Back",
-    //hide edit until I get back to edit event view
     event: "< Back",
     new: "Home"
   };
   function Header(view) {
-    var _a;
     const isHome = view === "home";
     const isEvent = view === "event";
     const isEditEvent = view === "edit";
     const newEvent = view === "new";
-    const windowPath = window.location.pathname;
-    const pathSplit = windowPath.split("/");
-    const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
-    const el = Div({
+    const showRightSideButton = !newEvent && !isEditEvent;
+    const header = Div({
       styles: __spreadProps(__spreadValues({
         height: "80px",
         backgroundColor: basics.whiteColor,
@@ -838,7 +834,6 @@
         justifyContent: "space-between"
       })
     });
-    const onLeftButtonClick = isEvent ? () => history.back() : () => setURL(`/`);
     const leftButton = Button({
       attr: {
         textContent: headerTopLeftButton[view],
@@ -848,31 +843,36 @@
         }
       }
     });
-    !isHome && el.append(leftButton);
-    if (!isEditEvent && !newEvent) {
+    !isHome && header.append(leftButton);
+    if (showRightSideButton) {
       const rightButton = Button({
         attr: {
-          textContent: "Add Event",
+          textContent: isEvent ? "Edit Event" : "Add Event",
           onclick: (e) => {
+            var _a;
+            const windowPath = window.location.pathname;
+            const pathSplit = windowPath.split("/");
+            const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
             e.preventDefault();
-            setURL("/new");
+            const nextURL = isEvent ? `/events/edit/${eventId}` : "/new";
+            setURL(nextURL);
           }
         },
         styles: {
           marginLeft: "auto"
         }
       });
-      el.append(rightButton);
+      header.append(rightButton);
     }
-    return el;
+    function onLeftButtonClick() {
+      return isEvent ? () => history.back() : () => setURL(`/`);
+    }
+    return header;
   }
 
   // src/views/Router.ts
   function Router() {
     const router = Div();
-    setStyle(router, {
-      flexGrow: "1"
-    });
     function init() {
       handleRouteUpdated();
     }

@@ -7,7 +7,7 @@ import { setURL } from '../../utils/HistoryUtils';
 const headerTopLeftButton = {
   home: '',
   day: 'Go to today',
-  edit: '< Back', //hide edit until I get back to edit event view
+  edit: '< Back',
   event: '< Back',
   new: 'Home',
 };
@@ -17,12 +17,9 @@ export function Header(view: 'home' | 'day' | 'edit' | 'event' | 'new') {
   const isEvent = view === 'event';
   const isEditEvent = view === 'edit';
   const newEvent = view === 'new';
+  const showRightSideButton = !newEvent && !isEditEvent;
 
-  const windowPath = window.location.pathname;
-  const pathSplit = windowPath.split('/');
-  const eventId = pathSplit[pathSplit.length - 1]?.toString();
-
-  const el = Div({
+  const header = Div({
     styles: {
       height: '80px',
       backgroundColor: basics.whiteColor,
@@ -33,7 +30,6 @@ export function Header(view: 'home' | 'day' | 'edit' | 'event' | 'new') {
     },
   });
 
-  const onLeftButtonClick = isEvent ? () => history.back() : () => setURL(`/`);
   const leftButton = Button({
     attr: {
       textContent: headerTopLeftButton[view],
@@ -43,23 +39,32 @@ export function Header(view: 'home' | 'day' | 'edit' | 'event' | 'new') {
       },
     },
   });
-  !isHome && el.append(leftButton);
+  !isHome && header.append(leftButton);
 
-  if (!isEditEvent && !newEvent) {
+  if (showRightSideButton) {
     const rightButton = Button({
       attr: {
-        textContent: 'Add Event',
+        textContent: isEvent ? 'Edit Event' : 'Add Event',
         onclick: (e) => {
+          const windowPath = window.location.pathname;
+          const pathSplit = windowPath.split('/');
+          const eventId = pathSplit[pathSplit.length - 1]?.toString();
+
           e.preventDefault();
-          setURL('/new');
+          const nextURL = isEvent ? `/events/edit/${eventId}` : '/new';
+          setURL(nextURL);
         },
       },
       styles: {
         marginLeft: 'auto',
       },
     });
-    el.append(rightButton);
+    header.append(rightButton);
   }
 
-  return el;
+  function onLeftButtonClick() {
+    return isEvent ? () => history.back() : () => setURL(`/`);
+  }
+
+  return header;
 }
