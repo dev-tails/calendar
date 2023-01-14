@@ -92,7 +92,7 @@ async function run() {
             title,
             description,
             start: new Date(start),
-            end: new Date(end),
+            end: end ? new Date(end) : null,
             allDay,
             updatedAt: new Date(),
           },

@@ -789,8 +789,7 @@
       const date = converToCurrentTZMidnight(event.start);
       day.innerText = `${formatDateTime("en-CA", dateOptions, date)}`;
       el.appendChild(day);
-    }
-    if (event.start && event.end) {
+    } else {
       const start = Div({
         attr: {
           innerText: `Start: ${formatDateTime(
