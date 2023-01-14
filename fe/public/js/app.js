@@ -210,6 +210,7 @@
     const second = dateFormatting[dateFormat[1]];
     const third = dateFormatting[dateFormat[2]];
     const dateString = `${first}${divider}${second}${divider}${third}`;
+    console.log("date sti", dateString);
     return dateString;
   };
   var formatDateTimeInputValue = (date) => {
@@ -219,6 +220,7 @@
     const minutes = date.getMinutes();
     const twoDigitsMinutes = minutes.toString()[1] ? minutes : `0${minutes}`;
     const dateTimeString = `${dateString}T${twoDigitsHours}:${twoDigitsMinutes}`;
+    console.log("dateTimeString", dateTimeString);
     return dateTimeString;
   };
   var addMinutesToDate = (date, minutes) => {
@@ -229,15 +231,26 @@
     const dateWithAddedMin = new Date(newTimeNumber);
     return dateWithAddedMin;
   };
-  var converToCurrentTZMidnight = (utcMidnight) => {
-    const utcMidnightDate = utcMidnight.getUTCDate();
-    const utcMidnightMonth = utcMidnight.getUTCMonth();
-    const utcMidnightFullYear = utcMidnight.getUTCFullYear();
-    const copiedDate = new Date(utcMidnight.getTime());
+  var convertToCurrentTZMidnight = (date, from) => {
+    const useUTC = from === "UTC";
+    const utcMidnightDate = date.getUTCDate();
+    const utcMidnightMonth = date.getUTCMonth();
+    const utcMidnightFullYear = useUTC ? date.getUTCFullYear() : date.getUTCFullYear();
+    const copiedDate = new Date(date.getTime());
     copiedDate.setDate(utcMidnightDate);
     copiedDate.setMonth(utcMidnightMonth);
     copiedDate.setFullYear(utcMidnightFullYear);
     copiedDate.setHours(0, 0, 0, 0);
+    return copiedDate;
+  };
+  var convertMidnightUTCToLocalDay = (date) => {
+    const utcMidnightDate = date.getUTCDate();
+    const utcMidnightMonth = date.getUTCMonth();
+    const utcMidnightFullYear = date.getUTCFullYear();
+    const copiedDate = new Date(date.getTime());
+    copiedDate.setDate(utcMidnightDate);
+    copiedDate.setMonth(utcMidnightMonth);
+    copiedDate.setFullYear(utcMidnightFullYear);
     return copiedDate;
   };
 
@@ -288,10 +301,58 @@
   }
 
   // src/views/AddEvent/EventDateSelect.ts
-  function DateSelect(event, onEventStateChange) {
+  function EventDateSelect(event, onEventStateChange) {
     const dateContainer = Div({ styles: { padding: "12px" } });
+    let dateTimeStringHere = () => formatDateTimeInputValue(event.start);
+    const newStartTimeInput = () => Input({
+      selectors: { id: "start" },
+      attr: {
+        type: "datetime-local",
+        value: event.start ? dateTimeStringHere() : void 0,
+        required: true,
+        onchange: (e) => {
+          const selectedValue = e.target.value;
+          let newStartDate = new Date(selectedValue);
+          const endDateTime = byId("end");
+          const newEndDate = addMinutesToDate(newStartDate, 30);
+          const endDateTimeString = formatDateTimeInputValue(newEndDate);
+          endDateTime.value = endDateTimeString;
+          onEventStateChange({
+            start: newStartDate,
+            end: newEndDate
+          });
+        }
+      },
+      styles: {
+        marginRight: "12px"
+      }
+    });
+    const newStartDateInput = () => Input({
+      selectors: { id: "start" },
+      attr: {
+        type: "date",
+        value: formatSplitDate(
+          convertMidnightUTCToLocalDay(event.start),
+          "-",
+          "yyyy-mm-dd"
+        ),
+        required: true,
+        onchange: (e) => {
+          const selectedValue = e.target.value;
+          let newStartDate = new Date(selectedValue);
+          newStartDate.setUTCHours(0, 0, 0, 0);
+          onEventStateChange({
+            start: newStartDate,
+            end: void 0
+          });
+        }
+      },
+      styles: {
+        marginRight: "12px"
+      }
+    });
     dateContainer.appendChild(
-      startTimeInputEl(event.allDay ? "date" : "datetime-local")
+      event.allDay ? newStartDateInput() : newStartTimeInput()
     );
     const toLabel = Label({
       attr: { innerText: "to" },
@@ -317,17 +378,45 @@
             dateContainer.removeChild(dateInput);
             dateContainer.removeChild(toLabel);
             dateContainer.removeChild(endDatetimeInput);
-            dateContainer.prepend(startTimeInputEl("date"));
+            const copiedDate = new Date(event.start.getTime());
+            copiedDate.setHours(0, 0, 0, 0);
+            onEventStateChange({
+              start: copiedDate,
+              allDay: isChecked,
+              end: isChecked ? void 0 : event.end
+            });
+            dateContainer.prepend(newStartDateInput());
           } else {
+            console.log(
+              "Aqui no?",
+              event.start,
+              convertMidnightUTCToLocalDay(event.start)
+            );
+            const copiedDate = convertMidnightUTCToLocalDay(
+              new Date(event.start.getTime())
+            );
+            const currentTime = new Date();
+            const currentTimeHrs = currentTime.getHours();
+            const currentTimeMin = currentTime.getMinutes();
+            const currentTimeSec = currentTime.getSeconds();
+            const currentTimeMs = currentTime.getMilliseconds();
+            copiedDate.setHours(
+              currentTimeHrs,
+              currentTimeMin,
+              currentTimeSec,
+              currentTimeMs
+            );
+            console.log("coped date", copiedDate);
             dateContainer.removeChild(dateInput);
             dateContainer.prepend(endTimeInput());
             dateContainer.prepend(toLabel);
-            dateContainer.prepend(startTimeInputEl("datetime-local"));
+            onEventStateChange({
+              start: copiedDate,
+              allDay: isChecked,
+              end: void 0
+            });
+            dateContainer.prepend(newStartTimeInput());
           }
-          onEventStateChange({
-            allDay: isChecked,
-            end: isChecked ? void 0 : event.end
-          });
         }
       },
       selectors: {
@@ -339,38 +428,6 @@
       attr: { innerText: "All day", for: "allDay" }
     });
     dateContainer.appendChild(allDayLabel);
-    function startTimeInputEl(type) {
-      const value = type === "date" ? formatSplitDate(event.start, "-", "yyyy-mm-dd") : formatDateTimeInputValue(event.start);
-      return Input({
-        selectors: { id: "start" },
-        attr: {
-          type,
-          value,
-          required: true,
-          onchange: (e) => {
-            const selectedValue = e.target.value;
-            let newStartDate = new Date(selectedValue);
-            if (event.allDay) {
-              const selectedValueToMidnight = newStartDate.toUTCString().split("GMT")[0];
-              newStartDate = new Date(selectedValueToMidnight);
-            }
-            const endDateTime = byId("end");
-            const newEndDate = addMinutesToDate(newStartDate, 30);
-            if (endDateTime) {
-              const endDateTimeString = formatDateTimeInputValue(newEndDate);
-              endDateTime.value = endDateTimeString;
-            }
-            onEventStateChange({
-              start: newStartDate,
-              end: endDateTime ? newEndDate : void 0
-            });
-          }
-        },
-        styles: {
-          marginRight: "12px"
-        }
-      });
-    }
     function endTimeInput() {
       return Input({
         attr: {
@@ -444,7 +501,7 @@
     descriptionContainer.appendChild(descriptionLabel);
     descriptionContainer.appendChild(descriptionInput);
     form.appendChild(descriptionContainer);
-    const dateContainer = DateSelect(eventState, setEventState);
+    const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
     const buttons = Div({
       styles: { display: "flex", justifyContent: "flex-end", marginTop: "24px" }
@@ -482,7 +539,6 @@
     form.appendChild(buttons);
     form.onsubmit = (e) => {
       e.preventDefault();
-      console.log("e", eventState);
       let start = eventState.start;
       if (eventState.allDay) {
         const midnightDate = new Date(eventState.start.getTime());
@@ -492,6 +548,7 @@
       }
       eventState = __spreadProps(__spreadValues({}, eventState), { start });
       createEvent(eventState);
+      console.log("submitting", eventState);
       const startDateISO = eventState.start.toISOString();
       const startDate = startDateISO.split("T")[0];
       const dateURLparam = startDate.replace(/-/g, "/");
@@ -679,6 +736,7 @@
     const eventState = __spreadValues({}, event);
     const setEventState = (newValue) => {
       Object.assign(eventState, newValue);
+      console.log("~~~~", eventState);
     };
     const form = Form();
     const editEventHeader = H3({ attr: { innerText: "Edit event" } });
@@ -716,7 +774,7 @@
     descriptionContainer.appendChild(descriptionLabel);
     descriptionContainer.appendChild(descriptionInput);
     form.appendChild(descriptionContainer);
-    const dateContainer = DateSelect(eventState, setEventState);
+    const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
     const buttons = Div({
       styles: { display: "flex", justifyContent: "flex-end", marginTop: "24px" }
@@ -763,7 +821,7 @@
       }
       setEventState({ start });
       editEvent(eventState);
-      console.log("event State sent", eventState);
+      console.log("event State sent submitted", eventState);
       setURL(`/events/${event._id}`);
     };
     return form;
@@ -786,8 +844,8 @@
     }
     if (event.allDay) {
       const day = Div({ styles: { padding: "4px 0" } });
-      const date = converToCurrentTZMidnight(event.start);
-      day.innerText = `${formatDateTime("en-CA", dateOptions, date)}`;
+      const date = convertMidnightUTCToLocalDay(event.start);
+      day.innerText = date.toString();
       el.appendChild(day);
     } else {
       const start = Div({
@@ -952,7 +1010,12 @@
             break;
           case `/events/${eventObject == null ? void 0 : eventObject._id}`:
             if (eventObject == null ? void 0 : eventObject.start) {
-              const date = converToCurrentTZMidnight(eventObject.start);
+              console.log("event ", eventObject);
+              const allDayDate = convertToCurrentTZMidnight(
+                eventObject.start,
+                "UTC"
+              );
+              const date = eventObject.allDay ? allDayDate : eventObject.start;
               const dateURL = formatSplitDate(date, "/", "yyyy-mm-dd");
               router.append(Header("event", dateURL));
               router.append(Event2(eventObject));

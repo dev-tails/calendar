@@ -6,7 +6,8 @@ import {
   formatDateTime,
   dateOptions,
   dateTimeOptions,
-  converToCurrentTZMidnight,
+  convertToCurrentTZMidnight,
+  convertMidnightUTCToLocalDay,
 } from '../../utils/dateHelpers';
 import { setURL } from '../../utils/HistoryUtils';
 
@@ -29,8 +30,9 @@ export function Event(event: IEvent) {
 
   if (event.allDay) {
     const day = Div({ styles: { padding: '4px 0' } });
-    const date = converToCurrentTZMidnight(event.start);
-    day.innerText = `${formatDateTime('en-CA', dateOptions, date)}`;
+    const date = convertMidnightUTCToLocalDay(event.start);
+    // day.innerText = `${formatDateTime('en-CA', dateOptions, date)}`;
+    day.innerText = date.toString();
     el.appendChild(day);
   } else {
     const start = Div({

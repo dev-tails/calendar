@@ -6,7 +6,7 @@ import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import { basics, fonts } from '../../utils/styles';
 import { Label } from '../../components/elements/Label';
-import { DateSelect } from './EventDateSelect';
+import { EventDateSelect } from './EventDateSelect';
 import { createEvent } from '../../apis/EventApi';
 import { H3 } from '../../components/elements/H3';
 
@@ -62,7 +62,7 @@ export function AddEvent() {
   form.appendChild(descriptionContainer);
 
   //Dates
-  const dateContainer = DateSelect(eventState, setEventState);
+  const dateContainer = EventDateSelect(eventState, setEventState);
   form.appendChild(dateContainer);
 
   //Guests
@@ -138,7 +138,6 @@ export function AddEvent() {
 
   form.onsubmit = (e) => {
     e.preventDefault();
-    console.log('e', eventState);
     let start = eventState.start;
 
     if (eventState.allDay) {
@@ -150,6 +149,7 @@ export function AddEvent() {
     eventState = { ...eventState, start };
     createEvent(eventState);
 
+    console.log('submitting', eventState);
     const startDateISO = eventState.start.toISOString();
     const startDate = startDateISO.split('T')[0];
     const dateURLparam = startDate.replace(/-/g, '/');

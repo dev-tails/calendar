@@ -34,6 +34,7 @@ export const formatSplitDate = (
   divider: string,
   format: 'yyyy-mm-dd' | 'dd-mm-yyyy'
 ) => {
+  // this will show proper date on edit event
   const fullYear = date.getFullYear();
   const month = date.getMonth() + 1;
   const twoDigitsMonth = String(month)[1] ? month : `0${month}`;
@@ -52,6 +53,7 @@ export const formatSplitDate = (
   const third = dateFormatting[dateFormat[2]];
 
   const dateString = `${first}${divider}${second}${divider}${third}`;
+  console.log('date sti', dateString);
   return dateString;
 };
 
@@ -64,6 +66,7 @@ export const formatDateTimeInputValue = (date: Date) => {
   const twoDigitsMinutes = minutes.toString()[1] ? minutes : `0${minutes}`;
 
   const dateTimeString = `${dateString}T${twoDigitsHours}:${twoDigitsMinutes}`;
+  console.log('dateTimeString', dateTimeString);
   return dateTimeString;
 };
 
@@ -78,15 +81,34 @@ export const addMinutesToDate = (date: Date, minutes: number) => {
 };
 
 // Mainly for all day events
-export const converToCurrentTZMidnight = (utcMidnight: Date) => {
-  const utcMidnightDate = utcMidnight.getUTCDate();
-  const utcMidnightMonth = utcMidnight.getUTCMonth();
-  const utcMidnightFullYear = utcMidnight.getUTCFullYear();
+export const convertToCurrentTZMidnight = (
+  date: Date,
+  from: 'localTZ' | 'UTC'
+) => {
+  const useUTC = from === 'UTC';
+  const utcMidnightDate = date.getUTCDate();
+  const utcMidnightMonth = date.getUTCMonth();
+  const utcMidnightFullYear = useUTC
+    ? date.getUTCFullYear()
+    : date.getUTCFullYear();
 
-  const copiedDate = new Date(utcMidnight.getTime());
+  const copiedDate = new Date(date.getTime());
   copiedDate.setDate(utcMidnightDate);
   copiedDate.setMonth(utcMidnightMonth);
   copiedDate.setFullYear(utcMidnightFullYear);
   copiedDate.setHours(0, 0, 0, 0);
   return copiedDate;
+};
+
+export const convertMidnightUTCToLocalDay = (date: Date) => {
+  const utcMidnightDate = date.getUTCDate();
+  const utcMidnightMonth = date.getUTCMonth();
+  const utcMidnightFullYear = date.getUTCFullYear();
+
+  const copiedDate = new Date(date.getTime());
+  copiedDate.setDate(utcMidnightDate);
+  copiedDate.setMonth(utcMidnightMonth);
+  copiedDate.setFullYear(utcMidnightFullYear);
+  return copiedDate;
+  // will return midnight on current zone
 };

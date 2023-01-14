@@ -1,5 +1,7 @@
 import {
   addMinutesToDate,
+  convertMidnightUTCToLocalDay,
+  convertToCurrentTZMidnight,
   formatDateTimeInputValue,
   formatSplitDate,
 } from '../../utils/dateHelpers';
@@ -8,14 +10,70 @@ import { Input } from '../../components/elements/Input/Input';
 import { Label } from '../../components/elements/Label';
 import { byId } from '../../utils/DOMutils';
 
-export function DateSelect(
+export function EventDateSelect(
   event: IEvent,
   onEventStateChange: (eventState: Partial<IEvent>) => void
 ) {
   const dateContainer = Div({ styles: { padding: '12px' } });
+  let dateTimeStringHere = () => formatDateTimeInputValue(event.start);
+  //2023-01-26T16:00
+  const newStartTimeInput = () =>
+    Input({
+      selectors: { id: 'start' },
+      attr: {
+        type: 'datetime-local',
+        value: event.start ? dateTimeStringHere() : undefined,
+        required: true,
+        onchange: (e) => {
+          const selectedValue = (e.target as HTMLInputElement).value;
+          let newStartDate = new Date(selectedValue);
+
+          const endDateTime = byId('end') as HTMLInputElement;
+          const newEndDate = addMinutesToDate(newStartDate, 30);
+
+          const endDateTimeString = formatDateTimeInputValue(newEndDate);
+          endDateTime.value = endDateTimeString;
+
+          onEventStateChange({
+            start: newStartDate,
+            end: newEndDate,
+          });
+        },
+      },
+      styles: {
+        marginRight: '12px',
+      },
+    });
+
+  const newStartDateInput = () =>
+    Input({
+      selectors: { id: 'start' },
+      attr: {
+        type: 'date',
+        value: formatSplitDate(
+          convertMidnightUTCToLocalDay(event.start),
+          '-',
+          'yyyy-mm-dd'
+        ),
+        required: true,
+        onchange: (e) => {
+          const selectedValue = (e.target as HTMLInputElement).value;
+          let newStartDate = new Date(selectedValue);
+          newStartDate.setUTCHours(0, 0, 0, 0);
+
+          onEventStateChange({
+            start: newStartDate,
+            end: undefined,
+          });
+        },
+      },
+      styles: {
+        marginRight: '12px',
+      },
+    });
 
   dateContainer.appendChild(
-    startTimeInputEl(event.allDay ? 'date' : 'datetime-local')
+    event.allDay ? newStartDateInput() : newStartTimeInput()
   );
 
   const toLabel = Label({
@@ -47,17 +105,46 @@ export function DateSelect(
           dateContainer.removeChild(toLabel);
           dateContainer.removeChild(endDatetimeInput);
 
-          dateContainer.prepend(startTimeInputEl('date'));
+          const copiedDate = new Date(event.start.getTime());
+          copiedDate.setHours(0, 0, 0, 0);
+          onEventStateChange({
+            start: copiedDate,
+            allDay: isChecked,
+            end: isChecked ? undefined : event.end,
+          });
+          dateContainer.prepend(newStartDateInput());
         } else {
+          console.log(
+            'Aqui no?',
+            event.start,
+            convertMidnightUTCToLocalDay(event.start)
+          );
+          const copiedDate = convertMidnightUTCToLocalDay(
+            new Date(event.start.getTime())
+          );
+          const currentTime = new Date();
+          const currentTimeHrs = currentTime.getHours();
+          const currentTimeMin = currentTime.getMinutes();
+          const currentTimeSec = currentTime.getSeconds();
+          const currentTimeMs = currentTime.getMilliseconds();
+
+          copiedDate.setHours(
+            currentTimeHrs,
+            currentTimeMin,
+            currentTimeSec,
+            currentTimeMs
+          );
+          console.log('coped date', copiedDate);
           dateContainer.removeChild(dateInput);
           dateContainer.prepend(endTimeInput());
           dateContainer.prepend(toLabel);
-          dateContainer.prepend(startTimeInputEl('datetime-local'));
+          onEventStateChange({
+            start: copiedDate,
+            allDay: isChecked,
+            end: undefined,
+          });
+          dateContainer.prepend(newStartTimeInput());
         }
-        onEventStateChange({
-          allDay: isChecked,
-          end: isChecked ? undefined : event.end,
-        });
       },
     },
     selectors: {
@@ -71,11 +158,36 @@ export function DateSelect(
   });
   dateContainer.appendChild(allDayLabel);
 
+  function endTimeInput() {
+    return Input({
+      attr: {
+        type: 'datetime-local',
+        value: event.end ? formatDateTimeInputValue(event.end) : '',
+        required: true,
+        onchange: (e) => {
+          onEventStateChange({
+            end: new Date((e.target as HTMLInputElement).value),
+          });
+        },
+      },
+      styles: {
+        marginRight: '12px',
+      },
+      selectors: { id: 'end' },
+    });
+  }
+
+  return dateContainer;
+}
+
+/*
   function startTimeInputEl(type: 'date' | 'datetime-local') {
+    const allDayDate = converToCurrentTZMidnight(event.start);
     const value =
       type === 'date'
         ? formatSplitDate(event.start, '-', 'yyyy-mm-dd')
-        : formatDateTimeInputValue(event.start);
+        : formatDateTimeInputValue(allDayDate);
+    console.log('value ', value);
     return Input({
       selectors: { id: 'start' },
       attr: {
@@ -111,25 +223,4 @@ export function DateSelect(
       },
     });
   }
-
-  function endTimeInput() {
-    return Input({
-      attr: {
-        type: 'datetime-local',
-        value: event.end ? formatDateTimeInputValue(event.end) : '',
-        required: true,
-        onchange: (e) => {
-          onEventStateChange({
-            end: new Date((e.target as HTMLInputElement).value),
-          });
-        },
-      },
-      styles: {
-        marginRight: '12px',
-      },
-      selectors: { id: 'end' },
-    });
-  }
-
-  return dateContainer;
-}
+  */

@@ -1,7 +1,7 @@
 import { getEventById } from '../apis/EventApi';
 import { Div } from '../components/elements/Div';
 import {
-  converToCurrentTZMidnight,
+  convertToCurrentTZMidnight,
   formatSplitDate,
 } from '../utils/dateHelpers';
 import { setStyle } from '../utils/DOMutils';
@@ -59,7 +59,13 @@ export function Router() {
         break;
       case `/events/${eventObject?._id}`:
         if (eventObject?.start) {
-          const date = converToCurrentTZMidnight(eventObject.start);
+          console.log('event ', eventObject);
+          const allDayDate = convertToCurrentTZMidnight(
+            eventObject.start,
+            'UTC'
+          );
+
+          const date = eventObject.allDay ? allDayDate : eventObject.start;
           const dateURL = formatSplitDate(date, '/', 'yyyy-mm-dd');
 
           router.append(Header('event', dateURL));

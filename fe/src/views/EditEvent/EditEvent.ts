@@ -6,7 +6,7 @@ import { setURL } from '../../utils/HistoryUtils';
 import { basics, fonts } from '../../utils/styles';
 import { Label } from '../../components/elements/Label';
 import { H3 } from '../../components/elements/H3';
-import { DateSelect } from '../AddEvent/EventDateSelect';
+import { EventDateSelect } from '../AddEvent/EventDateSelect';
 import { Form } from '../../components/elements/Form';
 import { editEvent } from '../../apis/EventApi';
 
@@ -15,6 +15,7 @@ export function EditEvent(event: IEvent) {
 
   const setEventState = (newValue: Partial<IEvent>) => {
     Object.assign(eventState, newValue);
+    console.log('~~~~', eventState);
   };
 
   const form = Form();
@@ -57,7 +58,7 @@ export function EditEvent(event: IEvent) {
   descriptionContainer.appendChild(descriptionInput);
   form.appendChild(descriptionContainer);
 
-  const dateContainer = DateSelect(eventState, setEventState);
+  const dateContainer = EventDateSelect(eventState, setEventState);
   form.appendChild(dateContainer);
 
   const buttons = Div({
@@ -111,7 +112,7 @@ export function EditEvent(event: IEvent) {
     // eventState = { ...eventState, start };
 
     editEvent(eventState);
-    console.log('event State sent', eventState);
+    console.log('event State sent submitted', eventState);
     setURL(`/events/${event._id}`);
   };
 
