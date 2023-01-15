@@ -44,8 +44,8 @@ async function run() {
     const end = new Date(start);
     end.setTime(end.getTime() + 24 * 60 * 60 * 1000);
 
-    const startAllDayUTC = new Date(start);
-    startAllDayUTC.setUTCHours(0, 0, 0, 0);
+    const startAllDayUTC = new Date(start.setUTCHours(0, 0, 0, 0));
+
     const events = await Event.find({
       $or: [
         {

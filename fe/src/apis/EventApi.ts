@@ -22,9 +22,7 @@ export const getEventById = async (eventId: string) => {
 export const getEventsForDay = async (date: Date) => {
   const newDate = new Date(date);
   newDate.setHours(0, 0, 0, 0);
-  const res = await fetch(
-    `${baseURL}/api/events?start=${newDate.toISOString()}`
-  );
+  const res = await fetch(`${baseURL}/api/events?start=${newDate}`);
   if (res.ok) {
     const eventsResponse = await res.json();
     const eventsData: IEvent[] = eventsResponse.data;

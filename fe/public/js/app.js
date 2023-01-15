@@ -108,9 +108,7 @@
   var getEventsForDay = (date) => __async(void 0, null, function* () {
     const newDate = new Date(date);
     newDate.setHours(0, 0, 0, 0);
-    const res = yield fetch(
-      `${baseURL}/api/events?start=${newDate.toISOString()}`
-    );
+    const res = yield fetch(`${baseURL}/api/events?start=${newDate}`);
     if (res.ok) {
       const eventsResponse = yield res.json();
       const eventsData = eventsResponse.data;
