@@ -795,7 +795,7 @@
     const isEditEvent = view === "edit";
     const isAddEvent = view === "add";
     const showTopRightButton = !isAddEvent && !isEditEvent;
-    const showTopLeftButton = !isHome && !isEditEvent;
+    const showTopLeftButton = !isHome;
     const windowPath = window.location.pathname;
     const pathSplit = windowPath.split("/");
     const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();

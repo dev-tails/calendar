@@ -20,7 +20,7 @@ export function Header(
   const isEditEvent = view === 'edit';
   const isAddEvent = view === 'add';
   const showTopRightButton = !isAddEvent && !isEditEvent;
-  const showTopLeftButton = !isHome && !isEditEvent;
+  const showTopLeftButton = !isHome;
   const windowPath = window.location.pathname;
   const pathSplit = windowPath.split('/');
   const eventId = pathSplit[pathSplit.length - 1]?.toString();
