@@ -121,15 +121,21 @@ async function run() {
   });
 
   server.post('/api/events', async (req, res) => {
-    const event = await Event.insertOne({
-      title: req.body.title,
-      description: req.body.description,
-      start: new Date(req.body.start),
-      end: req.body.end ? new Date(req.body.end) : undefined,
-      allDay: req.body.allDay,
-      users: req.body.users,
-    });
-    return res.sendStatus(200);
+    try {
+      const event = await Event.insertOne({
+        title: req.body.title,
+        description: req.body.description,
+        start: new Date(req.body.start),
+        end: req.body.end ? new Date(req.body.end) : undefined,
+        allDay: req.body.allDay,
+        users: req.body.users,
+      });
+      const { insertedId } = event;
+      return res.json({ data: insertedId });
+    } catch (err) {
+      console.error(err);
+      return res.sendStatus(400);
+    }
   });
 
   server.get('*', (req, res) => {

@@ -129,13 +129,19 @@
     }
   });
   var createEvent = (event) => __async(void 0, null, function* () {
-    fetch(`/api/events`, {
+    const res = yield fetch(`/api/events`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(event)
     });
+    if (res.ok) {
+      const eventId = yield res.json();
+      return eventId.data;
+    } else {
+      throw new Error(res.statusText || "Event could not be created.");
+    }
   });
   var editEvent = (event) => __async(void 0, null, function* () {
     const res = yield fetch(`/api/events/${event._id}`, {
@@ -692,7 +698,7 @@
     buttons.appendChild(cancelButton);
     buttons.appendChild(saveButton);
     form.appendChild(buttons);
-    form.onsubmit = (e) => {
+    form.onsubmit = (e) => __async(this, null, function* () {
       e.preventDefault();
       let start = eventState.start;
       if (eventState.allDay) {
@@ -702,15 +708,14 @@
         delete eventState.end;
       }
       setEventState({ start });
-      if (eventState._id) {
-        editEvent(eventState);
-        setURL(`/events/${eventState._id}`);
+      let eventId = eventState._id;
+      if (eventId) {
+        yield editEvent(eventState);
       } else {
-        createEvent(eventState);
-        const dateURLparam = formatSplitDate(eventState.start, "/", "yyyy-mm-dd");
-        setURL(`/day/${dateURLparam}`);
+        eventId = yield createEvent(eventState);
       }
-    };
+      setURL(`/events/${eventId}`);
+    });
     return form;
   }
 

@@ -46,13 +46,19 @@ export const getEventsForDay = async (date: Date) => {
 };
 
 export const createEvent = async (event: Partial<IEvent>) => {
-  fetch(`/api/events`, {
+  const res = await fetch(`/api/events`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(event),
   });
+  if (res.ok) {
+    const eventId = await res.json();
+    return eventId.data;
+  } else {
+    throw new Error(res.statusText || 'Event could not be created.');
+  }
 };
 
 export const editEvent = async (event: IEvent) => {

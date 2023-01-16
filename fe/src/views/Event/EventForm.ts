@@ -108,7 +108,7 @@ export function EventForm(event?: IEvent) {
   buttons.appendChild(saveButton);
   form.appendChild(buttons);
 
-  form.onsubmit = (e) => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
     let start = eventState.start;
 
@@ -120,14 +120,13 @@ export function EventForm(event?: IEvent) {
     }
     setEventState({ start });
 
-    if (eventState._id) {
-      editEvent(eventState);
-      setURL(`/events/${eventState._id}`);
+    let eventId = eventState._id;
+    if (eventId) {
+      await editEvent(eventState);
     } else {
-      createEvent(eventState);
-      const dateURLparam = formatSplitDate(eventState.start, '/', 'yyyy-mm-dd');
-      setURL(`/day/${dateURLparam}`);
+      eventId = await createEvent(eventState);
     }
+    setURL(`/events/${eventId}`);
   };
 
   return form;
