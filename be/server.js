@@ -26,6 +26,20 @@ async function run() {
 
   server.use(express.static('../fe/public'));
 
+  server.get('/api/users/self', async (req, res, next) => {
+    try {
+      const userId = req.user;
+      const user = await User.findOne(
+        { _id: mongodb.ObjectId(userId) },
+        { projection: { password: 0 } }
+      );
+      return res.json({ data: user });
+    } catch (err) {
+      console.error(err);
+      return res.sendStatus(400);
+    }
+  });
+
   server.post('/api/users/login', async (req, res, next) => {
     const { email, password } = req.body;
 
