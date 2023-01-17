@@ -40,6 +40,49 @@
     });
   };
 
+  // src/utils/HistoryUtils.ts
+  function setURL(url) {
+    history.pushState({}, "", url);
+    window.dispatchEvent(new Event("popstate"));
+  }
+
+  // src/apis/Api.ts
+  function httpGet(url) {
+    return __async(this, null, function* () {
+      const res = yield fetch(url);
+      if (res.status === 404) {
+        setURL("/");
+        return null;
+      }
+      const jsonData = yield res.json();
+      return jsonData.data;
+    });
+  }
+
+  // src/apis/UserApi.ts
+  var self = null;
+  var loggedIn = false;
+  function initializeUserApi() {
+    return __async(this, null, function* () {
+      self = yield fetchSelf();
+    });
+  }
+  function isLoggedIn() {
+    return loggedIn;
+  }
+  function fetchSelf() {
+    return __async(this, null, function* () {
+      try {
+        const user = yield httpGet("/api/users/self");
+        loggedIn = user ? true : false;
+        return user;
+      } catch (err) {
+        loggedIn = false;
+        return null;
+      }
+    });
+  }
+
   // src/utils/DOMutils.ts
   function byId(id) {
     return document.getElementById(id);
@@ -260,12 +303,6 @@
     const dateWithAddedMin = new Date(newTimeNumber);
     return dateWithAddedMin;
   };
-
-  // src/utils/HistoryUtils.ts
-  function setURL(url) {
-    history.pushState({}, "", url);
-    window.dispatchEvent(new Event("popstate"));
-  }
 
   // src/utils/styles.ts
   var basics = {
@@ -814,6 +851,32 @@
         justifyContent: "space-between"
       })
     });
+    console.log("is logged", isLoggedIn());
+    if (!isLoggedIn()) {
+      const btnLogin = Button({
+        attr: {
+          textContent: "login"
+        }
+      });
+      header.append(btnLogin);
+      btnLogin.addEventListener("click", function(e) {
+        return __async(this, null, function* () {
+          e.preventDefault();
+          const email = prompt("email");
+          const password = prompt("password");
+          const res = yield fetch(`/api/users/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+          });
+          if (res.ok) {
+            window.location.reload();
+          }
+        });
+      });
+    }
     const leftButton = Button({
       attr: {
         textContent: headerTopLeftButton[view],
@@ -927,6 +990,7 @@
   function run() {
     return __async(this, null, function* () {
       const root = document.getElementById("root");
+      yield initializeUserApi();
       if (root) {
         const router = Router();
         root.append(router);

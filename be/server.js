@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 
 dotenv.config();
+const maxAgeInMilliseconds = 365 * 60 * 60 * 24 * 1000;
 
 async function run() {
   const userDatabaseClient = await mongodb.MongoClient.connect(
@@ -25,6 +26,11 @@ async function run() {
   server.use(express.json());
 
   server.use(express.static('../fe/public'));
+
+  server.use((req, res, next) => {
+    req.user = req.cookies['user'];
+    next();
+  });
 
   server.get('/api/users/self', async (req, res, next) => {
     try {

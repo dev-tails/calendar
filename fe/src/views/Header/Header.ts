@@ -2,6 +2,7 @@ import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
 import { basics, flexAlignItemsCenter } from '../../utils/styles';
 import { setURL } from '../../utils/HistoryUtils';
+import { isLoggedIn } from '../../apis/UserApi';
 
 const headerTopLeftButton = {
   home: '',
@@ -36,6 +37,33 @@ export function Header(
     },
   });
 
+  console.log('is logged', isLoggedIn());
+  if (!isLoggedIn()) {
+    const btnLogin = Button({
+      attr: {
+        textContent: 'login',
+      },
+    });
+    header.append(btnLogin);
+
+    btnLogin.addEventListener('click', async function (e) {
+      e.preventDefault();
+      const email = prompt('email');
+      const password = prompt('password');
+
+      const res = await fetch(`/api/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (res.ok) {
+        window.location.reload();
+      }
+    });
+  }
   const leftButton = Button({
     attr: {
       textContent: headerTopLeftButton[view],
