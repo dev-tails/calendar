@@ -9,8 +9,9 @@ import { Day } from './Day/Day';
 import { EventForm } from './Event/EventForm';
 import { Event } from './Event/Event';
 import { Header } from './Header/Header';
+import { LogIn } from './LogIn/LogIn';
 
-export function Router() {
+export function Router(authenticated: boolean) {
   const router = Div();
 
   function init() {
@@ -21,6 +22,10 @@ export function Router() {
 
   async function handleRouteUpdated() {
     router.innerHTML = '';
+
+    if (!authenticated) {
+      return router.append(LogIn());
+    }
 
     const path = window.location.pathname;
     const home = path === '/';

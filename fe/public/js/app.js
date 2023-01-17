@@ -916,8 +916,74 @@
     return header;
   }
 
+  // src/apis/LogIn.ts
+  var logInApi = (_0) => __async(void 0, [_0], function* ({
+    email,
+    password
+  }) {
+    const res = yield fetch("/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+    if (res.ok) {
+      return !!res.ok;
+    } else {
+      throw new Error("Incorrect credentials.");
+    }
+  });
+
+  // src/views/LogIn/LogIn.ts
+  function LogIn() {
+    let logInState = {
+      email: "",
+      password: ""
+    };
+    const form = Form();
+    const email = formInput("email");
+    const password = formInput("password");
+    const error = Div({
+      attr: {
+        innerText: "Please provide correct email and password."
+      }
+    });
+    const submitBtn = Button({
+      attr: {
+        type: "submit",
+        textContent: "submit",
+        onclick: (e) => __async(this, null, function* () {
+          e.preventDefault();
+          console.log("log", logInState);
+          try {
+            yield logInApi(logInState);
+            window.location.reload();
+          } catch (err) {
+            form.appendChild(error);
+          }
+        })
+      }
+    });
+    form.appendChild(email);
+    form.appendChild(password);
+    form.appendChild(submitBtn);
+    function formInput(field) {
+      return Input({
+        attr: {
+          name: field,
+          placeholder: field,
+          onchange: (e) => {
+            logInState[field] = e.target.value;
+          }
+        }
+      });
+    }
+    return form;
+  }
+
   // src/views/Router.ts
-  function Router() {
+  function Router(authenticated) {
     const router = Div();
     function init() {
       handleRouteUpdated();
@@ -927,6 +993,9 @@
       return __async(this, null, function* () {
         var _a;
         router.innerHTML = "";
+        if (!authenticated) {
+          return router.append(LogIn());
+        }
         const path = window.location.pathname;
         const home = path === "/";
         const addEventPath = path === "/add";
@@ -991,8 +1060,9 @@
     return __async(this, null, function* () {
       const root = document.getElementById("root");
       yield initializeUserApi();
+      const isAuthenticated = isLoggedIn();
       if (root) {
-        const router = Router();
+        const router = Router(isAuthenticated);
         root.append(router);
       }
     });
