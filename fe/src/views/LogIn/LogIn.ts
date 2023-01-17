@@ -1,4 +1,4 @@
-import { logInApi } from '../../apis/LogIn';
+import { logIn } from '../../apis/AuthApi';
 import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
 import { Form } from '../../components/elements/Form';
@@ -29,7 +29,7 @@ export function LogIn() {
         e.preventDefault();
         console.log('log', logInState);
         try {
-          await logInApi(logInState);
+          await logIn(logInState);
           window.location.reload();
         } catch (err) {
           form.appendChild(error);

@@ -3,6 +3,7 @@ import { Div } from '../../components/elements/Div';
 import { basics, flexAlignItemsCenter } from '../../utils/styles';
 import { setURL } from '../../utils/HistoryUtils';
 import { isLoggedIn } from '../../apis/UserApi';
+import { logOut } from '../../apis/AuthApi';
 
 const headerTopLeftButton = {
   home: '',
@@ -37,33 +38,6 @@ export function Header(
     },
   });
 
-  console.log('is logged', isLoggedIn());
-  if (!isLoggedIn()) {
-    const btnLogin = Button({
-      attr: {
-        textContent: 'login',
-      },
-    });
-    header.append(btnLogin);
-
-    btnLogin.addEventListener('click', async function (e) {
-      e.preventDefault();
-      const email = prompt('email');
-      const password = prompt('password');
-
-      const res = await fetch(`/api/users/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (res.ok) {
-        window.location.reload();
-      }
-    });
-  }
   const leftButton = Button({
     attr: {
       textContent: headerTopLeftButton[view],
@@ -75,6 +49,7 @@ export function Header(
   });
   showTopLeftButton && header.append(leftButton);
 
+  const rightNavButtons = Div({ styles: { marginLeft: 'auto' } });
   if (showTopRightButton) {
     const rightButton = Button({
       attr: {
@@ -86,12 +61,31 @@ export function Header(
           setURL(nextURL);
         },
       },
-      styles: {
-        marginLeft: 'auto',
-      },
     });
-    header.append(rightButton);
+    rightNavButtons.append(rightButton);
   }
+
+  const logoutButton = Button({
+    attr: {
+      textContent: 'Log out',
+      onclick: (e) => {
+        e.preventDefault();
+        try {
+          logOut();
+          window.location.reload();
+        } catch (err) {
+          console.error('Unable to log out');
+          alert('Unable to log out');
+        }
+      },
+    },
+    styles: {
+      marginLeft: '20px',
+    },
+  });
+
+  isLoggedIn() && rightNavButtons.append(logoutButton);
+  header.appendChild(rightNavButtons);
 
   function onLeftButtonClick() {
     let nextURL = '/';

@@ -822,6 +822,30 @@
     return el;
   }
 
+  // src/apis/AuthApi.ts
+  var logIn = (_0) => __async(void 0, [_0], function* ({ email, password }) {
+    const res = yield fetch("/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+    if (res.ok) {
+      return !!res.ok;
+    } else {
+      throw new Error("Incorrect credentials.");
+    }
+  });
+  var logOut = () => __async(void 0, null, function* () {
+    const res = yield fetch("/api/users/logout");
+    if (res.ok) {
+      return !!res.ok;
+    } else {
+      throw new Error("Unable to log out.");
+    }
+  });
+
   // src/views/Header/Header.ts
   var headerTopLeftButton = {
     home: "",
@@ -851,32 +875,6 @@
         justifyContent: "space-between"
       })
     });
-    console.log("is logged", isLoggedIn());
-    if (!isLoggedIn()) {
-      const btnLogin = Button({
-        attr: {
-          textContent: "login"
-        }
-      });
-      header.append(btnLogin);
-      btnLogin.addEventListener("click", function(e) {
-        return __async(this, null, function* () {
-          e.preventDefault();
-          const email = prompt("email");
-          const password = prompt("password");
-          const res = yield fetch(`/api/users/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email, password })
-          });
-          if (res.ok) {
-            window.location.reload();
-          }
-        });
-      });
-    }
     const leftButton = Button({
       attr: {
         textContent: headerTopLeftButton[view],
@@ -887,6 +885,7 @@
       }
     });
     showTopLeftButton && header.append(leftButton);
+    const rightNavButtons = Div({ styles: { marginLeft: "auto" } });
     if (showTopRightButton) {
       const rightButton = Button({
         attr: {
@@ -896,13 +895,30 @@
             const nextURL = isEvent ? `/events/edit/${eventId}` : "/add";
             setURL(nextURL);
           }
-        },
-        styles: {
-          marginLeft: "auto"
         }
       });
-      header.append(rightButton);
+      rightNavButtons.append(rightButton);
     }
+    const logoutButton = Button({
+      attr: {
+        textContent: "Log out",
+        onclick: (e) => {
+          e.preventDefault();
+          try {
+            logOut();
+            window.location.reload();
+          } catch (err) {
+            console.error("Unable to log out");
+            alert("Unable to log out");
+          }
+        }
+      },
+      styles: {
+        marginLeft: "20px"
+      }
+    });
+    isLoggedIn() && rightNavButtons.append(logoutButton);
+    header.appendChild(rightNavButtons);
     function onLeftButtonClick() {
       let nextURL = "/";
       if (isEvent) {
@@ -915,25 +931,6 @@
     }
     return header;
   }
-
-  // src/apis/LogIn.ts
-  var logInApi = (_0) => __async(void 0, [_0], function* ({
-    email,
-    password
-  }) {
-    const res = yield fetch("/api/users/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
-    if (res.ok) {
-      return !!res.ok;
-    } else {
-      throw new Error("Incorrect credentials.");
-    }
-  });
 
   // src/views/LogIn/LogIn.ts
   function LogIn() {
@@ -957,7 +954,7 @@
           e.preventDefault();
           console.log("log", logInState);
           try {
-            yield logInApi(logInState);
+            yield logIn(logInState);
             window.location.reload();
           } catch (err) {
             form.appendChild(error);

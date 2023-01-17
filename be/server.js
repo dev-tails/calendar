@@ -59,6 +59,15 @@ async function run() {
     return res.sendStatus(400);
   });
 
+  server.get('/api/users/logout', async (req, res, next) => {
+    if (req.user) {
+      res.clearCookie('user');
+      return res.json({ message: 'User logged out.' });
+    } else {
+      return res.json({ message: 'No user to log out.' });
+    }
+  });
+
   server.get('/api/events', async (req, res) => {
     const start = new Date(req.query.start);
     const end = new Date(start);
