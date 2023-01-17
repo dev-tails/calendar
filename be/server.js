@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 
 dotenv.config();
+const maxAgeInMilliseconds = 365 * 60 * 60 * 24 * 1000;
 
 async function run() {
   const userDatabaseClient = await mongodb.MongoClient.connect(
@@ -26,6 +27,25 @@ async function run() {
 
   server.use(express.static('../fe/public'));
 
+  server.use((req, res, next) => {
+    req.user = req.cookies['user'];
+    next();
+  });
+
+  server.get('/api/users/self', async (req, res, next) => {
+    try {
+      const userId = req.user;
+      const user = await User.findOne(
+        { _id: mongodb.ObjectId(userId) },
+        { projection: { password: 0 } }
+      );
+      return res.json({ data: user });
+    } catch (err) {
+      console.error(err);
+      return res.sendStatus(400);
+    }
+  });
+
   server.post('/api/users/login', async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -37,6 +57,15 @@ async function run() {
     }
 
     return res.sendStatus(400);
+  });
+
+  server.get('/api/users/logout', async (req, res, next) => {
+    if (req.user) {
+      res.clearCookie('user');
+      return res.json({ message: 'User logged out.' });
+    } else {
+      return res.json({ message: 'No user to log out.' });
+    }
   });
 
   server.get('/api/events', async (req, res) => {

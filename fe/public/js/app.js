@@ -40,6 +40,49 @@
     });
   };
 
+  // src/utils/HistoryUtils.ts
+  function setURL(url) {
+    history.pushState({}, "", url);
+    window.dispatchEvent(new Event("popstate"));
+  }
+
+  // src/apis/Api.ts
+  function httpGet(url) {
+    return __async(this, null, function* () {
+      const res = yield fetch(url);
+      if (res.status === 404) {
+        setURL("/");
+        return null;
+      }
+      const jsonData = yield res.json();
+      return jsonData.data;
+    });
+  }
+
+  // src/apis/UserApi.ts
+  var self = null;
+  var loggedIn = false;
+  function initializeUserApi() {
+    return __async(this, null, function* () {
+      self = yield fetchSelf();
+    });
+  }
+  function isLoggedIn() {
+    return loggedIn;
+  }
+  function fetchSelf() {
+    return __async(this, null, function* () {
+      try {
+        const user = yield httpGet("/api/users/self");
+        loggedIn = user ? true : false;
+        return user;
+      } catch (err) {
+        loggedIn = false;
+        return null;
+      }
+    });
+  }
+
   // src/utils/DOMutils.ts
   function byId(id) {
     return document.getElementById(id);
@@ -260,12 +303,6 @@
     const dateWithAddedMin = new Date(newTimeNumber);
     return dateWithAddedMin;
   };
-
-  // src/utils/HistoryUtils.ts
-  function setURL(url) {
-    history.pushState({}, "", url);
-    window.dispatchEvent(new Event("popstate"));
-  }
 
   // src/utils/styles.ts
   var basics = {
@@ -785,6 +822,30 @@
     return el;
   }
 
+  // src/apis/AuthApi.ts
+  var logIn = (_0) => __async(void 0, [_0], function* ({ email, password }) {
+    const res = yield fetch("/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+    if (res.ok) {
+      return !!res.ok;
+    } else {
+      throw new Error("Incorrect credentials.");
+    }
+  });
+  var logOut = () => __async(void 0, null, function* () {
+    const res = yield fetch("/api/users/logout");
+    if (res.ok) {
+      return !!res.ok;
+    } else {
+      throw new Error("Unable to log out.");
+    }
+  });
+
   // src/views/Header/Header.ts
   var headerTopLeftButton = {
     home: "",
@@ -824,6 +885,7 @@
       }
     });
     showTopLeftButton && header.append(leftButton);
+    const rightNavButtons = Div({ styles: { marginLeft: "auto" } });
     if (showTopRightButton) {
       const rightButton = Button({
         attr: {
@@ -833,13 +895,30 @@
             const nextURL = isEvent ? `/events/edit/${eventId}` : "/add";
             setURL(nextURL);
           }
-        },
-        styles: {
-          marginLeft: "auto"
         }
       });
-      header.append(rightButton);
+      rightNavButtons.append(rightButton);
     }
+    const logoutButton = Button({
+      attr: {
+        textContent: "Log out",
+        onclick: (e) => {
+          e.preventDefault();
+          try {
+            logOut();
+            window.location.reload();
+          } catch (err) {
+            console.error("Unable to log out");
+            alert("Unable to log out");
+          }
+        }
+      },
+      styles: {
+        marginLeft: "20px"
+      }
+    });
+    isLoggedIn() && rightNavButtons.append(logoutButton);
+    header.appendChild(rightNavButtons);
     function onLeftButtonClick() {
       let nextURL = "/";
       if (isEvent) {
@@ -853,8 +932,55 @@
     return header;
   }
 
+  // src/views/LogIn/LogIn.ts
+  function LogIn() {
+    let logInState = {
+      email: "",
+      password: ""
+    };
+    const form = Form();
+    const email = formInput("email");
+    const password = formInput("password");
+    const error = Div({
+      attr: {
+        innerText: "Please provide correct email and password."
+      }
+    });
+    const submitBtn = Button({
+      attr: {
+        type: "submit",
+        textContent: "submit",
+        onclick: (e) => __async(this, null, function* () {
+          e.preventDefault();
+          console.log("log", logInState);
+          try {
+            yield logIn(logInState);
+            window.location.reload();
+          } catch (err) {
+            form.appendChild(error);
+          }
+        })
+      }
+    });
+    form.appendChild(email);
+    form.appendChild(password);
+    form.appendChild(submitBtn);
+    function formInput(field) {
+      return Input({
+        attr: {
+          name: field,
+          placeholder: field,
+          onchange: (e) => {
+            logInState[field] = e.target.value;
+          }
+        }
+      });
+    }
+    return form;
+  }
+
   // src/views/Router.ts
-  function Router() {
+  function Router(authenticated) {
     const router = Div();
     function init() {
       handleRouteUpdated();
@@ -864,6 +990,9 @@
       return __async(this, null, function* () {
         var _a;
         router.innerHTML = "";
+        if (!authenticated) {
+          return router.append(LogIn());
+        }
         const path = window.location.pathname;
         const home = path === "/";
         const addEventPath = path === "/add";
@@ -927,8 +1056,10 @@
   function run() {
     return __async(this, null, function* () {
       const root = document.getElementById("root");
+      yield initializeUserApi();
+      const isAuthenticated = isLoggedIn();
       if (root) {
-        const router = Router();
+        const router = Router(isAuthenticated);
         root.append(router);
       }
     });
