@@ -36,6 +36,7 @@ const arrowStyles = {
   border: 'none',
   color: basics.darkCharcoal,
   fontSize: '24px',
+  padding: '12px',
 };
 export function Day(date?: string) {
   let dayView = date ? new Date(date) : new Date();
@@ -87,6 +88,9 @@ export function Day(date?: string) {
           if (button) {
             button.style.color = colors.royalBlueLight;
             button.style.textDecoration = 'underline';
+            button.style.background = '#F2CC8F';
+            button.style.borderRadius = '4px';
+            button.style.color = basics.whiteColor;
           }
         },
         onmouseout: () => {
@@ -94,6 +98,9 @@ export function Day(date?: string) {
           if (button) {
             button.style.color = basics.darkCharcoal;
             button.style.textDecoration = 'none';
+            button.style.background = 'none';
+            button.style.borderRadius = 'none';
+            button.style.color = basics.darkCharcoal;
           }
         },
       },
@@ -112,6 +119,9 @@ export function Day(date?: string) {
           if (button) {
             button.style.color = colors.royalBlueLight;
             button.style.textDecoration = 'underline';
+            button.style.background = '#F2CC8F';
+            button.style.borderRadius = '4px';
+            button.style.color = basics.whiteColor;
           }
         },
         onmouseout: () => {
@@ -119,6 +129,8 @@ export function Day(date?: string) {
           if (button) {
             button.style.color = basics.darkCharcoal;
             button.style.textDecoration = 'none';
+            button.style.background = 'none';
+            button.style.color = basics.darkCharcoal;
           }
         },
       },

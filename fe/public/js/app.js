@@ -2800,7 +2800,8 @@
     springWaterTurquoise: "#79b3af",
     opal: "#99b1ad",
     royalBlueLight: "#5770d8",
-    keppel: "#59c0a7"
+    keppel: "#59c0a7",
+    mandarine: "#E07A5F"
   };
   var fonts = {
     montserrat: "Montserrat, sans-serif",
@@ -2844,7 +2845,8 @@
     background: "none",
     border: "none",
     color: basics.darkCharcoal,
-    fontSize: "24px"
+    fontSize: "24px",
+    padding: "12px"
   };
   function Day(date) {
     let dayView = date ? new Date(date) : new Date();
@@ -2893,6 +2895,9 @@
               if (button) {
                 button.style.color = colors.royalBlueLight;
                 button.style.textDecoration = "underline";
+                button.style.background = "#F2CC8F";
+                button.style.borderRadius = "4px";
+                button.style.color = basics.whiteColor;
               }
             },
             onmouseout: () => {
@@ -2900,6 +2905,9 @@
               if (button) {
                 button.style.color = basics.darkCharcoal;
                 button.style.textDecoration = "none";
+                button.style.background = "none";
+                button.style.borderRadius = "none";
+                button.style.color = basics.darkCharcoal;
               }
             }
           },
@@ -2917,6 +2925,9 @@
               if (button) {
                 button.style.color = colors.royalBlueLight;
                 button.style.textDecoration = "underline";
+                button.style.background = "#F2CC8F";
+                button.style.borderRadius = "4px";
+                button.style.color = basics.whiteColor;
               }
             },
             onmouseout: () => {
@@ -2924,6 +2935,8 @@
               if (button) {
                 button.style.color = basics.darkCharcoal;
                 button.style.textDecoration = "none";
+                button.style.background = "none";
+                button.style.color = basics.darkCharcoal;
               }
             }
           },
@@ -3421,7 +3434,7 @@
   // src/views/Header/Header.ts
   var headerTopLeftButton = {
     home: "",
-    day: "Go to today",
+    day: "Today",
     edit: "< Back",
     event: "< Back",
     add: "Home"
@@ -3429,17 +3442,25 @@
   var headerButtonStyles = {
     background: "none",
     border: "none",
-    color: basics.darkCharcoal,
+    color: colors.royalBlueLight,
     fontFamily: fonts.montserrat,
     fontWeight: "400",
-    fontSize: "14px"
+    fontSize: "14px",
+    marginLeft: "20px"
   };
+  var todayButtonStyles = __spreadProps(__spreadValues({}, headerButtonStyles), {
+    borderRadius: "4px",
+    background: colors.royalBlueLight,
+    color: basics.whiteColor,
+    padding: "8px 12px"
+  });
   function Header(view, dateURL) {
     var _a;
     const isHome = view === "home";
     const isEvent = view === "event";
     const isEditEvent = view === "edit";
     const isAddEvent = view === "add";
+    const isDay = view === "day";
     const showTopRightButton = !isAddEvent && !isEditEvent;
     const showTopLeftButton = !isHome;
     const windowPath = window.location.pathname;
@@ -3452,7 +3473,7 @@
         boxShadow: "0px 4px 4px rgba(238, 238, 238, 0.25)",
         margin: "0 20px"
       }, flexAlignItemsCenter), {
-        justifyContent: "space-between"
+        justifyContent: "flex-end"
       })
     });
     const leftButton = Button({
@@ -3466,27 +3487,26 @@
         onmouseover: () => {
           const button = byId("left-link");
           if (button) {
-            button.style.color = colors.royalBlueLight;
-            button.style.textDecoration = "underline";
+            button.style.color = isDay ? basics.whiteColor : colors.mandarine;
+            button.style.opacity = isDay ? ".8" : "";
           }
         },
         onmouseout: () => {
           const button = byId("left-link");
           if (button) {
-            button.style.color = basics.darkCharcoal;
-            button.style.textDecoration = "none";
+            button.style.color = isDay ? basics.whiteColor : colors.royalBlueLight;
+            button.style.opacity = isDay ? "1" : "";
           }
         }
       },
-      styles: headerButtonStyles
+      styles: isDay ? todayButtonStyles : __spreadProps(__spreadValues({}, headerButtonStyles), { marginRight: "auto" })
     });
     showTopLeftButton && header.append(leftButton);
-    const rightNavButtons = Div({ styles: { marginLeft: "auto" } });
     if (showTopRightButton) {
       const rightButton = Button({
         selectors: { id: "right-link" },
         attr: {
-          textContent: isEvent ? "Edit Event" : "Add Event",
+          textContent: isEvent ? "Edit event" : "Add event",
           onclick: (e) => {
             e.preventDefault();
             const nextURL = isEvent ? `/events/edit/${eventId}` : "/add";
@@ -3495,25 +3515,24 @@
           onmouseover: () => {
             const button = byId("right-link");
             if (button) {
-              button.style.color = colors.royalBlueLight;
-              button.style.textDecoration = "underline";
+              button.style.color = colors.mandarine;
             }
           },
           onmouseout: () => {
             const button = byId("right-link");
             if (button) {
-              button.style.color = basics.darkCharcoal;
-              button.style.textDecoration = "none";
+              button.style.color = colors.royalBlueLight;
             }
           }
         },
-        styles: __spreadProps(__spreadValues({}, headerButtonStyles), {
-          marginLeft: "auto"
-        })
+        styles: headerButtonStyles
       });
-      rightNavButtons.append(rightButton);
+      header.append(rightButton);
     }
     const logoutButton = Button({
+      selectors: {
+        id: "logout"
+      },
       attr: {
         textContent: "Log out",
         onclick: (e) => {
@@ -3525,14 +3544,23 @@
             console.error("Unable to log out");
             alert("Unable to log out");
           }
+        },
+        onmouseover: () => {
+          const button = byId("logout");
+          if (button) {
+            button.style.color = colors.mandarine;
+          }
+        },
+        onmouseout: () => {
+          const button = byId("logout");
+          if (button) {
+            button.style.color = colors.royalBlueLight;
+          }
         }
       },
-      styles: {
-        marginLeft: "20px"
-      }
+      styles: headerButtonStyles
     });
-    isLoggedIn() && rightNavButtons.append(logoutButton);
-    header.appendChild(rightNavButtons);
+    isLoggedIn() && header.append(logoutButton);
     function onLeftButtonClick() {
       let nextURL = "/";
       if (isEvent) {

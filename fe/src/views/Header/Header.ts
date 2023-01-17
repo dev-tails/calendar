@@ -13,7 +13,7 @@ import { byId } from '../../utils/DOMutils';
 
 const headerTopLeftButton = {
   home: '',
-  day: 'Go to today',
+  day: 'Today',
   edit: '< Back',
   event: '< Back',
   add: 'Home',
@@ -22,10 +22,19 @@ const headerTopLeftButton = {
 const headerButtonStyles = {
   background: 'none',
   border: 'none',
-  color: basics.darkCharcoal,
+  color: colors.royalBlueLight,
   fontFamily: fonts.montserrat,
   fontWeight: '400',
   fontSize: '14px',
+  marginLeft: '20px',
+};
+
+const todayButtonStyles = {
+  ...headerButtonStyles,
+  borderRadius: '4px',
+  background: colors.royalBlueLight,
+  color: basics.whiteColor,
+  padding: '8px 12px',
 };
 
 export function Header(
@@ -36,6 +45,7 @@ export function Header(
   const isEvent = view === 'event';
   const isEditEvent = view === 'edit';
   const isAddEvent = view === 'add';
+  const isDay = view === 'day';
   const showTopRightButton = !isAddEvent && !isEditEvent;
   const showTopLeftButton = !isHome;
   const windowPath = window.location.pathname;
@@ -49,7 +59,7 @@ export function Header(
       boxShadow: '0px 4px 4px rgba(238, 238, 238, 0.25)',
       margin: '0 20px',
       ...flexAlignItemsCenter,
-      justifyContent: 'space-between',
+      justifyContent: 'flex-end',
     },
   });
 
@@ -64,28 +74,31 @@ export function Header(
       onmouseover: () => {
         const button = byId('left-link');
         if (button) {
-          button.style.color = colors.royalBlueLight;
-          button.style.textDecoration = 'underline';
+          button.style.color = isDay ? basics.whiteColor : colors.mandarine;
+          button.style.opacity = isDay ? '.8' : '';
         }
       },
       onmouseout: () => {
         const button = byId('left-link');
         if (button) {
-          button.style.color = basics.darkCharcoal;
-          button.style.textDecoration = 'none';
+          button.style.color = isDay
+            ? basics.whiteColor
+            : colors.royalBlueLight;
+          button.style.opacity = isDay ? '1' : '';
         }
       },
     },
-    styles: headerButtonStyles,
+    styles: isDay
+      ? todayButtonStyles
+      : { ...headerButtonStyles, marginRight: 'auto' },
   });
   showTopLeftButton && header.append(leftButton);
 
-  const rightNavButtons = Div({ styles: { marginLeft: 'auto' } });
   if (showTopRightButton) {
     const rightButton = Button({
       selectors: { id: 'right-link' },
       attr: {
-        textContent: isEvent ? 'Edit Event' : 'Add Event',
+        textContent: isEvent ? 'Edit event' : 'Add event',
         onclick: (e) => {
           e.preventDefault();
 
@@ -95,27 +108,25 @@ export function Header(
         onmouseover: () => {
           const button = byId('right-link');
           if (button) {
-            button.style.color = colors.royalBlueLight;
-            button.style.textDecoration = 'underline';
+            button.style.color = colors.mandarine;
           }
         },
         onmouseout: () => {
           const button = byId('right-link');
           if (button) {
-            button.style.color = basics.darkCharcoal;
-            button.style.textDecoration = 'none';
+            button.style.color = colors.royalBlueLight;
           }
         },
       },
-      styles: {
-        ...headerButtonStyles,
-        marginLeft: 'auto',
-      },
+      styles: headerButtonStyles,
     });
-    rightNavButtons.append(rightButton);
+    header.append(rightButton);
   }
 
   const logoutButton = Button({
+    selectors: {
+      id: 'logout',
+    },
     attr: {
       textContent: 'Log out',
       onclick: (e) => {
@@ -128,14 +139,23 @@ export function Header(
           alert('Unable to log out');
         }
       },
+      onmouseover: () => {
+        const button = byId('logout');
+        if (button) {
+          button.style.color = colors.mandarine;
+        }
+      },
+      onmouseout: () => {
+        const button = byId('logout');
+        if (button) {
+          button.style.color = colors.royalBlueLight;
+        }
+      },
     },
-    styles: {
-      marginLeft: '20px',
-    },
+    styles: headerButtonStyles,
   });
 
-  isLoggedIn() && rightNavButtons.append(logoutButton);
-  header.appendChild(rightNavButtons);
+  isLoggedIn() && header.append(logoutButton);
 
   function onLeftButtonClick() {
     let nextURL = '/';

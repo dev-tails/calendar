@@ -18,6 +18,7 @@ export const colors = {
   opal: '#99b1ad',
   royalBlueLight: '#5770d8',
   keppel: '#59c0a7',
+  mandarine: '#E07A5F',
 };
 
 export const fonts = {
