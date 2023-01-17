@@ -7,7 +7,13 @@ import {
 } from '../../utils/dateHelpers';
 import { onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
-import { flexAlignItemsCenter } from '../../utils/styles';
+import {
+  basics,
+  colors,
+  flexAlignItemsCenter,
+  fonts,
+  fontsWeight,
+} from '../../utils/styles';
 import { Div } from '../../components/elements/Div';
 import { Span } from '../../components/elements/Span';
 import { Button } from '../../components/elements/Button';
@@ -38,6 +44,12 @@ export function Day(date?: string) {
         innerText: new Intl.DateTimeFormat('en-US', dateOptions as any).format(
           dayView
         ),
+      },
+      styles: {
+        fontFamily: fonts.regular,
+        fontWeight: fontsWeight.regular,
+        fontSize: '32px,',
+        color: basics.darkCharcoal,
       },
     });
     setStyle(title, {
@@ -79,7 +91,8 @@ export function Day(date?: string) {
             padding: '12px',
             margin: '12px 20px',
             width: 'auto',
-            backgroundColor: 'papayawhip',
+            backgroundColor: colors.greenSheen,
+            color: basics.whiteColor,
             cursor: 'pointer',
           };
           const allDayEvents = createEventCard(event, allDayEventStyles);
@@ -103,25 +116,31 @@ export function Day(date?: string) {
               width: '100%',
             },
           });
+          if (event.start && event.end) {
+            const startTime = `${formatDateTime(
+              'en-CA',
+              timeOptions,
+              event.start
+            )} `;
 
-          const start = Span({
-            attr: {
-              innerText: `${formatDateTime(
-                'en-CA',
-                timeOptions,
-                event.start
-              )} - `,
-            },
-          });
-          times.appendChild(start);
+            const endTime = `${formatDateTime(
+              'en-CA',
+              timeOptions,
+              event.end
+            )}`;
 
-          if (event.end) {
-            const end = Span({
+            const timesText = Span({
               attr: {
-                innerText: `${formatDateTime('en-CA', timeOptions, event.end)}`,
+                innerText: `${startTime} - ${endTime}`.replace(/\./g, ''),
+              },
+              styles: {
+                textTransform: 'uppercase',
+                fontFamily: fonts.montserrat,
+                color: basics.darkCharcoal,
+                fontWeight: fontsWeight.regular,
               },
             });
-            times.appendChild(end);
+            times.appendChild(timesText);
           }
 
           eventContainer.appendChild(times);
@@ -129,7 +148,8 @@ export function Day(date?: string) {
             borderRadius: '4px',
             padding: '12px',
             width: '100%',
-            backgroundColor: '#d2e7de',
+            backgroundColor: colors.greenSheen,
+            color: basics.whiteColor,
             cursor: 'pointer',
             maxWidth: '980px',
           };

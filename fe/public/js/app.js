@@ -306,10 +306,25 @@
 
   // src/utils/styles.ts
   var basics = {
-    whiteColor: "#fff"
+    whiteColor: "#fff",
+    darkCharcoal: "#333"
+  };
+  var colors = {
+    mainTurquoise: "#438796",
+    accentPlum: "#6E526F",
+    accentPlumLight: "#6e526f36",
+    eggplant: "#78636f",
+    honeydew: "#d2e7de",
+    // greenSheen: '#7fae9e',
+    greenSheen: "#73a196",
+    mountbattenPink: "#9d8793"
   };
   var fonts = {
-    regular: "Outfit"
+    regular: "Outfit",
+    montserrat: "Montserrat, sans-serif"
+  };
+  var fontsWeight = {
+    regular: "400"
   };
   var flexAlignItemsCenter = {
     display: "flex",
@@ -367,6 +382,12 @@
             innerText: new Intl.DateTimeFormat("en-US", dateOptions).format(
               dayView
             )
+          },
+          styles: {
+            fontFamily: fonts.regular,
+            fontWeight: fontsWeight.regular,
+            fontSize: "32px,",
+            color: basics.darkCharcoal
           }
         });
         setStyle(title, {
@@ -402,7 +423,8 @@
                 padding: "12px",
                 margin: "12px 20px",
                 width: "auto",
-                backgroundColor: "papayawhip",
+                backgroundColor: colors.greenSheen,
+                color: basics.whiteColor,
                 cursor: "pointer"
               };
               const allDayEvents = createEventCard(event, allDayEventStyles);
@@ -424,30 +446,37 @@
                   width: "100%"
                 }
               });
-              const start = Span({
-                attr: {
-                  innerText: `${formatDateTime(
-                    "en-CA",
-                    timeOptions,
-                    event.start
-                  )} - `
-                }
-              });
-              times.appendChild(start);
-              if (event.end) {
-                const end = Span({
+              if (event.start && event.end) {
+                const startTime = `${formatDateTime(
+                  "en-CA",
+                  timeOptions,
+                  event.start
+                )} `;
+                const endTime = `${formatDateTime(
+                  "en-CA",
+                  timeOptions,
+                  event.end
+                )}`;
+                const timesText = Span({
                   attr: {
-                    innerText: `${formatDateTime("en-CA", timeOptions, event.end)}`
+                    innerText: `${startTime} - ${endTime}`.replace(/\./g, "")
+                  },
+                  styles: {
+                    textTransform: "uppercase",
+                    fontFamily: fonts.montserrat,
+                    color: basics.darkCharcoal,
+                    fontWeight: fontsWeight.regular
                   }
                 });
-                times.appendChild(end);
+                times.appendChild(timesText);
               }
               eventContainer.appendChild(times);
               const eventStyles = {
                 borderRadius: "4px",
                 padding: "12px",
                 width: "100%",
-                backgroundColor: "#d2e7de",
+                backgroundColor: colors.greenSheen,
+                color: basics.whiteColor,
                 cursor: "pointer",
                 maxWidth: "980px"
               };
@@ -830,6 +859,14 @@
     event: "< Back",
     add: "Home"
   };
+  var headerButtonStyles = {
+    background: "none",
+    border: "none",
+    color: "#79b3af",
+    fontFamily: "Outfit",
+    fontWeight: "400",
+    fontSize: "16px"
+  };
   function Header(view, dateURL) {
     var _a;
     const isHome = view === "home";
@@ -846,12 +883,11 @@
         height: "80px",
         backgroundColor: basics.whiteColor,
         boxShadow: "0px 4px 4px rgba(238, 238, 238, 0.25)",
-        margin: "12px 20px"
+        margin: "0 20px"
       }, flexAlignItemsCenter), {
         justifyContent: "space-between"
       })
     });
-    console.log("is logged", isLoggedIn());
     if (!isLoggedIn()) {
       const btnLogin = Button({
         attr: {
@@ -884,7 +920,8 @@
           e.preventDefault();
           onLeftButtonClick();
         }
-      }
+      },
+      styles: headerButtonStyles
     });
     showTopLeftButton && header.append(leftButton);
     if (showTopRightButton) {
@@ -897,9 +934,9 @@
             setURL(nextURL);
           }
         },
-        styles: {
+        styles: __spreadProps(__spreadValues({}, headerButtonStyles), {
           marginLeft: "auto"
-        }
+        })
       });
       header.append(rightButton);
     }

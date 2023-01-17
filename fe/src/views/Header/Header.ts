@@ -12,6 +12,15 @@ const headerTopLeftButton = {
   add: 'Home',
 };
 
+const headerButtonStyles = {
+  background: 'none',
+  border: 'none',
+  color: '#79b3af',
+  fontFamily: 'Outfit',
+  fontWeight: '400',
+  fontSize: '16px',
+};
+
 export function Header(
   view: 'home' | 'day' | 'edit' | 'event' | 'add',
   dateURL?: string
@@ -31,13 +40,12 @@ export function Header(
       height: '80px',
       backgroundColor: basics.whiteColor,
       boxShadow: '0px 4px 4px rgba(238, 238, 238, 0.25)',
-      margin: '12px 20px',
+      margin: '0 20px',
       ...flexAlignItemsCenter,
       justifyContent: 'space-between',
     },
   });
 
-  console.log('is logged', isLoggedIn());
   if (!isLoggedIn()) {
     const btnLogin = Button({
       attr: {
@@ -72,6 +80,7 @@ export function Header(
         onLeftButtonClick();
       },
     },
+    styles: headerButtonStyles,
   });
   showTopLeftButton && header.append(leftButton);
 
@@ -87,6 +96,7 @@ export function Header(
         },
       },
       styles: {
+        ...headerButtonStyles,
         marginLeft: 'auto',
       },
     });
