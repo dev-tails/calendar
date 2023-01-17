@@ -8,9 +8,12 @@ export type Selectors = {
 export type ElementAttributes = {
   className?: string;
   innerText?: string;
+  innerHTML?: string;
   value?: string;
   name?: string;
   onchange?: (ev: Event) => void;
+  onmouseover?: (ev: Event) => void;
+  onmouseout?: (ev: Event) => void;
 };
 
 type ElementProps = {

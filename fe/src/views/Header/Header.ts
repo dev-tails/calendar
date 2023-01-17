@@ -1,8 +1,14 @@
 import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
-import { basics, flexAlignItemsCenter } from '../../utils/styles';
+import {
+  basics,
+  colors,
+  flexAlignItemsCenter,
+  fonts,
+} from '../../utils/styles';
 import { setURL } from '../../utils/HistoryUtils';
 import { isLoggedIn } from '../../apis/UserApi';
+import { byId } from '../../utils/DOMutils';
 
 const headerTopLeftButton = {
   home: '',
@@ -15,10 +21,10 @@ const headerTopLeftButton = {
 const headerButtonStyles = {
   background: 'none',
   border: 'none',
-  color: '#79b3af',
-  fontFamily: 'Outfit',
+  color: basics.darkCharcoal,
+  fontFamily: fonts.montserrat,
   fontWeight: '400',
-  fontSize: '16px',
+  fontSize: '14px',
 };
 
 export function Header(
@@ -73,11 +79,26 @@ export function Header(
     });
   }
   const leftButton = Button({
+    selectors: { id: 'left-link' },
     attr: {
       textContent: headerTopLeftButton[view],
       onclick: (e) => {
         e.preventDefault();
         onLeftButtonClick();
+      },
+      onmouseover: () => {
+        const button = byId('left-link');
+        if (button) {
+          button.style.color = colors.royalBlueLight;
+          button.style.textDecoration = 'underline';
+        }
+      },
+      onmouseout: () => {
+        const button = byId('left-link');
+        if (button) {
+          button.style.color = basics.darkCharcoal;
+          button.style.textDecoration = 'none';
+        }
       },
     },
     styles: headerButtonStyles,
@@ -86,6 +107,7 @@ export function Header(
 
   if (showTopRightButton) {
     const rightButton = Button({
+      selectors: { id: 'right-link' },
       attr: {
         textContent: isEvent ? 'Edit Event' : 'Add Event',
         onclick: (e) => {
@@ -93,6 +115,20 @@ export function Header(
 
           const nextURL = isEvent ? `/events/edit/${eventId}` : '/add';
           setURL(nextURL);
+        },
+        onmouseover: () => {
+          const button = byId('right-link');
+          if (button) {
+            button.style.color = colors.royalBlueLight;
+            button.style.textDecoration = 'underline';
+          }
+        },
+        onmouseout: () => {
+          const button = byId('right-link');
+          if (button) {
+            button.style.color = basics.darkCharcoal;
+            button.style.textDecoration = 'none';
+          }
         },
       },
       styles: {

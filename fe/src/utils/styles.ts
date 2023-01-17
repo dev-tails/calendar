@@ -1,6 +1,8 @@
 export const basics = {
   whiteColor: '#fff',
   darkCharcoal: '#333',
+  slateGray: '#708090',
+  spanishGray: '#999',
 };
 
 export const colors = {
@@ -12,11 +14,15 @@ export const colors = {
   // greenSheen: '#7fae9e',
   greenSheen: '#73a196',
   mountbattenPink: '#9d8793',
+  springWaterTurquoise: '#79b3af',
+  opal: '#99b1ad',
+  royalBlueLight: '#5770d8',
+  keppel: '#59c0a7',
 };
 
 export const fonts = {
-  regular: 'Outfit',
   montserrat: 'Montserrat, sans-serif',
+  garamond: 'EB Garamond, serif',
 };
 
 export const fontsWeight = {

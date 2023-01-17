@@ -1,3 +1,9 @@
+import { library, icon } from '@fortawesome/fontawesome-svg-core';
+import {
+  faChevronLeft,
+  faChevronRight,
+} from '@fortawesome/free-solid-svg-icons';
+
 import { getEventsForDay } from '../../apis/EventApi';
 import {
   formatDateTime,
@@ -5,7 +11,7 @@ import {
   timeOptions,
   formatSplitDate,
 } from '../../utils/dateHelpers';
-import { onClick, setStyle } from '../../utils/DOMutils';
+import { byId, onClick, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import {
   basics,
@@ -18,8 +24,19 @@ import { Div } from '../../components/elements/Div';
 import { Span } from '../../components/elements/Span';
 import { Button } from '../../components/elements/Button';
 import { H1 } from '../../components/elements/H1';
-import { H3 } from '../../components/elements/H3';
 
+library.add(faChevronLeft);
+library.add(faChevronRight);
+
+const chevronLeft = icon({ prefix: 'fas', iconName: 'chevron-left' }).html[0];
+const chevronRight = icon({ prefix: 'fas', iconName: 'chevron-right' }).html[0];
+
+const arrowStyles = {
+  background: 'none',
+  border: 'none',
+  color: basics.darkCharcoal,
+  fontSize: '24px',
+};
 export function Day(date?: string) {
   let dayView = date ? new Date(date) : new Date();
   const el = Div({
@@ -46,10 +63,11 @@ export function Day(date?: string) {
         ),
       },
       styles: {
-        fontFamily: fonts.regular,
-        fontWeight: fontsWeight.regular,
+        fontFamily: fonts.garamond,
+        fontWeight: '600',
         fontSize: '32px,',
         color: basics.darkCharcoal,
+        padding: '12px',
       },
     });
     setStyle(title, {
@@ -58,17 +76,53 @@ export function Day(date?: string) {
     });
 
     const prevDay = Button({
-      attr: {
-        textContent: 'prev',
-        onclick: () => goToSelectedDayView(dayView, 'previous'),
+      selectors: {
+        id: 'left-chevron',
       },
+      attr: {
+        innerHTML: chevronLeft,
+        onclick: () => goToSelectedDayView(dayView, 'previous'),
+        onmouseover: () => {
+          const button = byId('left-chevron');
+          if (button) {
+            button.style.color = colors.royalBlueLight;
+            button.style.textDecoration = 'underline';
+          }
+        },
+        onmouseout: () => {
+          const button = byId('left-chevron');
+          if (button) {
+            button.style.color = basics.darkCharcoal;
+            button.style.textDecoration = 'none';
+          }
+        },
+      },
+      styles: arrowStyles,
     });
 
     const nextDay = Button({
-      attr: {
-        textContent: 'next',
-        onclick: () => goToSelectedDayView(dayView, 'next'),
+      selectors: {
+        id: 'right-chevron',
       },
+      attr: {
+        innerHTML: chevronRight,
+        onclick: () => goToSelectedDayView(dayView, 'next'),
+        onmouseover: () => {
+          const button = byId('right-chevron');
+          if (button) {
+            button.style.color = colors.royalBlueLight;
+            button.style.textDecoration = 'underline';
+          }
+        },
+        onmouseout: () => {
+          const button = byId('right-chevron');
+          if (button) {
+            button.style.color = basics.darkCharcoal;
+            button.style.textDecoration = 'none';
+          }
+        },
+      },
+      styles: arrowStyles,
     });
 
     headerDate.appendChild(prevDay);
@@ -91,7 +145,7 @@ export function Day(date?: string) {
             padding: '12px',
             margin: '12px 20px',
             width: 'auto',
-            backgroundColor: colors.greenSheen,
+            backgroundColor: colors.royalBlueLight,
             color: basics.whiteColor,
             cursor: 'pointer',
           };
@@ -138,6 +192,8 @@ export function Day(date?: string) {
                 fontFamily: fonts.montserrat,
                 color: basics.darkCharcoal,
                 fontWeight: fontsWeight.regular,
+                fontSize: '14px',
+                padding: '12px 0',
               },
             });
             times.appendChild(timesText);
@@ -148,7 +204,7 @@ export function Day(date?: string) {
             borderRadius: '4px',
             padding: '12px',
             width: '100%',
-            backgroundColor: colors.greenSheen,
+            backgroundColor: colors.keppel,
             color: basics.whiteColor,
             cursor: 'pointer',
             maxWidth: '980px',
@@ -163,8 +219,14 @@ export function Day(date?: string) {
       el.appendChild(eventsList);
     } else {
       const noEventsLabel = Div({
-        attr: { innerText: 'No events this day' },
-        styles: { margin: '12px 20px' },
+        attr: { innerText: 'No events.' },
+        styles: {
+          fontFamily: fonts.montserrat,
+          margin: '12px 20px',
+          paddingLeft: '20px',
+          fontStyle: 'italic',
+          color: basics.spanishGray,
+        },
       });
       el.appendChild(noEventsLabel);
     }
@@ -176,13 +238,14 @@ export function Day(date?: string) {
 function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
   const eventCard = Div({ styles });
 
-  const title = H3({ attr: { innerText: event.title } });
+  const title = Div({
+    attr: { innerText: event.title },
+    styles: {
+      fontFamily: fonts.montserrat,
+      fontWeight: '300',
+    },
+  });
   eventCard.appendChild(title);
-
-  // if (event.description) {
-  //   const description = Div({ attr: { innerText: event.description } });
-  //   eventCard.appendChild(description);
-  // }
 
   onClick(eventCard, () => setURL(`/events/${event._id}`));
   return eventCard;
