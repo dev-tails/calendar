@@ -83,7 +83,6 @@ export function EventForm(event?: IEvent) {
     color: basics.whiteColor,
     minWidth: '100px',
     minHeight: '36px',
-    fontFamily: fonts.regular,
     letterSpacing: '1',
     marginLeft: '24px',
     cursor: 'pointer',

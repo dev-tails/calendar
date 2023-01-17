@@ -2,7 +2,7 @@ import { Element, ElementAttributes, Selectors } from './Element';
 
 interface ButtonAttributes extends ElementAttributes {
   type?: 'button' | 'submit';
-  textContent: string;
+  textContent?: string;
   onclick?: (e?: any) => void;
 }
 
