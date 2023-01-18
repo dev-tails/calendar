@@ -3,6 +3,8 @@ export const basics = {
   darkCharcoal: '#333',
   slateGray: '#708090',
   spanishGray: '#999',
+  silver: '#cccccc',
+  cultured: '#f5f5f5',
 };
 
 export const colors = {
@@ -19,6 +21,7 @@ export const colors = {
   royalBlueLight: '#5770d8',
   keppel: '#59c0a7',
   mandarine: '#E07A5F',
+  lightOrange: '#f4c984',
 };
 
 export const fonts = {

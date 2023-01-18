@@ -58,7 +58,7 @@ export function Header(
       height: '80px',
       backgroundColor: basics.whiteColor,
       boxShadow: '0px 4px 4px rgba(238, 238, 238, 0.25)',
-      margin: '0 20px',
+      padding: '0 20px',
       ...flexAlignItemsCenter,
       justifyContent: 'flex-end',
     },
@@ -93,8 +93,8 @@ export function Header(
       ? todayButtonStyles
       : {
           ...headerButtonStyles,
-          marginRight: 'auto',
-          fontSize: isAddEvent ? '18px' : '',
+          marginRight: isAddEvent ? '' : 'auto',
+          fontSize: isAddEvent ? '20px' : '',
         },
   });
   showTopLeftButton && header.append(leftButton);

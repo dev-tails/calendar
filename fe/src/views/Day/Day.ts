@@ -34,7 +34,7 @@ export function Day(date?: string) {
   let dayView = date ? new Date(date) : new Date();
   const el = Div({
     styles: {
-      maxWidth: '1200px',
+      maxWidth: '1000px',
       marginLeft: 'auto',
       marginRight: 'auto',
     },
@@ -79,7 +79,7 @@ export function Day(date?: string) {
           const button = byId('left-chevron');
           if (button) {
             button.style.color = colors.royalBlueLight;
-            button.style.background = '#f4c984';
+            button.style.background = colors.lightOrange;
             button.style.borderRadius = '4px';
             button.style.color = basics.whiteColor;
           }
@@ -108,7 +108,7 @@ export function Day(date?: string) {
           const button = byId('right-chevron');
           if (button) {
             button.style.color = colors.royalBlueLight;
-            button.style.background = '#f4c984';
+            button.style.background = colors.lightOrange;
             button.style.borderRadius = '4px';
             button.style.color = basics.whiteColor;
           }

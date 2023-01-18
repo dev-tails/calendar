@@ -309,7 +309,9 @@
     whiteColor: "#fff",
     darkCharcoal: "#333",
     slateGray: "#708090",
-    spanishGray: "#999"
+    spanishGray: "#999",
+    silver: "#cccccc",
+    cultured: "#f5f5f5"
   };
   var colors = {
     mainTurquoise: "#438796",
@@ -324,7 +326,8 @@
     opal: "#99b1ad",
     royalBlueLight: "#5770d8",
     keppel: "#59c0a7",
-    mandarine: "#E07A5F"
+    mandarine: "#E07A5F",
+    lightOrange: "#f4c984"
   };
   var fonts = {
     montserrat: "Montserrat, sans-serif",
@@ -2841,14 +2844,22 @@
     iconName: "chevron-right",
     icon: [384, 512, [9002], "f054", "M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"]
   };
+  var faCircleXmark = {
+    prefix: "fas",
+    iconName: "circle-xmark",
+    icon: [512, 512, [61532, "times-circle", "xmark-circle"], "f057", "M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"]
+  };
+  var faTimesCircle = faCircleXmark;
 
   // public/assets/FontAwesomeIcons.ts
   library$1.add(faChevronLeft);
   library$1.add(faChevronRight);
   library$1.add(faHome);
+  library$1.add(faTimesCircle);
   var chevronLeft = icon2({ prefix: "fas", iconName: "chevron-left" }).html[0];
   var chevronRight = icon2({ prefix: "fas", iconName: "chevron-right" }).html[0];
   var home = icon2({ prefix: "fas", iconName: "home" }).html[0];
+  var times = icon2({ prefix: "fas", iconName: "times-circle" }).html[0];
 
   // src/views/Day/Day.ts
   var arrowStyles = {
@@ -2862,7 +2873,7 @@
     let dayView = date ? new Date(date) : new Date();
     const el = Div({
       styles: {
-        maxWidth: "1200px",
+        maxWidth: "1000px",
         marginLeft: "auto",
         marginRight: "auto"
       }
@@ -2904,7 +2915,7 @@
               const button = byId("left-chevron");
               if (button) {
                 button.style.color = colors.royalBlueLight;
-                button.style.background = "#f4c984";
+                button.style.background = colors.lightOrange;
                 button.style.borderRadius = "4px";
                 button.style.color = basics.whiteColor;
               }
@@ -2932,7 +2943,7 @@
               const button = byId("right-chevron");
               if (button) {
                 button.style.color = colors.royalBlueLight;
-                button.style.background = "#f4c984";
+                button.style.background = colors.lightOrange;
                 button.style.borderRadius = "4px";
                 button.style.color = basics.whiteColor;
               }
@@ -2979,7 +2990,7 @@
                   gridGap: "20px"
                 }, flexAlignItemsCenter)
               });
-              const times = Div({
+              const times2 = Div({
                 styles: {
                   display: "flex",
                   justifyContent: "space-around",
@@ -3012,9 +3023,9 @@
                     padding: "12px 0"
                   }
                 });
-                times.appendChild(timesText);
+                times2.appendChild(timesText);
               }
-              eventContainer.appendChild(times);
+              eventContainer.appendChild(times2);
               const eventStyles = {
                 borderRadius: "4px",
                 padding: "12px",
@@ -3097,6 +3108,28 @@
     }, props));
   }
 
+  // public/css/componentStyles.ts
+  var inputStyles = {
+    border: `1px solid ${basics.spanishGray}`,
+    borderRadius: "4px",
+    padding: "4px 8px",
+    fontSize: "14px",
+    outline: "none",
+    fontFamily: fonts.montserrat,
+    color: basics.darkCharcoal
+  };
+  var buttonStyles = {
+    background: colors.royalBlueLight,
+    border: "none",
+    color: basics.whiteColor,
+    fontFamily: fonts.montserrat,
+    fontWeight: "400",
+    fontSize: "14px",
+    borderRadius: "4px",
+    padding: "8px 16px",
+    letterSpacing: "1"
+  };
+
   // src/views/Event/EventDateSelect.ts
   function EventDateSelect(event, onEventStateChange) {
     const dateContainer = Div({ styles: { padding: "12px" } });
@@ -3151,9 +3184,9 @@
             });
           }
         },
-        styles: {
+        styles: __spreadProps(__spreadValues({}, inputStyles), {
           marginRight: "12px"
-        }
+        })
       });
     }
     function newStartDateInput() {
@@ -3177,9 +3210,9 @@
             });
           }
         },
-        styles: {
+        styles: __spreadProps(__spreadValues({}, inputStyles), {
           marginRight: "12px"
-        }
+        })
       });
     }
     function endTimeInput() {
@@ -3194,9 +3227,9 @@
             });
           }
         },
-        styles: {
+        styles: __spreadProps(__spreadValues({}, inputStyles), {
           marginRight: "12px"
-        },
+        }),
         selectors: { id: "end" }
       });
     }
@@ -3253,11 +3286,54 @@
     const setEventState = (newValue) => {
       Object.assign(eventState, newValue);
     };
-    const form = Form();
-    const editEventHeader = H3({
-      attr: { innerText: eventState._id ? "Edit event" : "Add event" }
+    const form = Form({
+      styles: {
+        maxWidth: "600px",
+        paddingTop: "24px",
+        marginLeft: "auto",
+        marginRight: "auto"
+      }
     });
-    form.appendChild(editEventHeader);
+    const headerContainer = Div({
+      styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
+        justifyContent: "space-between",
+        padding: "0px 12px"
+      })
+    });
+    const editEventHeader = H3({
+      attr: { innerText: `${eventState._id ? "Edit" : "Add"} event` }
+    });
+    const cancelButton = Button({
+      selectors: {
+        id: "cancel-btn"
+      },
+      attr: {
+        innerHTML: times,
+        onclick: () => setURL("/"),
+        onmouseover: () => {
+          const button = byId("cancel-btn");
+          if (button) {
+            button.style.color = colors.lightOrange;
+          }
+        },
+        onmouseout: () => {
+          const button = byId("cancel-btn");
+          if (button) {
+            button.style.color = basics.silver;
+          }
+        }
+      },
+      styles: {
+        background: "none",
+        border: "none",
+        color: basics.silver,
+        fontSize: "20px",
+        padding: "0"
+      }
+    });
+    headerContainer.appendChild(editEventHeader);
+    headerContainer.appendChild(cancelButton);
+    form.appendChild(headerContainer);
     const titleContainer = Div({ styles: { padding: "12px" } });
     const titleInput = Input({
       attr: {
@@ -3268,14 +3344,20 @@
         },
         placeholder: "Title",
         required: true
-      }
+      },
+      styles: __spreadProps(__spreadValues({}, inputStyles), { width: "100%" })
     });
     titleContainer.appendChild(titleInput);
     form.appendChild(titleContainer);
     const descriptionContainer = Div({
       styles: { padding: "12px", display: "flex", flexDirection: "column" }
     });
-    const descriptionLabel = Label({ attr: { innerText: "Description" } });
+    const descriptionLabel = Label({
+      attr: { innerText: "Description:" },
+      styles: {
+        marginBottom: "4px"
+      }
+    });
     const descriptionInput = Textarea({
       attr: {
         name: "description",
@@ -3286,7 +3368,8 @@
           });
         },
         placeholder: "Write something..."
-      }
+      },
+      styles: inputStyles
     });
     descriptionContainer.appendChild(descriptionLabel);
     descriptionContainer.appendChild(descriptionInput);
@@ -3294,36 +3377,28 @@
     const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
     const buttons = Div({
-      styles: { display: "flex", justifyContent: "flex-end", marginTop: "24px" }
-    });
-    const buttonStyles = {
-      borderRadius: "4px",
-      padding: "8px 12px",
-      fontSize: "14px",
-      border: "none",
-      background: "#79B2AF",
-      color: basics.whiteColor,
-      minWidth: "100px",
-      minHeight: "36px",
-      letterSpacing: "1",
-      marginLeft: "24px",
-      cursor: "pointer"
-    };
-    const cancelButton = Button({
-      attr: {
-        textContent: "Cancel",
-        onclick: () => setURL("/")
-      },
-      styles: buttonStyles
+      styles: { marginTop: "8px", padding: "12px" }
     });
     const saveButton = Button({
+      selectors: { id: "save-btn" },
       attr: {
         textContent: "Save",
-        type: "submit"
+        type: "submit",
+        onmouseover: () => {
+          const button = byId("save-btn");
+          if (button) {
+            button.style.opacity = ".8";
+          }
+        },
+        onmouseout: () => {
+          const button = byId("save-btn");
+          if (button) {
+            button.style.opacity = "1";
+          }
+        }
       },
       styles: buttonStyles
     });
-    buttons.appendChild(cancelButton);
     buttons.appendChild(saveButton);
     form.appendChild(buttons);
     form.onsubmit = (e) => __async(this, null, function* () {
@@ -3477,7 +3552,7 @@
         height: "80px",
         backgroundColor: basics.whiteColor,
         boxShadow: "0px 4px 4px rgba(238, 238, 238, 0.25)",
-        margin: "0 20px"
+        padding: "0 20px"
       }, flexAlignItemsCenter), {
         justifyContent: "flex-end"
       })
@@ -3506,8 +3581,8 @@
         }
       },
       styles: isDay ? todayButtonStyles : __spreadProps(__spreadValues({}, headerButtonStyles), {
-        marginRight: "auto",
-        fontSize: isAddEvent ? "18px" : ""
+        marginRight: isAddEvent ? "" : "auto",
+        fontSize: isAddEvent ? "20px" : ""
       })
     });
     showTopLeftButton && header.append(leftButton);
@@ -3631,7 +3706,7 @@
 
   // src/views/Router.ts
   function Router(authenticated) {
-    const router = Div();
+    const router = Div({ styles: { height: "100%" } });
     function init() {
       handleRouteUpdated();
     }

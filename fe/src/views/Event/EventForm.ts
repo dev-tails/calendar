@@ -3,13 +3,15 @@ import { Div } from '../../components/elements/Div';
 import { Input } from '../../components/elements/Input/Input';
 import { Textarea } from '../../components/elements/Textarea';
 import { setURL } from '../../utils/HistoryUtils';
-import { basics, fonts } from '../../utils/styles';
+import { basics, colors, flexAlignItemsCenter } from '../../utils/styles';
 import { Label } from '../../components/elements/Label';
 import { H3 } from '../../components/elements/H3';
 import { EventDateSelect } from './EventDateSelect';
 import { Form } from '../../components/elements/Form';
 import { createEvent, editEvent } from '../../apis/EventApi';
-import { formatSplitDate } from '../../utils/dateHelpers';
+import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
+import { times } from '../../../public/assets/FontAwesomeIcons';
+import { byId } from '../../utils/DOMutils';
 
 export function EventForm(event?: IEvent) {
   let eventTemplate: IEvent = {
@@ -26,12 +28,59 @@ export function EventForm(event?: IEvent) {
     Object.assign(eventState, newValue);
   };
 
-  const form = Form();
+  const form = Form({
+    styles: {
+      maxWidth: '600px',
+      paddingTop: '24px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+  });
+
+  const headerContainer = Div({
+    styles: {
+      ...flexAlignItemsCenter,
+      justifyContent: 'space-between',
+      padding: '0px 12px',
+    },
+  });
 
   const editEventHeader = H3({
-    attr: { innerText: eventState._id ? 'Edit event' : 'Add event' },
+    attr: { innerText: `${eventState._id ? 'Edit' : 'Add'} event` },
   });
-  form.appendChild(editEventHeader);
+
+  const cancelButton = Button({
+    selectors: {
+      id: 'cancel-btn',
+    },
+    attr: {
+      innerHTML: times,
+      onclick: () => setURL('/'),
+      onmouseover: () => {
+        const button = byId('cancel-btn');
+        if (button) {
+          button.style.color = colors.lightOrange;
+        }
+      },
+      onmouseout: () => {
+        const button = byId('cancel-btn');
+        if (button) {
+          button.style.color = basics.silver;
+        }
+      },
+    },
+    styles: {
+      background: 'none',
+      border: 'none',
+      color: basics.silver,
+      fontSize: '20px',
+      padding: '0',
+    },
+  });
+
+  headerContainer.appendChild(editEventHeader);
+  headerContainer.appendChild(cancelButton);
+  form.appendChild(headerContainer);
 
   const titleContainer = Div({ styles: { padding: '12px' } });
   const titleInput = Input({
@@ -44,14 +93,21 @@ export function EventForm(event?: IEvent) {
       placeholder: 'Title',
       required: true,
     },
+    styles: { ...inputStyles, width: '100%' },
   });
+
   titleContainer.appendChild(titleInput);
   form.appendChild(titleContainer);
 
   const descriptionContainer = Div({
     styles: { padding: '12px', display: 'flex', flexDirection: 'column' },
   });
-  const descriptionLabel = Label({ attr: { innerText: 'Description' } });
+  const descriptionLabel = Label({
+    attr: { innerText: 'Description:' },
+    styles: {
+      marginBottom: '4px',
+    },
+  });
   const descriptionInput = Textarea({
     attr: {
       name: 'description',
@@ -63,6 +119,7 @@ export function EventForm(event?: IEvent) {
       },
       placeholder: 'Write something...',
     },
+    styles: inputStyles,
   });
   descriptionContainer.appendChild(descriptionLabel);
   descriptionContainer.appendChild(descriptionInput);
@@ -72,38 +129,30 @@ export function EventForm(event?: IEvent) {
   form.appendChild(dateContainer);
 
   const buttons = Div({
-    styles: { display: 'flex', justifyContent: 'flex-end', marginTop: '24px' },
-  });
-  const buttonStyles = {
-    borderRadius: '4px',
-    padding: '8px 12px',
-    fontSize: '14px',
-    border: 'none',
-    background: '#79B2AF',
-    color: basics.whiteColor,
-    minWidth: '100px',
-    minHeight: '36px',
-    letterSpacing: '1',
-    marginLeft: '24px',
-    cursor: 'pointer',
-  };
-  const cancelButton = Button({
-    attr: {
-      textContent: 'Cancel',
-      onclick: () => setURL('/'),
-    },
-    styles: buttonStyles,
+    styles: { marginTop: '8px', padding: '12px' },
   });
 
   const saveButton = Button({
+    selectors: { id: 'save-btn' },
     attr: {
       textContent: 'Save',
       type: 'submit',
+      onmouseover: () => {
+        const button = byId('save-btn');
+        if (button) {
+          button.style.opacity = '.8';
+        }
+      },
+      onmouseout: () => {
+        const button = byId('save-btn');
+        if (button) {
+          button.style.opacity = '1';
+        }
+      },
     },
     styles: buttonStyles,
   });
 
-  buttons.appendChild(cancelButton);
   buttons.appendChild(saveButton);
   form.appendChild(buttons);
 

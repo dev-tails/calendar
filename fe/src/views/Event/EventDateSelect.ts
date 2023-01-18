@@ -9,6 +9,7 @@ import { Div } from '../../components/elements/Div';
 import { Input } from '../../components/elements/Input/Input';
 import { Label } from '../../components/elements/Label';
 import { byId } from '../../utils/DOMutils';
+import { inputStyles } from '../../../public/css/componentStyles';
 
 export function EventDateSelect(
   event: IEvent,
@@ -76,6 +77,7 @@ export function EventDateSelect(
         },
       },
       styles: {
+        ...inputStyles,
         marginRight: '12px',
       },
     });
@@ -104,6 +106,7 @@ export function EventDateSelect(
         },
       },
       styles: {
+        ...inputStyles,
         marginRight: '12px',
       },
     });
@@ -122,6 +125,7 @@ export function EventDateSelect(
         },
       },
       styles: {
+        ...inputStyles,
         marginRight: '12px',
       },
       selectors: { id: 'end' },
