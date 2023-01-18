@@ -31,11 +31,11 @@ export function EventUsers(
             attr: { innerHTML: 'here I will select users' },
           });
           el.appendChild(usersSelect);
-          onEventStateChange({ users: [currentUserId] });
+          // onEventStateChange({ users: [currentUserId] });
         } else {
           const usersSelect = byId('users-select');
           usersSelect && el.removeChild(usersSelect);
-          onEventStateChange({ users: [] });
+          // onEventStateChange({ users: [] });
         }
       },
     });

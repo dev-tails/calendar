@@ -16,10 +16,10 @@ export function EventDateSelect(
   event: IEvent,
   onEventStateChange: (eventState: Partial<IEvent>) => void
 ) {
+  console.log('event', event);
   const el = Div({
     styles: {
       ...flexAlignItemsCenter,
-      justifyContent: event.allDay ? 'space-between' : 'flex-start',
       padding: '12px',
     },
   });
@@ -160,7 +160,7 @@ export function EventDateSelect(
         allDay: isChecked,
         end: isChecked ? undefined : event.end,
       });
-
+      datesContainer.style.marginRight = '0';
       datesContainer.prepend(newStartDateInput());
     } else {
       const currentDate = convertMidnightUTCToLocalDay(event.start);
@@ -176,6 +176,7 @@ export function EventDateSelect(
         end: undefined,
       });
 
+      datesContainer.style.marginRight = 'auto';
       datesContainer.prepend(newStartTimeInput());
     }
   }

@@ -3165,9 +3165,9 @@
 
   // src/views/Event/EventDateSelect.ts
   function EventDateSelect(event, onEventStateChange) {
+    console.log("event", event);
     const el = Div({
       styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-        justifyContent: event.allDay ? "space-between" : "flex-start",
         padding: "12px"
       })
     });
@@ -3288,6 +3288,7 @@
           allDay: isChecked,
           end: isChecked ? void 0 : event.end
         });
+        datesContainer.style.marginRight = "0";
         datesContainer.prepend(newStartDateInput());
       } else {
         const currentDate = convertMidnightUTCToLocalDay(event.start);
@@ -3300,6 +3301,7 @@
           allDay: isChecked,
           end: void 0
         });
+        datesContainer.style.marginRight = "auto";
         datesContainer.prepend(newStartTimeInput());
       }
     }
@@ -3365,11 +3367,9 @@
                 attr: { innerHTML: "here I will select users" }
               });
               el.appendChild(usersSelect);
-              onEventStateChange({ users: [currentUserId] });
             } else {
               const usersSelect = byId("users-select");
               usersSelect && el.removeChild(usersSelect);
-              onEventStateChange({ users: [] });
             }
           }
         });
@@ -6205,10 +6205,9 @@
               title: "",
               description: "",
               start: new Date(),
-              allDay: false,
-              users: self2._id ? [self2._id] : []
+              allDay: false
+              // users: self._id ? [self._id] : [],
             };
-            router.append(Header("add"));
             router.append(EventForm(eventTemplate, self2 == null ? void 0 : self2._id));
             break;
           default:
