@@ -20,6 +20,14 @@ const headerTopLeftButton = {
   add: home,
 };
 
+const headerTopRightButton = {
+  home: 'Add event',
+  day: 'Add event',
+  edit: home,
+  event: 'Add event',
+  add: home,
+};
+
 const headerButtonStyles = {
   background: 'none',
   border: 'none',
@@ -47,7 +55,7 @@ export function Header(
   const isEditEvent = view === 'edit';
   const isAddEvent = view === 'add';
   const isDay = view === 'day';
-  const showTopRightButton = !isAddEvent && !isEditEvent;
+  const showTopRightButton = !isAddEvent;
   const showTopLeftButton = !isHome;
   const windowPath = window.location.pathname;
   const pathSplit = windowPath.split('/');
@@ -75,16 +83,12 @@ export function Header(
       onmouseover: () => {
         const button = byId('left-link');
         if (button) {
-          button.style.color = isDay ? basics.whiteColor : '#9da8d2';
-          button.style.opacity = isDay ? '.8' : '';
+          button.style.opacity = isDay ? '.9' : '';
         }
       },
       onmouseout: () => {
         const button = byId('left-link');
         if (button) {
-          button.style.color = isDay
-            ? basics.whiteColor
-            : colors.royalBlueLight;
           button.style.opacity = isDay ? '1' : '';
         }
       },
@@ -94,6 +98,7 @@ export function Header(
       : {
           ...headerButtonStyles,
           marginRight: isAddEvent ? '' : 'auto',
+          marginLeft: 'none',
           fontSize: isAddEvent ? '20px' : '',
         },
   });
@@ -103,12 +108,11 @@ export function Header(
     const rightButton = Button({
       selectors: { id: 'right-link' },
       attr: {
-        textContent: isEvent ? 'Edit event' : 'Add event',
+        innerHTML: headerTopRightButton[view],
         onclick: (e) => {
           e.preventDefault();
 
-          const nextURL = isEvent ? `/events/edit/${eventId}` : '/add';
-          setURL(nextURL);
+          onRightButtonClick();
         },
         onmouseover: () => {
           const button = byId('right-link');
@@ -123,7 +127,10 @@ export function Header(
           }
         },
       },
-      styles: headerButtonStyles,
+      styles: {
+        ...headerButtonStyles,
+        fontSize: isEditEvent || isAddEvent ? '20px' : '14px',
+      },
     });
     header.append(rightButton);
   }
@@ -170,6 +177,14 @@ export function Header(
       nextURL = `/events/${eventId}`;
     }
 
+    setURL(nextURL);
+  }
+
+  function onRightButtonClick() {
+    let nextURL = '/';
+    if (isHome || isDay || isEvent) {
+      nextURL = '/add';
+    }
     setURL(nextURL);
   }
 

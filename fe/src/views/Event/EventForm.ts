@@ -140,7 +140,7 @@ export function EventForm(event?: IEvent) {
       onmouseover: () => {
         const button = byId('save-btn');
         if (button) {
-          button.style.opacity = '.8';
+          button.style.opacity = '.9';
         }
       },
       onmouseout: () => {

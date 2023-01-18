@@ -87,10 +87,10 @@
   function byId(id) {
     return document.getElementById(id);
   }
-  function setStyle(el, styles2) {
-    for (const key of Object.keys(styles2)) {
+  function setStyle(el, styles3) {
+    for (const key of Object.keys(styles3)) {
       const elementKey = key;
-      const stylesKey = styles2[key];
+      const stylesKey = styles3[key];
       if (stylesKey)
         el.style[elementKey] = stylesKey;
     }
@@ -105,7 +105,7 @@
     if (!(props == null ? void 0 : props.selectors) && !(props == null ? void 0 : props.attr) && !(props == null ? void 0 : props.styles)) {
       return el;
     }
-    const { selectors, attr, styles: styles2 } = props;
+    const { selectors, attr, styles: styles3 } = props;
     if (selectors) {
       for (const selector in selectors) {
         const attr2 = selectors[selector];
@@ -117,8 +117,8 @@
         el[key] = attr[key];
       });
     }
-    if (styles2) {
-      setStyle(el, styles2);
+    if (styles3) {
+      setStyle(el, styles3);
     }
     return el;
   }
@@ -793,9 +793,9 @@
       return acc + "".concat(attributeName, '="').concat(htmlEscape(attributes[attributeName]), '" ');
     }, "").trim();
   }
-  function joinStyles(styles2) {
-    return Object.keys(styles2 || {}).reduce(function(acc, styleName) {
-      return acc + "".concat(styleName, ": ").concat(styles2[styleName].trim(), ";");
+  function joinStyles(styles3) {
+    return Object.keys(styles3 || {}).reduce(function(acc, styleName) {
+      return acc + "".concat(styleName, ": ").concat(styles3[styleName].trim(), ";");
     }, "");
   }
   function transformIsMeaningful(transform) {
@@ -1455,14 +1455,14 @@
     return val;
   }
   function asIcon(_ref2) {
-    var children = _ref2.children, main = _ref2.main, mask = _ref2.mask, attributes = _ref2.attributes, styles2 = _ref2.styles, transform = _ref2.transform;
+    var children = _ref2.children, main = _ref2.main, mask = _ref2.mask, attributes = _ref2.attributes, styles3 = _ref2.styles, transform = _ref2.transform;
     if (transformIsMeaningful(transform) && main.found && !mask.found) {
       var width = main.width, height = main.height;
       var offset = {
         x: width / height / 2,
         y: 0.5
       };
-      attributes["style"] = joinStyles(_objectSpread2(_objectSpread2({}, styles2), {}, {
+      attributes["style"] = joinStyles(_objectSpread2(_objectSpread2({}, styles3), {}, {
         "transform-origin": "".concat(offset.x + transform.x / 16, "em ").concat(offset.y + transform.y / 16, "em")
       }));
     }
@@ -1560,17 +1560,17 @@
     if (watchable) {
       attributes[DATA_FA_I2SVG] = "";
     }
-    var styles2 = _objectSpread2({}, extra.styles);
+    var styles3 = _objectSpread2({}, extra.styles);
     if (transformIsMeaningful(transform)) {
-      styles2["transform"] = transformForCss({
+      styles3["transform"] = transformForCss({
         transform,
         startCentered: true,
         width,
         height
       });
-      styles2["-webkit-transform"] = styles2["transform"];
+      styles3["-webkit-transform"] = styles3["transform"];
     }
-    var styleString = joinStyles(styles2);
+    var styleString = joinStyles(styles3);
     if (styleString.length > 0) {
       attributes["style"] = styleString;
     }
@@ -1902,9 +1902,9 @@
     var val = [];
     if (style) {
       val = style.split(";").reduce(function(acc, style2) {
-        var styles2 = style2.split(":");
-        var prop = styles2[0];
-        var value = styles2.slice(1);
+        var styles3 = style2.split(":");
+        var prop = styles3[0];
+        var value = styles3.slice(1);
         if (prop && value.length > 0) {
           acc[prop] = value.join(":").trim();
         }
@@ -2112,7 +2112,7 @@
   }
   var render = function render2(iconDefinition) {
     var params = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-    var _params$transform = params.transform, transform = _params$transform === void 0 ? meaninglessTransform : _params$transform, _params$symbol = params.symbol, symbol = _params$symbol === void 0 ? false : _params$symbol, _params$mask = params.mask, mask = _params$mask === void 0 ? null : _params$mask, _params$maskId = params.maskId, maskId = _params$maskId === void 0 ? null : _params$maskId, _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$titleId = params.titleId, titleId = _params$titleId === void 0 ? null : _params$titleId, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles2 = _params$styles === void 0 ? {} : _params$styles;
+    var _params$transform = params.transform, transform = _params$transform === void 0 ? meaninglessTransform : _params$transform, _params$symbol = params.symbol, symbol = _params$symbol === void 0 ? false : _params$symbol, _params$mask = params.mask, mask = _params$mask === void 0 ? null : _params$mask, _params$maskId = params.maskId, maskId = _params$maskId === void 0 ? null : _params$maskId, _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$titleId = params.titleId, titleId = _params$titleId === void 0 ? null : _params$titleId, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles3 = _params$styles === void 0 ? {} : _params$styles;
     if (!iconDefinition)
       return;
     var prefix = iconDefinition.prefix, iconName = iconDefinition.iconName, icon3 = iconDefinition.icon;
@@ -2150,7 +2150,7 @@
         titleId,
         extra: {
           attributes,
-          styles: styles2,
+          styles: styles3,
           classes
         }
       });
@@ -2206,8 +2206,8 @@
         });
       };
       providers$$1.generateAbstractIcon = function(_ref3) {
-        var children = _ref3.children, attributes = _ref3.attributes, main = _ref3.main, transform = _ref3.transform, styles2 = _ref3.styles;
-        var styleString = joinStyles(styles2);
+        var children = _ref3.children, attributes = _ref3.attributes, main = _ref3.main, transform = _ref3.transform, styles3 = _ref3.styles;
+        var styleString = joinStyles(styles3);
         if (styleString.length > 0) {
           attributes["style"] = styleString;
         }
@@ -2264,7 +2264,7 @@
       return {
         counter: function counter2(content) {
           var params = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-          var _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles2 = _params$styles === void 0 ? {} : _params$styles;
+          var _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles3 = _params$styles === void 0 ? {} : _params$styles;
           return domVariants({
             type: "counter",
             content
@@ -2278,7 +2278,7 @@
               title,
               extra: {
                 attributes,
-                styles: styles2,
+                styles: styles3,
                 classes: ["".concat(config.cssPrefix, "-layers-counter")].concat(_toConsumableArray(classes))
               }
             });
@@ -2292,7 +2292,7 @@
       return {
         text: function text2(content) {
           var params = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-          var _params$transform = params.transform, transform = _params$transform === void 0 ? meaninglessTransform : _params$transform, _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles2 = _params$styles === void 0 ? {} : _params$styles;
+          var _params$transform = params.transform, transform = _params$transform === void 0 ? meaninglessTransform : _params$transform, _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles3 = _params$styles === void 0 ? {} : _params$styles;
           return domVariants({
             type: "text",
             content
@@ -2307,7 +2307,7 @@
               title,
               extra: {
                 attributes,
-                styles: styles2,
+                styles: styles3,
                 classes: ["".concat(config.cssPrefix, "-layers-text")].concat(_toConsumableArray(classes))
               }
             });
@@ -2363,15 +2363,15 @@
       var alreadyProcessedPseudoElement = children.filter(function(c) {
         return c.getAttribute(DATA_FA_PSEUDO_ELEMENT) === position;
       })[0];
-      var styles2 = WINDOW.getComputedStyle(node, position);
-      var fontFamily = styles2.getPropertyValue("font-family").match(FONT_FAMILY_PATTERN);
-      var fontWeight = styles2.getPropertyValue("font-weight");
-      var content = styles2.getPropertyValue("content");
+      var styles3 = WINDOW.getComputedStyle(node, position);
+      var fontFamily = styles3.getPropertyValue("font-family").match(FONT_FAMILY_PATTERN);
+      var fontWeight = styles3.getPropertyValue("font-weight");
+      var content = styles3.getPropertyValue("content");
       if (alreadyProcessedPseudoElement && !fontFamily) {
         node.removeChild(alreadyProcessedPseudoElement);
         return resolve();
       } else if (fontFamily && content !== "none" && content !== "") {
-        var _content = styles2.getPropertyValue("content");
+        var _content = styles3.getPropertyValue("content");
         var family = ~["Sharp"].indexOf(fontFamily[2]) ? FAMILY_SHARP : FAMILY_CLASSIC;
         var prefix = ~["Solid", "Regular", "Light", "Thin", "Duotone", "Brands", "Kit"].indexOf(fontFamily[2]) ? STYLE_TO_PREFIX[family][fontFamily[2].toLowerCase()] : FONT_WEIGHT_TO_PREFIX[family][fontWeight];
         var _hexValueFromContent = hexValueFromContent(_content), hexValue = _hexValueFromContent.value, isSecondary = _hexValueFromContent.isSecondary;
@@ -2828,12 +2828,27 @@
   var counter = api.counter;
 
   // node_modules/@fortawesome/free-solid-svg-icons/index.mjs
+  var faPencil = {
+    prefix: "fas",
+    iconName: "pencil",
+    icon: [512, 512, [9999, 61504, "pencil-alt"], "f303", "M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"]
+  };
+  var faTrash = {
+    prefix: "fas",
+    iconName: "trash",
+    icon: [448, 512, [], "f1f8", "M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"]
+  };
   var faHouse = {
     prefix: "fas",
     iconName: "house",
     icon: [576, 512, [127968, 63498, 63500, "home", "home-alt", "home-lg-alt"], "f015", "M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"]
   };
   var faHome = faHouse;
+  var faCalendarWeek = {
+    prefix: "fas",
+    iconName: "calendar-week",
+    icon: [448, 512, [], "f784", "M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm80 64c-8.8 0-16 7.2-16 16v64c0 8.8 7.2 16 16 16H368c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80z"]
+  };
   var faChevronLeft = {
     prefix: "fas",
     iconName: "chevron-left",
@@ -2852,14 +2867,20 @@
   var faTimesCircle = faCircleXmark;
 
   // public/assets/FontAwesomeIcons.ts
+  library$1.add(faCalendarWeek);
   library$1.add(faChevronLeft);
   library$1.add(faChevronRight);
   library$1.add(faHome);
+  library$1.add(faPencil);
   library$1.add(faTimesCircle);
+  library$1.add(faTrash);
+  var calendarWeek = icon2({ prefix: "fas", iconName: "calendar-week" }).html[0];
   var chevronLeft = icon2({ prefix: "fas", iconName: "chevron-left" }).html[0];
   var chevronRight = icon2({ prefix: "fas", iconName: "chevron-right" }).html[0];
   var home = icon2({ prefix: "fas", iconName: "home" }).html[0];
+  var pencil = icon2({ prefix: "fas", iconName: "pencil" }).html[0];
   var times = icon2({ prefix: "fas", iconName: "times-circle" }).html[0];
+  var trash = icon2({ prefix: "fas", iconName: "trash" }).html[0];
 
   // src/views/Day/Day.ts
   var arrowStyles = {
@@ -3059,8 +3080,8 @@
     init();
     return el;
   }
-  function createEventCard(event, styles2) {
-    const eventCard = Div({ styles: styles2 });
+  function createEventCard(event, styles3) {
+    const eventCard = Div({ styles: styles3 });
     const title = Div({
       attr: { innerText: event.title },
       styles: {
@@ -3396,7 +3417,7 @@
         onmouseover: () => {
           const button = byId("save-btn");
           if (button) {
-            button.style.opacity = ".8";
+            button.style.opacity = ".9";
           }
         },
         onmouseout: () => {
@@ -5701,8 +5722,16 @@
   var es2015_default = autolinker_default;
 
   // src/views/Event/Event.ts
+  var styles2 = {
+    fontFamily: fonts.montserrat,
+    fontSize: "14px",
+    padding: "4px 0",
+    marginTop: "8px"
+  };
   function Event2(event) {
-    const el = Div({ styles: { padding: "12px" } });
+    const el = Div({
+      styles: { padding: "12px", margin: "8px auto auto", maxWidth: "600px" }
+    });
     const title = H3({
       attr: {
         innerText: event.title
@@ -5711,12 +5740,12 @@
     });
     el.appendChild(title);
     if (event.description) {
-      const description = Div({ styles: { padding: "4px 0" } });
+      const description = Div({ styles: styles2 });
       description.innerHTML = es2015_default.link(event.description);
       el.appendChild(description);
     }
     if (event.allDay) {
-      const day = Div({ styles: { padding: "4px 0" } });
+      const day = Div({ styles: styles2 });
       const localDay = convertMidnightUTCToLocalDay(event.start);
       day.innerText = `${formatDateTime("en-CA", dateOptions, localDay)}`;
       el.appendChild(day);
@@ -5729,17 +5758,19 @@
             event.start
           )}`
         },
-        styles: { padding: "4px 0" }
+        styles: styles2
       });
       el.appendChild(start);
-      const end3 = Div({ styles: { padding: "4px 0" } });
+      const end3 = Div({ styles: __spreadProps(__spreadValues({}, styles2), { marginTop: "0" }) });
       const endDate = event.end ? `${formatDateTime("en-CA", dateTimeOptions, event.end)}` : "";
       end3.innerHTML = `End: ${endDate}`;
       el.appendChild(end3);
     }
-    const button = Button({
+    const buttons = Div({ styles: { marginTop: "40px" } });
+    const remove2 = Button({
+      selectors: { id: "remove-event-btn" },
       attr: {
-        textContent: "Delete",
+        innerHTML: trash,
         onclick: (e) => __async(this, null, function* () {
           e.preventDefault();
           try {
@@ -5753,16 +5784,52 @@
             });
             el.appendChild(temporaryError);
           }
-        })
+        }),
+        onmouseover: () => {
+          const button = byId("remove-event-btn");
+          if (button) {
+            button.style.opacity = ".9";
+          }
+        },
+        onmouseout: () => {
+          const button = byId("remove-event-btn");
+          if (button) {
+            button.style.opacity = "1";
+          }
+        }
       },
-      styles: {
-        display: "flex",
-        justifyContent: "flex-end",
-        marginTop: "24px",
-        cursor: "pointer"
-      }
+      styles: __spreadProps(__spreadValues({}, buttonStyles), {
+        marginLeft: "12px",
+        backgroundColor: colors.lightOrange,
+        color: basics.whiteColor
+      })
     });
-    el.appendChild(button);
+    const edit = Button({
+      selectors: { id: "edit-event-btn" },
+      attr: {
+        innerHTML: pencil,
+        onclick: (e) => __async(this, null, function* () {
+          e.preventDefault();
+          setURL(`/events/edit/${event._id}`);
+        }),
+        onmouseover: () => {
+          const button = byId("edit-event-btn");
+          if (button) {
+            button.style.opacity = ".9";
+          }
+        },
+        onmouseout: () => {
+          const button = byId("edit-event-btn");
+          if (button) {
+            button.style.opacity = "1";
+          }
+        }
+      },
+      styles: buttonStyles
+    });
+    buttons.appendChild(edit);
+    buttons.appendChild(remove2);
+    el.appendChild(buttons);
     return el;
   }
 
@@ -5798,6 +5865,13 @@
     event: `${chevronLeft} Back`,
     add: home
   };
+  var headerTopRightButton = {
+    home: "Add event",
+    day: "Add event",
+    edit: home,
+    event: "Add event",
+    add: home
+  };
   var headerButtonStyles = {
     background: "none",
     border: "none",
@@ -5820,7 +5894,7 @@
     const isEditEvent = view === "edit";
     const isAddEvent = view === "add";
     const isDay = view === "day";
-    const showTopRightButton = !isAddEvent && !isEditEvent;
+    const showTopRightButton = !isAddEvent;
     const showTopLeftButton = !isHome;
     const windowPath = window.location.pathname;
     const pathSplit = windowPath.split("/");
@@ -5846,20 +5920,19 @@
         onmouseover: () => {
           const button = byId("left-link");
           if (button) {
-            button.style.color = isDay ? basics.whiteColor : "#9da8d2";
-            button.style.opacity = isDay ? ".8" : "";
+            button.style.opacity = isDay ? ".9" : "";
           }
         },
         onmouseout: () => {
           const button = byId("left-link");
           if (button) {
-            button.style.color = isDay ? basics.whiteColor : colors.royalBlueLight;
             button.style.opacity = isDay ? "1" : "";
           }
         }
       },
       styles: isDay ? todayButtonStyles : __spreadProps(__spreadValues({}, headerButtonStyles), {
         marginRight: isAddEvent ? "" : "auto",
+        marginLeft: "none",
         fontSize: isAddEvent ? "20px" : ""
       })
     });
@@ -5868,11 +5941,10 @@
       const rightButton = Button({
         selectors: { id: "right-link" },
         attr: {
-          textContent: isEvent ? "Edit event" : "Add event",
+          innerHTML: headerTopRightButton[view],
           onclick: (e) => {
             e.preventDefault();
-            const nextURL = isEvent ? `/events/edit/${eventId}` : "/add";
-            setURL(nextURL);
+            onRightButtonClick();
           },
           onmouseover: () => {
             const button = byId("right-link");
@@ -5887,7 +5959,9 @@
             }
           }
         },
-        styles: headerButtonStyles
+        styles: __spreadProps(__spreadValues({}, headerButtonStyles), {
+          fontSize: isEditEvent || isAddEvent ? "20px" : "14px"
+        })
       });
       header.append(rightButton);
     }
@@ -5929,6 +6003,13 @@
       }
       if (isEditEvent) {
         nextURL = `/events/${eventId}`;
+      }
+      setURL(nextURL);
+    }
+    function onRightButtonClick() {
+      let nextURL = "/";
+      if (isHome || isDay || isEvent) {
+        nextURL = "/add";
       }
       setURL(nextURL);
     }
