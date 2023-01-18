@@ -3695,6 +3695,7 @@
         attr: {
           name: field,
           placeholder: field,
+          type: field === "password" ? "password" : "text",
           onchange: (e) => {
             logInState[field] = e.target.value;
           }
