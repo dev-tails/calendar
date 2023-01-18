@@ -4,7 +4,14 @@ interface InputAttributes extends ElementAttributes {
   checked?: boolean;
   placeholder?: string;
   required?: boolean;
-  type?: 'text' | 'date' | 'time' | 'checkbox' | 'datetime-local' | 'password';
+  type?:
+    | 'text'
+    | 'date'
+    | 'time'
+    | 'checkbox'
+    | 'datetime-local'
+    | 'password'
+    | 'radio';
   value?: string;
 }
 

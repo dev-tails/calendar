@@ -2995,7 +2995,6 @@
             if (event.allDay) {
               const allDayEventStyles = {
                 borderRadius: "4px",
-                padding: "12px",
                 margin: "12px 20px",
                 width: "auto",
                 backgroundColor: colors.royalBlueLight,
@@ -3050,7 +3049,6 @@
               eventContainer.appendChild(times2);
               const eventStyles = {
                 borderRadius: "4px",
-                padding: "12px",
                 width: "100%",
                 backgroundColor: colors.keppel,
                 color: basics.whiteColor,
@@ -3099,7 +3097,8 @@
       },
       styles: {
         fontFamily: fonts.montserrat,
-        fontWeight: "300"
+        fontWeight: "300",
+        padding: "12px"
       }
     });
     eventCard.appendChild(title);
@@ -3315,6 +3314,59 @@
     }, props));
   }
 
+  // src/components/RadioButtons.ts
+  function RadioButtons(props) {
+    var _a;
+    const el = Div();
+    (_a = props.options) == null ? void 0 : _a.map((option) => {
+      const { label } = option;
+      const firstLabel = Label({
+        attr: { for: label, innerText: label },
+        styles: { marginRight: "8px" }
+      });
+      const first = Input({
+        selectors: { id: label },
+        attr: {
+          checked: label === props.selected,
+          type: "radio",
+          name: "users",
+          value: label,
+          onchange: (e) => {
+            props.onChange(e.target.value);
+          }
+        },
+        styles: { marginRight: "4px", cursor: "pointer" }
+      });
+      el.appendChild(first);
+      el.appendChild(firstLabel);
+    });
+    return el;
+  }
+
+  // src/views/Event/EventGuests.ts
+  function EventUsers(selected, onEventStateChange) {
+    let eventPrivacy = "Private";
+    const el = Div({ styles: { padding: "12px" } });
+    const privacyRadioButtons = RadioButtons({
+      selected: eventPrivacy,
+      options: [{ label: "Private" }, { label: "Public" }],
+      onChange: (privacyOption) => {
+        if (privacyOption === "Public") {
+          const usersSelect = Div({
+            selectors: { id: "users-select" },
+            attr: { innerHTML: "here I will select users" }
+          });
+          el.appendChild(usersSelect);
+        } else {
+          const usersSelect = byId("users-select");
+          usersSelect && el.removeChild(usersSelect);
+        }
+      }
+    });
+    el.appendChild(privacyRadioButtons);
+    return el;
+  }
+
   // src/views/Event/EventForm.ts
   function EventForm(event) {
     let eventTemplate = {
@@ -3418,6 +3470,8 @@
     form.appendChild(descriptionContainer);
     const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
+    const guests = EventUsers(eventState.users, setEventState);
+    form.appendChild(guests);
     const buttons = Div({
       styles: { marginTop: "8px", padding: "12px" }
     });

@@ -12,6 +12,7 @@ import { createEvent, editEvent } from '../../apis/EventApi';
 import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
 import { times } from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
+import { EventUsers } from './EventGuests';
 
 export function EventForm(event?: IEvent) {
   let eventTemplate: IEvent = {
@@ -127,6 +128,9 @@ export function EventForm(event?: IEvent) {
 
   const dateContainer = EventDateSelect(eventState, setEventState);
   form.appendChild(dateContainer);
+
+  const guests = EventUsers(eventState.users, setEventState);
+  form.appendChild(guests);
 
   const buttons = Div({
     styles: { marginTop: '8px', padding: '12px' },
