@@ -12,6 +12,7 @@ export type ElementAttributes = {
   value?: string;
   name?: string;
   onchange?: (ev: Event) => void;
+  onclick?: (ev: Event) => void;
   onmouseover?: (ev: Event) => void;
   onmouseout?: (ev: Event) => void;
 };

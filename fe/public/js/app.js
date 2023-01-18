@@ -95,11 +95,8 @@
         el.style[elementKey] = stylesKey;
     }
   }
-  function onClick(el, handler) {
-    return el.addEventListener("click", handler, true);
-  }
   function onKeydown(el, handler) {
-    return el.addEventListener("keydown", handler, true);
+    return el.addEventListener("keydown", handler, { once: true });
   }
 
   // src/components/elements/Element.ts
@@ -2982,12 +2979,13 @@
           },
           styles: arrowStyles
         });
-        onKeydown(window, changeActiveDay);
+        onKeydown(document, changeActiveDay);
         headerDate.appendChild(prevDay);
         headerDate.appendChild(nextDay);
         headerDate.appendChild(title);
         el.appendChild(headerDate);
         const eventsList = Div();
+        console.log("day view", dayView);
         const events = yield getEventsForDay(dayView);
         if (events.length) {
           events.sort(
@@ -3095,14 +3093,16 @@
   function createEventCard(event, styles3) {
     const eventCard = Div({ styles: styles3 });
     const title = Div({
-      attr: { innerText: event.title },
+      attr: {
+        innerText: event.title,
+        onclick: () => setURL(`/events/${event._id}`)
+      },
       styles: {
         fontFamily: fonts.montserrat,
         fontWeight: "300"
       }
     });
     eventCard.appendChild(title);
-    onClick(eventCard, () => setURL(`/events/${event._id}`));
     return eventCard;
   }
   function goToSelectedDayView(currentDayView, direction) {

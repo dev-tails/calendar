@@ -18,8 +18,8 @@ export function onClick(el: HTMLElement, handler: (event: MouseEvent) => void) {
 }
 
 export function onKeydown(
-  el: HTMLElement | Window,
+  el: HTMLElement | Document,
   handler: (eventListener: KeyboardEvent) => void
 ) {
-  return el.addEventListener('keydown', handler as any, true);
+  return el.addEventListener('keydown', handler as any, { once: true });
 }

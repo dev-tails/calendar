@@ -5,7 +5,7 @@ import {
   timeOptions,
   formatSplitDate,
 } from '../../utils/dateHelpers';
-import { byId, onClick, onKeydown, setStyle } from '../../utils/DOMutils';
+import { byId, onKeydown, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import {
   basics,
@@ -124,13 +124,14 @@ export function Day(date?: string) {
       styles: arrowStyles,
     });
 
-    onKeydown(window, changeActiveDay);
+    onKeydown(document, changeActiveDay);
     headerDate.appendChild(prevDay);
     headerDate.appendChild(nextDay);
     headerDate.appendChild(title);
     el.appendChild(headerDate);
 
     const eventsList = Div();
+    console.log('day view', dayView);
     const events = await getEventsForDay(dayView);
 
     if (events.length) {
@@ -249,7 +250,10 @@ function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
   const eventCard = Div({ styles });
 
   const title = Div({
-    attr: { innerText: event.title },
+    attr: {
+      innerText: event.title,
+      onclick: () => setURL(`/events/${event._id}`),
+    },
     styles: {
       fontFamily: fonts.montserrat,
       fontWeight: '300',
@@ -257,7 +261,6 @@ function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
   });
   eventCard.appendChild(title);
 
-  onClick(eventCard, () => setURL(`/events/${event._id}`));
   return eventCard;
 }
 
