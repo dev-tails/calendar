@@ -143,7 +143,6 @@ export function Day(date?: string) {
         if (event.allDay) {
           const allDayEventStyles = {
             borderRadius: '4px',
-            padding: '12px',
             margin: '12px 20px',
             width: 'auto',
             backgroundColor: colors.royalBlueLight,
@@ -203,7 +202,6 @@ export function Day(date?: string) {
           eventContainer.appendChild(times);
           const eventStyles = {
             borderRadius: '4px',
-            padding: '12px',
             width: '100%',
             backgroundColor: colors.keppel,
             color: basics.whiteColor,
@@ -257,6 +255,7 @@ function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
     styles: {
       fontFamily: fonts.montserrat,
       fontWeight: '300',
+      padding: '12px',
     },
   });
   eventCard.appendChild(title);
