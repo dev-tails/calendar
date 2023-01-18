@@ -3167,7 +3167,7 @@
   function EventDateSelect(event, onEventStateChange) {
     const el = Div({
       styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-        justifyContent: "space-between",
+        justifyContent: event.allDay ? "space-between" : "flex-start",
         padding: "12px"
       })
     });
@@ -3278,9 +3278,9 @@
       const dateInput = byId("start");
       const endDatetimeInput = byId("end");
       if (isChecked) {
-        el.removeChild(dateInput);
-        el.removeChild(toLabel);
-        el.removeChild(endDatetimeInput);
+        datesContainer.removeChild(dateInput);
+        datesContainer.removeChild(toLabel);
+        datesContainer.removeChild(endDatetimeInput);
         const copiedDate = new Date(event.start.getTime());
         copiedDate.setHours(0, 0, 0, 0);
         onEventStateChange({
@@ -3288,19 +3288,19 @@
           allDay: isChecked,
           end: isChecked ? void 0 : event.end
         });
-        el.prepend(newStartDateInput());
+        datesContainer.prepend(newStartDateInput());
       } else {
         const currentDate = convertMidnightUTCToLocalDay(event.start);
         const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
-        el.removeChild(dateInput);
-        el.prepend(endTimeInput());
-        el.prepend(toLabel);
+        datesContainer.removeChild(dateInput);
+        datesContainer.prepend(endTimeInput());
+        datesContainer.prepend(toLabel);
         onEventStateChange({
           start: selectedDateWithCurrentTime,
           allDay: isChecked,
           end: void 0
         });
-        el.prepend(newStartTimeInput());
+        datesContainer.prepend(newStartTimeInput());
       }
     }
     el.appendChild(datesContainer);

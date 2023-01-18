@@ -19,7 +19,7 @@ export function EventDateSelect(
   const el = Div({
     styles: {
       ...flexAlignItemsCenter,
-      justifyContent: 'space-between',
+      justifyContent: event.allDay ? 'space-between' : 'flex-start',
       padding: '12px',
     },
   });
@@ -148,9 +148,9 @@ export function EventDateSelect(
     const endDatetimeInput = byId('end') as HTMLInputElement;
 
     if (isChecked) {
-      el.removeChild(dateInput);
-      el.removeChild(toLabel);
-      el.removeChild(endDatetimeInput);
+      datesContainer.removeChild(dateInput);
+      datesContainer.removeChild(toLabel);
+      datesContainer.removeChild(endDatetimeInput);
 
       const copiedDate = new Date(event.start.getTime());
       copiedDate.setHours(0, 0, 0, 0);
@@ -161,14 +161,14 @@ export function EventDateSelect(
         end: isChecked ? undefined : event.end,
       });
 
-      el.prepend(newStartDateInput());
+      datesContainer.prepend(newStartDateInput());
     } else {
       const currentDate = convertMidnightUTCToLocalDay(event.start);
       const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
 
-      el.removeChild(dateInput);
-      el.prepend(endTimeInput());
-      el.prepend(toLabel);
+      datesContainer.removeChild(dateInput);
+      datesContainer.prepend(endTimeInput());
+      datesContainer.prepend(toLabel);
 
       onEventStateChange({
         start: selectedDateWithCurrentTime,
@@ -176,7 +176,7 @@ export function EventDateSelect(
         end: undefined,
       });
 
-      el.prepend(newStartTimeInput());
+      datesContainer.prepend(newStartTimeInput());
     }
   }
 
