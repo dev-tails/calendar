@@ -10,14 +10,22 @@ import { Input } from '../../components/elements/Input/Input';
 import { Label } from '../../components/elements/Label';
 import { byId } from '../../utils/DOMutils';
 import { inputStyles } from '../../../public/css/componentStyles';
+import { flexAlignItemsCenter } from '../../utils/styles';
 
 export function EventDateSelect(
   event: IEvent,
   onEventStateChange: (eventState: Partial<IEvent>) => void
 ) {
-  const dateContainer = Div({ styles: { padding: '12px' } });
+  const el = Div({
+    styles: {
+      ...flexAlignItemsCenter,
+      justifyContent: 'space-between',
+      padding: '12px',
+    },
+  });
 
-  dateContainer.appendChild(
+  const datesContainer = Div();
+  datesContainer.appendChild(
     event.allDay ? newStartDateInput() : newStartTimeInput()
   );
 
@@ -28,10 +36,11 @@ export function EventDateSelect(
     },
   });
   if (!event.allDay) {
-    dateContainer.appendChild(toLabel);
-    dateContainer.appendChild(endTimeInput());
+    datesContainer.appendChild(toLabel);
+    datesContainer.appendChild(endTimeInput());
   }
 
+  const allDayContainer = Div();
   const allDayInput = Input({
     attr: {
       type: 'checkbox',
@@ -42,12 +51,12 @@ export function EventDateSelect(
       id: 'allDay',
     },
   });
-  dateContainer.appendChild(allDayInput);
+  allDayContainer.appendChild(allDayInput);
 
   const allDayLabel = Label({
     attr: { innerText: 'All day', for: 'allDay' },
   });
-  dateContainer.appendChild(allDayLabel);
+  allDayContainer.appendChild(allDayLabel);
 
   function dateTimeString() {
     return formatDateTimeInputValue(event.start);
@@ -139,9 +148,9 @@ export function EventDateSelect(
     const endDatetimeInput = byId('end') as HTMLInputElement;
 
     if (isChecked) {
-      dateContainer.removeChild(dateInput);
-      dateContainer.removeChild(toLabel);
-      dateContainer.removeChild(endDatetimeInput);
+      el.removeChild(dateInput);
+      el.removeChild(toLabel);
+      el.removeChild(endDatetimeInput);
 
       const copiedDate = new Date(event.start.getTime());
       copiedDate.setHours(0, 0, 0, 0);
@@ -152,14 +161,14 @@ export function EventDateSelect(
         end: isChecked ? undefined : event.end,
       });
 
-      dateContainer.prepend(newStartDateInput());
+      el.prepend(newStartDateInput());
     } else {
       const currentDate = convertMidnightUTCToLocalDay(event.start);
       const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
 
-      dateContainer.removeChild(dateInput);
-      dateContainer.prepend(endTimeInput());
-      dateContainer.prepend(toLabel);
+      el.removeChild(dateInput);
+      el.prepend(endTimeInput());
+      el.prepend(toLabel);
 
       onEventStateChange({
         start: selectedDateWithCurrentTime,
@@ -167,9 +176,11 @@ export function EventDateSelect(
         end: undefined,
       });
 
-      dateContainer.prepend(newStartTimeInput());
+      el.prepend(newStartTimeInput());
     }
   }
 
-  return dateContainer;
+  el.appendChild(datesContainer);
+  el.appendChild(allDayContainer);
+  return el;
 }

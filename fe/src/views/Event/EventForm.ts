@@ -119,7 +119,7 @@ export function EventForm(event?: IEvent) {
       },
       placeholder: 'Write something...',
     },
-    styles: inputStyles,
+    styles: { ...inputStyles, minHeight: '160px' },
   });
   descriptionContainer.appendChild(descriptionLabel);
   descriptionContainer.appendChild(descriptionInput);

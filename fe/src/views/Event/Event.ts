@@ -1,3 +1,4 @@
+import autolinker from 'autolinker';
 import { deleteEvent } from '../../apis/EventApi';
 import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
@@ -23,7 +24,7 @@ export function Event(event: IEvent) {
 
   if (event.description) {
     const description = Div({ styles: { padding: '4px 0' } });
-    description.innerText = event.description;
+    description.innerHTML = autolinker.link(event.description);
     el.appendChild(description);
   }
 
