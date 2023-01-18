@@ -10,13 +10,14 @@ import { setURL } from '../../utils/HistoryUtils';
 import { isLoggedIn } from '../../apis/UserApi';
 import { logOut } from '../../apis/AuthApi';
 import { byId } from '../../utils/DOMutils';
+import { chevronLeft, home } from '../../../public/assets/FontAwesomeIcons';
 
 const headerTopLeftButton = {
   home: '',
   day: 'Today',
-  edit: '< Back',
-  event: '< Back',
-  add: 'Home',
+  edit: `${chevronLeft} Back`,
+  event: `${chevronLeft} Back`,
+  add: home,
 };
 
 const headerButtonStyles = {
@@ -66,7 +67,7 @@ export function Header(
   const leftButton = Button({
     selectors: { id: 'left-link' },
     attr: {
-      textContent: headerTopLeftButton[view],
+      innerHTML: headerTopLeftButton[view],
       onclick: (e) => {
         e.preventDefault();
         onLeftButtonClick();
@@ -74,7 +75,7 @@ export function Header(
       onmouseover: () => {
         const button = byId('left-link');
         if (button) {
-          button.style.color = isDay ? basics.whiteColor : colors.mandarine;
+          button.style.color = isDay ? basics.whiteColor : '#9da8d2';
           button.style.opacity = isDay ? '.8' : '';
         }
       },
@@ -90,7 +91,11 @@ export function Header(
     },
     styles: isDay
       ? todayButtonStyles
-      : { ...headerButtonStyles, marginRight: 'auto' },
+      : {
+          ...headerButtonStyles,
+          marginRight: 'auto',
+          fontSize: isAddEvent ? '18px' : '',
+        },
   });
   showTopLeftButton && header.append(leftButton);
 
@@ -108,7 +113,7 @@ export function Header(
         onmouseover: () => {
           const button = byId('right-link');
           if (button) {
-            button.style.color = colors.mandarine;
+            button.style.color = '#9da8d2';
           }
         },
         onmouseout: () => {
@@ -135,14 +140,13 @@ export function Header(
           logOut();
           window.location.reload();
         } catch (err) {
-          console.error('Unable to log out');
-          alert('Unable to log out');
+          console.error('Unable to log out.');
         }
       },
       onmouseover: () => {
         const button = byId('logout');
         if (button) {
-          button.style.color = colors.mandarine;
+          button.style.color = '#9da8d2';
         }
       },
       onmouseout: () => {

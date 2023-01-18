@@ -304,6 +304,61 @@
     return dateWithAddedMin;
   };
 
+  // src/utils/styles.ts
+  var basics = {
+    whiteColor: "#fff",
+    darkCharcoal: "#333",
+    slateGray: "#708090",
+    spanishGray: "#999"
+  };
+  var colors = {
+    mainTurquoise: "#438796",
+    accentPlum: "#6E526F",
+    accentPlumLight: "#6e526f36",
+    eggplant: "#78636f",
+    honeydew: "#d2e7de",
+    // greenSheen: '#7fae9e',
+    greenSheen: "#73a196",
+    mountbattenPink: "#9d8793",
+    springWaterTurquoise: "#79b3af",
+    opal: "#99b1ad",
+    royalBlueLight: "#5770d8",
+    keppel: "#59c0a7",
+    mandarine: "#E07A5F"
+  };
+  var fonts = {
+    montserrat: "Montserrat, sans-serif",
+    garamond: "EB Garamond, serif"
+  };
+  var fontsWeight = {
+    regular: "400"
+  };
+  var flexAlignItemsCenter = {
+    display: "flex",
+    alignItems: "center"
+  };
+
+  // src/components/elements/Span.ts
+  function Span(props) {
+    return Element(__spreadValues({
+      tag: "span"
+    }, props));
+  }
+
+  // src/components/elements/Button.ts
+  function Button(props) {
+    return Element(__spreadValues({
+      tag: "button"
+    }, props));
+  }
+
+  // src/components/elements/H1.ts
+  function H1(props) {
+    return Element(__spreadValues({
+      tag: "h1"
+    }, props));
+  }
+
   // node_modules/@fortawesome/fontawesome-svg-core/index.mjs
   function ownKeys(object, enumerableOnly) {
     var keys = Object.keys(object);
@@ -2770,6 +2825,12 @@
   var counter = api.counter;
 
   // node_modules/@fortawesome/free-solid-svg-icons/index.mjs
+  var faHouse = {
+    prefix: "fas",
+    iconName: "house",
+    icon: [576, 512, [127968, 63498, 63500, "home", "home-alt", "home-lg-alt"], "f015", "M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"]
+  };
+  var faHome = faHouse;
   var faChevronLeft = {
     prefix: "fas",
     iconName: "chevron-left",
@@ -2781,66 +2842,15 @@
     icon: [384, 512, [9002], "f054", "M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"]
   };
 
-  // src/utils/styles.ts
-  var basics = {
-    whiteColor: "#fff",
-    darkCharcoal: "#333",
-    slateGray: "#708090",
-    spanishGray: "#999"
-  };
-  var colors = {
-    mainTurquoise: "#438796",
-    accentPlum: "#6E526F",
-    accentPlumLight: "#6e526f36",
-    eggplant: "#78636f",
-    honeydew: "#d2e7de",
-    // greenSheen: '#7fae9e',
-    greenSheen: "#73a196",
-    mountbattenPink: "#9d8793",
-    springWaterTurquoise: "#79b3af",
-    opal: "#99b1ad",
-    royalBlueLight: "#5770d8",
-    keppel: "#59c0a7",
-    mandarine: "#E07A5F"
-  };
-  var fonts = {
-    montserrat: "Montserrat, sans-serif",
-    garamond: "EB Garamond, serif"
-  };
-  var fontsWeight = {
-    regular: "400"
-  };
-  var flexAlignItemsCenter = {
-    display: "flex",
-    alignItems: "center"
-  };
-
-  // src/components/elements/Span.ts
-  function Span(props) {
-    return Element(__spreadValues({
-      tag: "span"
-    }, props));
-  }
-
-  // src/components/elements/Button.ts
-  function Button(props) {
-    return Element(__spreadValues({
-      tag: "button"
-    }, props));
-  }
-
-  // src/components/elements/H1.ts
-  function H1(props) {
-    return Element(__spreadValues({
-      tag: "h1"
-    }, props));
-  }
-
-  // src/views/Day/Day.ts
+  // public/assets/FontAwesomeIcons.ts
   library$1.add(faChevronLeft);
   library$1.add(faChevronRight);
+  library$1.add(faHome);
   var chevronLeft = icon2({ prefix: "fas", iconName: "chevron-left" }).html[0];
   var chevronRight = icon2({ prefix: "fas", iconName: "chevron-right" }).html[0];
+  var home = icon2({ prefix: "fas", iconName: "home" }).html[0];
+
+  // src/views/Day/Day.ts
   var arrowStyles = {
     background: "none",
     border: "none",
@@ -2861,7 +2871,7 @@
       return __async(this, null, function* () {
         const headerDate = Div({
           styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-            justifyContent: "space-between",
+            // justifyContent: 'space-between',
             margin: "12px 20px"
           })
         });
@@ -2894,8 +2904,7 @@
               const button = byId("left-chevron");
               if (button) {
                 button.style.color = colors.royalBlueLight;
-                button.style.textDecoration = "underline";
-                button.style.background = "#F2CC8F";
+                button.style.background = "#f4c984";
                 button.style.borderRadius = "4px";
                 button.style.color = basics.whiteColor;
               }
@@ -2904,7 +2913,6 @@
               const button = byId("left-chevron");
               if (button) {
                 button.style.color = basics.darkCharcoal;
-                button.style.textDecoration = "none";
                 button.style.background = "none";
                 button.style.borderRadius = "none";
                 button.style.color = basics.darkCharcoal;
@@ -2924,8 +2932,7 @@
               const button = byId("right-chevron");
               if (button) {
                 button.style.color = colors.royalBlueLight;
-                button.style.textDecoration = "underline";
-                button.style.background = "#F2CC8F";
+                button.style.background = "#f4c984";
                 button.style.borderRadius = "4px";
                 button.style.color = basics.whiteColor;
               }
@@ -2934,7 +2941,6 @@
               const button = byId("right-chevron");
               if (button) {
                 button.style.color = basics.darkCharcoal;
-                button.style.textDecoration = "none";
                 button.style.background = "none";
                 button.style.color = basics.darkCharcoal;
               }
@@ -2943,8 +2949,8 @@
           styles: arrowStyles
         });
         headerDate.appendChild(prevDay);
-        headerDate.appendChild(title);
         headerDate.appendChild(nextDay);
+        headerDate.appendChild(title);
         el.appendChild(headerDate);
         const eventsList = Div();
         const events = yield getEventsForDay(dayView);
@@ -3435,9 +3441,9 @@
   var headerTopLeftButton = {
     home: "",
     day: "Today",
-    edit: "< Back",
-    event: "< Back",
-    add: "Home"
+    edit: `${chevronLeft} Back`,
+    event: `${chevronLeft} Back`,
+    add: home
   };
   var headerButtonStyles = {
     background: "none",
@@ -3479,7 +3485,7 @@
     const leftButton = Button({
       selectors: { id: "left-link" },
       attr: {
-        textContent: headerTopLeftButton[view],
+        innerHTML: headerTopLeftButton[view],
         onclick: (e) => {
           e.preventDefault();
           onLeftButtonClick();
@@ -3487,7 +3493,7 @@
         onmouseover: () => {
           const button = byId("left-link");
           if (button) {
-            button.style.color = isDay ? basics.whiteColor : colors.mandarine;
+            button.style.color = isDay ? basics.whiteColor : "#9da8d2";
             button.style.opacity = isDay ? ".8" : "";
           }
         },
@@ -3499,7 +3505,10 @@
           }
         }
       },
-      styles: isDay ? todayButtonStyles : __spreadProps(__spreadValues({}, headerButtonStyles), { marginRight: "auto" })
+      styles: isDay ? todayButtonStyles : __spreadProps(__spreadValues({}, headerButtonStyles), {
+        marginRight: "auto",
+        fontSize: isAddEvent ? "18px" : ""
+      })
     });
     showTopLeftButton && header.append(leftButton);
     if (showTopRightButton) {
@@ -3515,7 +3524,7 @@
           onmouseover: () => {
             const button = byId("right-link");
             if (button) {
-              button.style.color = colors.mandarine;
+              button.style.color = "#9da8d2";
             }
           },
           onmouseout: () => {
@@ -3541,14 +3550,13 @@
             logOut();
             window.location.reload();
           } catch (err) {
-            console.error("Unable to log out");
-            alert("Unable to log out");
+            console.error("Unable to log out.");
           }
         },
         onmouseover: () => {
           const button = byId("logout");
           if (button) {
-            button.style.color = colors.mandarine;
+            button.style.color = "#9da8d2";
           }
         },
         onmouseout: () => {
@@ -3636,10 +3644,10 @@
           return router.append(LogIn());
         }
         const path = window.location.pathname;
-        const home = path === "/";
+        const home2 = path === "/";
         const addEventPath = path === "/add";
         const isDayPath = path.includes("day");
-        const eventsPaths = !home && !addEventPath && !isDayPath;
+        const eventsPaths = !home2 && !addEventPath && !isDayPath;
         let eventObject;
         if (eventsPaths) {
           const eventPath = path.split("/");

@@ -1,9 +1,3 @@
-import { library, icon } from '@fortawesome/fontawesome-svg-core';
-import {
-  faChevronLeft,
-  faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
-
 import { getEventsForDay } from '../../apis/EventApi';
 import {
   formatDateTime,
@@ -24,12 +18,10 @@ import { Div } from '../../components/elements/Div';
 import { Span } from '../../components/elements/Span';
 import { Button } from '../../components/elements/Button';
 import { H1 } from '../../components/elements/H1';
-
-library.add(faChevronLeft);
-library.add(faChevronRight);
-
-const chevronLeft = icon({ prefix: 'fas', iconName: 'chevron-left' }).html[0];
-const chevronRight = icon({ prefix: 'fas', iconName: 'chevron-right' }).html[0];
+import {
+  chevronLeft,
+  chevronRight,
+} from '../../../public/assets/FontAwesomeIcons';
 
 const arrowStyles = {
   background: 'none',
@@ -52,7 +44,7 @@ export function Day(date?: string) {
     const headerDate = Div({
       styles: {
         ...flexAlignItemsCenter,
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         margin: '12px 20px',
       },
     });
@@ -87,8 +79,7 @@ export function Day(date?: string) {
           const button = byId('left-chevron');
           if (button) {
             button.style.color = colors.royalBlueLight;
-            button.style.textDecoration = 'underline';
-            button.style.background = '#F2CC8F';
+            button.style.background = '#f4c984';
             button.style.borderRadius = '4px';
             button.style.color = basics.whiteColor;
           }
@@ -97,7 +88,6 @@ export function Day(date?: string) {
           const button = byId('left-chevron');
           if (button) {
             button.style.color = basics.darkCharcoal;
-            button.style.textDecoration = 'none';
             button.style.background = 'none';
             button.style.borderRadius = 'none';
             button.style.color = basics.darkCharcoal;
@@ -118,8 +108,7 @@ export function Day(date?: string) {
           const button = byId('right-chevron');
           if (button) {
             button.style.color = colors.royalBlueLight;
-            button.style.textDecoration = 'underline';
-            button.style.background = '#F2CC8F';
+            button.style.background = '#f4c984';
             button.style.borderRadius = '4px';
             button.style.color = basics.whiteColor;
           }
@@ -128,7 +117,6 @@ export function Day(date?: string) {
           const button = byId('right-chevron');
           if (button) {
             button.style.color = basics.darkCharcoal;
-            button.style.textDecoration = 'none';
             button.style.background = 'none';
             button.style.color = basics.darkCharcoal;
           }
@@ -138,8 +126,8 @@ export function Day(date?: string) {
     });
 
     headerDate.appendChild(prevDay);
-    headerDate.appendChild(title);
     headerDate.appendChild(nextDay);
+    headerDate.appendChild(title);
     el.appendChild(headerDate);
 
     const eventsList = Div();
