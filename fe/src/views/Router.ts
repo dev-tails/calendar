@@ -84,7 +84,7 @@ export function Router(authenticated: boolean, self: User) {
           description: '',
           start: new Date(),
           allDay: false,
-          // users: self._id ? [self._id] : [],
+          users: self._id ? [self._id] : [],
         };
         router.append(Header('add'));
         router.append(EventForm(eventTemplate, self?._id));

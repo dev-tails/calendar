@@ -121,11 +121,7 @@ export function EventForm(event: IEvent, currentUserId: string) {
   const dateContainer = EventDateSelect(eventState, setEventState);
   form.appendChild(dateContainer);
 
-  const guests = EventUsers(
-    eventState?.users,
-    currentUserId?._id,
-    setEventState
-  );
+  const guests = EventUsers(eventState?.users, currentUserId, setEventState);
   form.appendChild(guests);
 
   const buttons = Div({
@@ -169,12 +165,13 @@ export function EventForm(event: IEvent, currentUserId: string) {
     setEventState({ start });
 
     let eventId = eventState._id;
-    if (eventId) {
-      await editEvent(eventState);
-    } else {
-      eventId = await createEvent(eventState);
-    }
-    setURL(`/events/${eventId}`);
+    console.log('event state submitting', eventState);
+    // if (eventId) {
+    //   await editEvent(eventState);
+    // } else {
+    //   eventId = await createEvent(eventState);
+    // }
+    // setURL(`/events/${eventId}`);
   };
 
   return form;

@@ -172,36 +172,6 @@
       throw new Error(error || "Events could not be fetched.");
     }
   });
-  var createEvent = (event) => __async(void 0, null, function* () {
-    const res = yield fetch(`/api/events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(event)
-    });
-    if (res.ok) {
-      const eventId = yield res.json();
-      return eventId.data;
-    } else {
-      throw new Error(res.statusText || "Event could not be created.");
-    }
-  });
-  var editEvent = (event) => __async(void 0, null, function* () {
-    const res = yield fetch(`/api/events/${event._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id: event._id, body: event })
-    });
-    if (res.ok) {
-      const modifiedEvent = yield res.json();
-      return modifiedEvent;
-    } else {
-      throw new Error(res.statusText || "Event could not be edited.");
-    }
-  });
   var deleteEvent = (eventId) => __async(void 0, null, function* () {
     if (!eventId) {
       throw new Error("Event id must exist.");
@@ -3322,18 +3292,17 @@
     var _a;
     const el = Div();
     (_a = props.options) == null ? void 0 : _a.map((option) => {
-      const { label } = option;
       const firstLabel = Label({
-        attr: { for: label, innerText: label },
+        attr: { for: option, innerText: option },
         styles: { marginRight: "8px" }
       });
       const first = Input({
-        selectors: { id: label },
+        selectors: { id: option },
         attr: {
-          checked: label === props.selected,
+          checked: option === props.selected,
           type: "radio",
           name: "users",
-          value: label,
+          value: option,
           onchange: (e) => {
             props.onChange(e.target.value);
           }
@@ -3349,34 +3318,29 @@
   // src/views/Event/EventGuests.ts
   function EventUsers(selectedUsers, currentUserId, onEventStateChange) {
     const el = Div({ styles: { padding: "12px" } });
-    let currentUser = null;
-    console.log("Selected users", selectedUsers);
-    function init() {
-      return __async(this, null, function* () {
-        currentUser = yield fetchSelf();
-        const isPrivateEvent = (selectedUsers == null ? void 0 : selectedUsers.length) === 1 && selectedUsers[0] === (currentUser == null ? void 0 : currentUser._id);
-        const privacy = isPrivateEvent ? "Private" : "Public";
-        let eventPrivacy = privacy;
-        const privacyRadioButtons = RadioButtons({
-          selected: eventPrivacy,
-          options: [{ label: "Private" }, { label: "Public" }],
-          onChange: (privacyOption) => {
-            if (privacyOption === "Public") {
-              const usersSelect = Div({
-                selectors: { id: "users-select" },
-                attr: { innerHTML: "here I will select users" }
-              });
-              el.appendChild(usersSelect);
-            } else {
-              const usersSelect = byId("users-select");
-              usersSelect && el.removeChild(usersSelect);
-            }
-          }
+    const isPrivateEvent = (selectedUsers == null ? void 0 : selectedUsers.length) === 1 && selectedUsers[0] === currentUserId;
+    const privacy = isPrivateEvent ? "Private" : "Public";
+    let eventPrivacy = privacy;
+    const privacyRadioButtons = RadioButtons({
+      selected: eventPrivacy,
+      options: ["Private", "Public"],
+      onChange: onRadioButtonChange
+    });
+    function onRadioButtonChange(privacyOption) {
+      if (privacyOption === "Public") {
+        const usersSelect = Div({
+          selectors: { id: "users-select" },
+          attr: { innerHTML: "here I will select users" }
         });
-        el.appendChild(privacyRadioButtons);
-      });
+        el.appendChild(usersSelect);
+        onEventStateChange({ users: [currentUserId] });
+      } else {
+        const usersSelect = byId("users-select");
+        usersSelect && el.removeChild(usersSelect);
+        onEventStateChange({ users: [] });
+      }
     }
-    init();
+    el.appendChild(privacyRadioButtons);
     return el;
   }
 
@@ -3476,11 +3440,7 @@
     form.appendChild(descriptionContainer);
     const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
-    const guests = EventUsers(
-      eventState == null ? void 0 : eventState.users,
-      currentUserId == null ? void 0 : currentUserId._id,
-      setEventState
-    );
+    const guests = EventUsers(eventState == null ? void 0 : eventState.users, currentUserId, setEventState);
     form.appendChild(guests);
     const buttons = Div({
       styles: { marginTop: "8px", padding: "12px" }
@@ -3518,12 +3478,7 @@
       }
       setEventState({ start });
       let eventId = eventState._id;
-      if (eventId) {
-        yield editEvent(eventState);
-      } else {
-        eventId = yield createEvent(eventState);
-      }
-      setURL(`/events/${eventId}`);
+      console.log("event state submitting", eventState);
     });
     return form;
   }
@@ -6205,8 +6160,8 @@
               title: "",
               description: "",
               start: new Date(),
-              allDay: false
-              // users: self._id ? [self._id] : [],
+              allDay: false,
+              users: self2._id ? [self2._id] : []
             };
             router.append(Header("add"));
             router.append(EventForm(eventTemplate, self2 == null ? void 0 : self2._id));
