@@ -11,7 +11,7 @@ import { Event } from './Event/Event';
 import { Header } from './Header/Header';
 import { LogIn } from './LogIn/LogIn';
 
-export function Router(authenticated: boolean) {
+export function Router(authenticated: boolean, self: User) {
   const router = Div({ styles: { height: '100%' } });
 
   function init() {
@@ -75,12 +75,20 @@ export function Router(authenticated: boolean) {
       case `/events/edit/${eventObject?._id}`:
         if (eventObject) {
           router.append(Header('edit'));
-          router.append(EventForm(eventObject));
+          router.append(EventForm(eventObject, self?._id));
         }
         break;
       case `/add`:
+        let eventTemplate: IEvent = {
+          title: '',
+          description: '',
+          start: new Date(),
+          allDay: false,
+          users: self._id ? [self._id] : [],
+        };
+
         router.append(Header('add'));
-        router.append(EventForm());
+        router.append(EventForm(eventTemplate, self?._id));
         break;
       default:
         break;

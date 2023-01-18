@@ -1,16 +1,11 @@
 import { httpGet } from './Api';
 
-type User = {
-  _id: string;
-  name: string;
-  color: string;
-};
-
 let self: User | null = null;
 let loggedIn = false;
 
 export async function initializeUserApi() {
   self = await fetchSelf();
+  return self;
 }
 
 export function isLoggedIn() {

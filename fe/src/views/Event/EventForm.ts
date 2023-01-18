@@ -14,16 +14,8 @@ import { times } from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
 import { EventUsers } from './EventGuests';
 
-export function EventForm(event?: IEvent) {
-  let eventTemplate: IEvent = {
-    title: '',
-    description: '',
-    start: new Date(),
-    allDay: false,
-    // users: [] as string[],
-  };
-
-  const eventState: IEvent = event ? { ...event } : { ...eventTemplate };
+export function EventForm(event: IEvent, currentUserId: string) {
+  const eventState: IEvent = { ...event };
 
   const setEventState = (newValue: Partial<IEvent>) => {
     Object.assign(eventState, newValue);
@@ -129,7 +121,11 @@ export function EventForm(event?: IEvent) {
   const dateContainer = EventDateSelect(eventState, setEventState);
   form.appendChild(dateContainer);
 
-  const guests = EventUsers(eventState.users, setEventState);
+  const guests = EventUsers(
+    eventState?.users,
+    currentUserId?._id,
+    setEventState
+  );
   form.appendChild(guests);
 
   const buttons = Div({

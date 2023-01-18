@@ -65,6 +65,7 @@
   function initializeUserApi() {
     return __async(this, null, function* () {
       self = yield fetchSelf();
+      return self;
     });
   }
   function isLoggedIn() {
@@ -3344,39 +3345,44 @@
   }
 
   // src/views/Event/EventGuests.ts
-  function EventUsers(selected, onEventStateChange) {
-    let eventPrivacy = "Private";
+  function EventUsers(selectedUsers, currentUserId, onEventStateChange) {
     const el = Div({ styles: { padding: "12px" } });
-    const privacyRadioButtons = RadioButtons({
-      selected: eventPrivacy,
-      options: [{ label: "Private" }, { label: "Public" }],
-      onChange: (privacyOption) => {
-        if (privacyOption === "Public") {
-          const usersSelect = Div({
-            selectors: { id: "users-select" },
-            attr: { innerHTML: "here I will select users" }
-          });
-          el.appendChild(usersSelect);
-        } else {
-          const usersSelect = byId("users-select");
-          usersSelect && el.removeChild(usersSelect);
-        }
-      }
-    });
-    el.appendChild(privacyRadioButtons);
+    let currentUser = null;
+    console.log("Selected users", selectedUsers);
+    function init() {
+      return __async(this, null, function* () {
+        currentUser = yield fetchSelf();
+        const isPrivateEvent = (selectedUsers == null ? void 0 : selectedUsers.length) === 1 && selectedUsers[0] === (currentUser == null ? void 0 : currentUser._id);
+        const privacy = isPrivateEvent ? "Private" : "Public";
+        let eventPrivacy = privacy;
+        const privacyRadioButtons = RadioButtons({
+          selected: eventPrivacy,
+          options: [{ label: "Private" }, { label: "Public" }],
+          onChange: (privacyOption) => {
+            if (privacyOption === "Public") {
+              const usersSelect = Div({
+                selectors: { id: "users-select" },
+                attr: { innerHTML: "here I will select users" }
+              });
+              el.appendChild(usersSelect);
+              onEventStateChange({ users: [currentUserId] });
+            } else {
+              const usersSelect = byId("users-select");
+              usersSelect && el.removeChild(usersSelect);
+              onEventStateChange({ users: [] });
+            }
+          }
+        });
+        el.appendChild(privacyRadioButtons);
+      });
+    }
+    init();
     return el;
   }
 
   // src/views/Event/EventForm.ts
-  function EventForm(event) {
-    let eventTemplate = {
-      title: "",
-      description: "",
-      start: new Date(),
-      allDay: false
-      // users: [] as string[],
-    };
-    const eventState = event ? __spreadValues({}, event) : __spreadValues({}, eventTemplate);
+  function EventForm(event, currentUserId) {
+    const eventState = __spreadValues({}, event);
     const setEventState = (newValue) => {
       Object.assign(eventState, newValue);
     };
@@ -3470,7 +3476,11 @@
     form.appendChild(descriptionContainer);
     const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
-    const guests = EventUsers(eventState.users, setEventState);
+    const guests = EventUsers(
+      eventState == null ? void 0 : eventState.users,
+      currentUserId == null ? void 0 : currentUserId._id,
+      setEventState
+    );
     form.appendChild(guests);
     const buttons = Div({
       styles: { marginTop: "8px", padding: "12px" }
@@ -6131,7 +6141,7 @@
   }
 
   // src/views/Router.ts
-  function Router(authenticated) {
+  function Router(authenticated, self2) {
     const router = Div({ styles: { height: "100%" } });
     function init() {
       handleRouteUpdated();
@@ -6187,12 +6197,19 @@
           case `/events/edit/${eventObject == null ? void 0 : eventObject._id}`:
             if (eventObject) {
               router.append(Header("edit"));
-              router.append(EventForm(eventObject));
+              router.append(EventForm(eventObject, self2 == null ? void 0 : self2._id));
             }
             break;
           case `/add`:
+            let eventTemplate = {
+              title: "",
+              description: "",
+              start: new Date(),
+              allDay: false,
+              users: self2._id ? [self2._id] : []
+            };
             router.append(Header("add"));
-            router.append(EventForm());
+            router.append(EventForm(eventTemplate, self2 == null ? void 0 : self2._id));
             break;
           default:
             break;
@@ -6207,10 +6224,10 @@
   function run() {
     return __async(this, null, function* () {
       const root = document.getElementById("root");
-      yield initializeUserApi();
+      const self2 = yield initializeUserApi();
       const isAuthenticated = isLoggedIn();
       if (root) {
-        const router = Router(isAuthenticated);
+        const router = Router(isAuthenticated, self2);
         root.append(router);
       }
     });
