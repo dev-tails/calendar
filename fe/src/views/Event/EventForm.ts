@@ -73,7 +73,7 @@ export function EventForm(event?: IEvent) {
       background: 'none',
       border: 'none',
       color: basics.silver,
-      fontSize: '20px',
+      fontSize: '24px',
       padding: '0',
     },
   });

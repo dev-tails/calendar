@@ -5,7 +5,7 @@ import {
   timeOptions,
   formatSplitDate,
 } from '../../utils/dateHelpers';
-import { byId, onClick, setStyle } from '../../utils/DOMutils';
+import { byId, onClick, onKeydown, setStyle } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import {
   basics,
@@ -44,7 +44,6 @@ export function Day(date?: string) {
     const headerDate = Div({
       styles: {
         ...flexAlignItemsCenter,
-        // justifyContent: 'space-between',
         margin: '12px 20px',
       },
     });
@@ -125,6 +124,7 @@ export function Day(date?: string) {
       styles: arrowStyles,
     });
 
+    onKeydown(window, changeActiveDay);
     headerDate.appendChild(prevDay);
     headerDate.appendChild(nextDay);
     headerDate.appendChild(title);
@@ -230,6 +230,16 @@ export function Day(date?: string) {
       });
       el.appendChild(noEventsLabel);
     }
+  }
+
+  function changeActiveDay(e: KeyboardEvent) {
+    if (e.key === 'ArrowRight') {
+      goToSelectedDayView(dayView, 'next');
+    }
+    if (e.key === 'ArrowLeft') {
+      goToSelectedDayView(dayView, 'previous');
+    }
+    return;
   }
   init();
   return el;

@@ -98,6 +98,9 @@
   function onClick(el, handler) {
     return el.addEventListener("click", handler, true);
   }
+  function onKeydown(el, handler) {
+    return el.addEventListener("keydown", handler, true);
+  }
 
   // src/components/elements/Element.ts
   function Element(props) {
@@ -2903,7 +2906,6 @@
       return __async(this, null, function* () {
         const headerDate = Div({
           styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-            // justifyContent: 'space-between',
             margin: "12px 20px"
           })
         });
@@ -2980,6 +2982,7 @@
           },
           styles: arrowStyles
         });
+        onKeydown(window, changeActiveDay);
         headerDate.appendChild(prevDay);
         headerDate.appendChild(nextDay);
         headerDate.appendChild(title);
@@ -3076,6 +3079,15 @@
           el.appendChild(noEventsLabel);
         }
       });
+    }
+    function changeActiveDay(e) {
+      if (e.key === "ArrowRight") {
+        goToSelectedDayView(dayView, "next");
+      }
+      if (e.key === "ArrowLeft") {
+        goToSelectedDayView(dayView, "previous");
+      }
+      return;
     }
     init();
     return el;
@@ -3357,7 +3369,7 @@
         background: "none",
         border: "none",
         color: basics.silver,
-        fontSize: "20px",
+        fontSize: "24px",
         padding: "0"
       }
     });

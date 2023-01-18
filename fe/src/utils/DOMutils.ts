@@ -17,10 +17,9 @@ export function onClick(el: HTMLElement, handler: (event: MouseEvent) => void) {
   return el.addEventListener('click', handler, true);
 }
 
-export function onMouseOver(el: HTMLElement, handler: EventListener) {
-  return el.addEventListener('onmouseover', handler, true);
-}
-
-export function onMouseOut(el: HTMLElement, handler: EventListener) {
-  return el.addEventListener('onmouseout', handler, true);
+export function onKeydown(
+  el: HTMLElement | Window,
+  handler: (eventListener: KeyboardEvent) => void
+) {
+  return el.addEventListener('keydown', handler as any, true);
 }
