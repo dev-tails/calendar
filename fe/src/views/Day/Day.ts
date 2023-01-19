@@ -164,10 +164,10 @@ export function Day(date?: string) {
           const times = Div({
             styles: {
               display: 'flex',
-              justifyContent: 'space-around',
               marginBottom: 'auto',
               maxWidth: '160px',
               width: '100%',
+              padding: '12px',
             },
           });
           if (event.start && event.end) {

@@ -1,8 +1,8 @@
 import { setStyle } from '../utils/DOMutils';
 
 export function MultiSelect(
-  optionEntries: [string, string][],
-  onChange: () => void
+  optionEntries: any[],
+  onChange: (option: any) => void
 ) {
   const selectEl = document.createElement('select');
   setStyle(selectEl, {
@@ -12,13 +12,15 @@ export function MultiSelect(
   });
   selectEl.multiple = true;
   selectEl.required = true;
-  optionEntries.forEach(([key, value]) => {
-    const option = document.createElement('option');
-    option.value = key;
-    option.innerText = value;
-    option.style.padding = '8px';
-    option.onchange = onChange;
-    selectEl.appendChild(option);
+  console.log('option entries', optionEntries);
+  optionEntries.forEach((option) => {
+    const { name, id } = option;
+    const optionEl = document.createElement('option');
+    optionEl.value = id;
+    optionEl.innerText = name;
+    optionEl.style.padding = '8px';
+    optionEl.onselect = onChange;
+    selectEl.appendChild(optionEl);
   });
   return selectEl;
 }

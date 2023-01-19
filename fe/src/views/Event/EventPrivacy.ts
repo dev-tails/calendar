@@ -3,8 +3,9 @@ import { Div } from '../../components/elements/Div';
 import { Label } from '../../components/elements/Label';
 import { RadioButtons } from '../../components/RadioButtons';
 import { byId } from '../../utils/DOMutils';
+import { UsersSelect } from './UsersSelect';
 
-export function EventUsers(
+export function EventPrivacy(
   selectedUsers: string[] | undefined,
   currentUserId: string,
   onEventStateChange: (eventState: Partial<IEvent>) => void
@@ -24,10 +25,7 @@ export function EventUsers(
 
   function onRadioButtonChange(privacyOption: string) {
     if (privacyOption === 'Public') {
-      const usersSelect = Div({
-        selectors: { id: 'users-select' },
-        attr: { innerHTML: 'here I will select users' },
-      });
+      const usersSelect = UsersSelect('users-select');
 
       el.appendChild(usersSelect);
       onEventStateChange({ users: [currentUserId] });

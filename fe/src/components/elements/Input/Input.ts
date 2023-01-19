@@ -13,6 +13,7 @@ interface InputAttributes extends ElementAttributes {
     | 'password'
     | 'radio';
   value?: string;
+  onkeyup: (e: KeyboardEvent) => void;
 }
 
 type InputProps = {

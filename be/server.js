@@ -68,6 +68,18 @@ async function run() {
     }
   });
 
+  server.get('/api/users', async (req, res, next) => {
+    if (req.user) {
+      const users = await User.find(
+        {},
+        { projection: { password: 0 } }
+      ).toArray();
+      res.json({ data: users });
+    } else {
+      res.sendStatus(400);
+    }
+  });
+
   server.get('/api/events', async (req, res) => {
     const start = new Date(req.query.start);
     const end = new Date(start);

@@ -61,6 +61,7 @@
 
   // src/apis/UserApi.ts
   var self = null;
+  var usersPromise = null;
   var loggedIn = false;
   function initializeUserApi() {
     return __async(this, null, function* () {
@@ -80,6 +81,20 @@
       } catch (err) {
         loggedIn = false;
         return null;
+      }
+    });
+  }
+  function getUsers() {
+    return __async(this, null, function* () {
+      try {
+        if (!usersPromise) {
+          usersPromise = yield httpGet(`/api/users/`);
+          console.log("userPromius", usersPromise);
+        }
+        const allUsers = yield usersPromise;
+        return allUsers;
+      } catch (err) {
+        return [];
       }
     });
   }
@@ -2985,10 +3000,10 @@
               const times2 = Div({
                 styles: {
                   display: "flex",
-                  justifyContent: "space-around",
                   marginBottom: "auto",
                   maxWidth: "160px",
-                  width: "100%"
+                  width: "100%",
+                  padding: "12px"
                 }
               });
               if (event.start && event.end) {
@@ -3315,8 +3330,100 @@
     return el;
   }
 
-  // src/views/Event/EventGuests.ts
-  function EventUsers(selectedUsers, currentUserId, onEventStateChange) {
+  // src/components/MultiSelect.ts
+  function MultiSelect(optionEntries, onChange2) {
+    const selectEl = document.createElement("select");
+    setStyle(selectEl, {
+      minHeight: "228px",
+      minWidth: "100px",
+      fontSize: "14px"
+    });
+    selectEl.multiple = true;
+    selectEl.required = true;
+    console.log("option entries", optionEntries);
+    optionEntries.forEach((option) => {
+      const { name, id } = option;
+      const optionEl = document.createElement("option");
+      optionEl.value = id;
+      optionEl.innerText = name;
+      optionEl.style.padding = "8px";
+      optionEl.onselect = onChange2;
+      selectEl.appendChild(optionEl);
+    });
+    return selectEl;
+  }
+
+  // src/views/Event/UsersSelect.ts
+  function UsersSelect(id) {
+    let userEntries = [];
+    const el = Div({ selectors: { id }, styles: { padding: "12px 0" } });
+    function init() {
+      return __async(this, null, function* () {
+        const users = yield getUsers();
+        users == null ? void 0 : users.forEach((user) => {
+          userEntries == null ? void 0 : userEntries.push({ id: user._id, name: user.name });
+        });
+        const selectEl = MultiSelect(userEntries, (e) => console.log("e", e));
+        const inputSearch = Div({
+          selectors: { id: "input-search" },
+          styles: {
+            position: "absolute",
+            backgroundColor: "#f6f6f6",
+            minWidth: "230px",
+            overflow: "auto",
+            zIndex: "1"
+          }
+        });
+        const input = Input({
+          selectors: { id: "myInput" },
+          attr: { placeholder: "Search user", onkeyup: filterFunction },
+          styles: __spreadProps(__spreadValues({}, inputStyles), { width: "230px" })
+        });
+        users == null ? void 0 : users.map((user) => {
+          const userOption = Div({
+            attr: { innerHTML: user.name },
+            styles: {
+              display: "none",
+              color: "black",
+              padding: "12px 16px",
+              textDecoration: "none"
+            }
+          });
+          inputSearch.appendChild(userOption);
+        });
+        el.appendChild(input);
+        el.appendChild(inputSearch);
+        function myFunction() {
+          var _a;
+          (_a = byId("input-search")) == null ? void 0 : _a.classList.toggle("show");
+        }
+        function filterFunction(e) {
+          const arrowDownKey = e.key === "ArrowDown";
+          const input2 = byId("myInput");
+          const typedInput = input2.value.toLowerCase();
+          const dropdown = byId("input-search");
+          if (!dropdown) {
+            return;
+          }
+          dropdown.style.display = typedInput || arrowDownKey ? "" : "none";
+          const options = dropdown == null ? void 0 : dropdown.getElementsByTagName("div");
+          if (options == null ? void 0 : options.length) {
+            Array.from(options).forEach((option) => {
+              const textValue = option.innerText;
+              const match = textValue.toLowerCase().indexOf(typedInput) > -1;
+              option.style.display = match ? "block" : "none";
+              option.onclick = () => console.log("option", option);
+            });
+          }
+        }
+      });
+    }
+    init();
+    return el;
+  }
+
+  // src/views/Event/EventPrivacy.ts
+  function EventPrivacy(selectedUsers, currentUserId, onEventStateChange) {
     const el = Div({ styles: { padding: "12px" } });
     const isPrivateEvent = (selectedUsers == null ? void 0 : selectedUsers.length) === 1 && selectedUsers[0] === currentUserId;
     const privacy = isPrivateEvent ? "Private" : "Public";
@@ -3328,10 +3435,7 @@
     });
     function onRadioButtonChange(privacyOption) {
       if (privacyOption === "Public") {
-        const usersSelect = Div({
-          selectors: { id: "users-select" },
-          attr: { innerHTML: "here I will select users" }
-        });
+        const usersSelect = UsersSelect("users-select");
         el.appendChild(usersSelect);
         onEventStateChange({ users: [currentUserId] });
       } else {
@@ -3440,7 +3544,7 @@
     form.appendChild(descriptionContainer);
     const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
-    const guests = EventUsers(eventState == null ? void 0 : eventState.users, currentUserId, setEventState);
+    const guests = EventPrivacy(eventState == null ? void 0 : eventState.users, currentUserId, setEventState);
     form.appendChild(guests);
     const buttons = Div({
       styles: { marginTop: "8px", padding: "12px" }

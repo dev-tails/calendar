@@ -12,7 +12,7 @@ import { createEvent, editEvent } from '../../apis/EventApi';
 import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
 import { times } from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
-import { EventUsers } from './EventGuests';
+import { EventPrivacy } from './EventPrivacy';
 
 export function EventForm(event: IEvent, currentUserId: string) {
   const eventState: IEvent = { ...event };
@@ -121,7 +121,7 @@ export function EventForm(event: IEvent, currentUserId: string) {
   const dateContainer = EventDateSelect(eventState, setEventState);
   form.appendChild(dateContainer);
 
-  const guests = EventUsers(eventState?.users, currentUserId, setEventState);
+  const guests = EventPrivacy(eventState?.users, currentUserId, setEventState);
   form.appendChild(guests);
 
   const buttons = Div({

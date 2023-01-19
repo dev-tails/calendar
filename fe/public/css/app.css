@@ -43,3 +43,7 @@ input::placeholder,
 textarea::placeholder {
   color: #cccccc;
 }
+
+.show {
+  display: 'block';
+}
