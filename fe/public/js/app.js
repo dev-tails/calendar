@@ -3031,7 +3031,7 @@
                 styles: {
                   display: "flex",
                   marginBottom: "auto",
-                  maxWidth: "160px",
+                  maxWidth: "180px",
                   width: "100%",
                   padding: "8px 12px"
                 }
