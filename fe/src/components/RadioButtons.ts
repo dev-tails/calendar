@@ -10,7 +10,7 @@ type RadioButtonsProps = {
 };
 
 export function RadioButtons(props: RadioButtonsProps) {
-  const el = Div({ styles: { marginBottom: '12px' } });
+  const el = Div({ styles: { display: 'flex' } });
 
   props.options?.map((option) => {
     const firstLabel = Label({
@@ -28,7 +28,7 @@ export function RadioButtons(props: RadioButtonsProps) {
           props.onChange((e.target as HTMLInputElement).value);
         },
       },
-      styles: { marginRight: '4px', cursor: 'pointer' },
+      styles: { margin: '0 4px', cursor: 'pointer' },
     });
     el.appendChild(first);
     el.appendChild(firstLabel);

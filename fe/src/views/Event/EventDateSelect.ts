@@ -41,7 +41,7 @@ export function EventDateSelect(
     datesContainer.appendChild(endTimeInput());
   }
 
-  const allDayContainer = Div();
+  const allDayContainer = Div({ styles: { ...flexAlignItemsCenter } });
   const allDayInput = Input({
     attr: {
       type: 'checkbox',
@@ -51,11 +51,13 @@ export function EventDateSelect(
     selectors: {
       id: 'allDay',
     },
+    styles: { cursor: 'pointer' },
   });
   allDayContainer.appendChild(allDayInput);
 
   const allDayLabel = Label({
     attr: { innerText: 'All day', for: 'allDay' },
+    styles: { marginLeft: '4px' },
   });
   allDayContainer.appendChild(allDayLabel);
 

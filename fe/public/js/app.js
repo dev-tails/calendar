@@ -3201,7 +3201,7 @@
       datesContainer.appendChild(toLabel);
       datesContainer.appendChild(endTimeInput());
     }
-    const allDayContainer = Div();
+    const allDayContainer = Div({ styles: __spreadValues({}, flexAlignItemsCenter) });
     const allDayInput = Input({
       attr: {
         type: "checkbox",
@@ -3210,11 +3210,13 @@
       },
       selectors: {
         id: "allDay"
-      }
+      },
+      styles: { cursor: "pointer" }
     });
     allDayContainer.appendChild(allDayInput);
     const allDayLabel = Label({
-      attr: { innerText: "All day", for: "allDay" }
+      attr: { innerText: "All day", for: "allDay" },
+      styles: { marginLeft: "4px" }
     });
     allDayContainer.appendChild(allDayLabel);
     function dateTimeString() {
@@ -3336,7 +3338,7 @@
   // src/components/RadioButtons.ts
   function RadioButtons(props) {
     var _a;
-    const el = Div({ styles: { marginBottom: "12px" } });
+    const el = Div({ styles: { display: "flex" } });
     (_a = props.options) == null ? void 0 : _a.map((option) => {
       const firstLabel = Label({
         attr: { for: option, innerText: option },
@@ -3353,7 +3355,7 @@
             props.onChange(e.target.value);
           }
         },
-        styles: { marginRight: "4px", cursor: "pointer" }
+        styles: { margin: "0 4px", cursor: "pointer" }
       });
       el.appendChild(first);
       el.appendChild(firstLabel);
@@ -3363,16 +3365,20 @@
 
   // src/views/Event/UsersCheckboxes.ts
   function UsersCheckboxes(id, selectedUserIds, onChange2) {
-    const checkboxEl = Div({ selectors: { id } });
+    const checkboxEl = Div({
+      selectors: { id },
+      styles: { padding: "0 12px 12px" }
+    });
     function init() {
       return __async(this, null, function* () {
         const currentUser = yield fetchSelf();
         const users2 = yield getUsers();
-        const isPrivateEvent = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === (currentUser == null ? void 0 : currentUser._id);
         const everyone = !selectedUserIds.length;
-        let selectedIds = isPrivateEvent || everyone ? users2.map((user) => user._id) : selectedUserIds;
+        let selectedIds = everyone ? users2.map((user) => user._id) : selectedUserIds;
         users2.forEach((option) => {
-          const optionContainer = Div({ styles: { padding: "4px 0" } });
+          const optionContainer = Div({
+            styles: __spreadValues({ padding: "4px 0" }, flexAlignItemsCenter)
+          });
           const { name, _id } = option;
           const optionLabel = Label({
             attr: { innerText: name, for: name }
@@ -3400,7 +3406,8 @@
               }
             },
             styles: {
-              cursor: "pointer"
+              cursor: "pointer",
+              marginRight: "8px"
             }
           });
           optionContainer.appendChild(optionEl);
@@ -3415,12 +3422,19 @@
 
   // src/views/Event/EventPrivacy.ts
   function EventPrivacy(currentUserId, selectedUserIds, onEventStateChange) {
-    const el = Div({ styles: { padding: "12px" } });
+    const el = Div();
+    const sharedOptions = Div({
+      styles: __spreadValues({ padding: "12px" }, flexAlignItemsCenter)
+    });
+    const label = Label({
+      attr: { innerText: "Who can see this?" },
+      styles: { marginRight: "8px" }
+    });
     const isPrivateEvent = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === currentUserId;
-    let eventPrivacy = isPrivateEvent ? "Private" : "Public";
+    let eventPrivacy = isPrivateEvent ? "Me" : "Others";
     const privacyRadioButtons = RadioButtons({
       selected: eventPrivacy,
-      options: ["Private", "Public"],
+      options: ["Me", "Others"],
       onChange: onRadioButtonChange
     });
     const usersCheckboxes = UsersCheckboxes(
@@ -3431,18 +3445,21 @@
       }
     );
     function onRadioButtonChange(privacyOption) {
-      if (privacyOption === "Public") {
-        onEventStateChange({ users: [] });
+      onEventStateChange({
+        users: [currentUserId]
+      });
+      if (privacyOption === "Others") {
         el.appendChild(usersCheckboxes);
       } else {
-        onEventStateChange({ users: [currentUserId] });
         const usersSelect = byId("users-select");
         usersSelect && el.removeChild(usersSelect);
       }
     }
-    el.appendChild(privacyRadioButtons);
-    if (eventPrivacy === "Public") {
-      el.appendChild(usersCheckboxes);
+    sharedOptions.appendChild(label);
+    sharedOptions.appendChild(privacyRadioButtons);
+    el.appendChild(sharedOptions);
+    if (eventPrivacy === "Others") {
+      el.append(usersCheckboxes);
     }
     return el;
   }

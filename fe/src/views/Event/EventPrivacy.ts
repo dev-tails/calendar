@@ -1,6 +1,8 @@
 import { Div } from '../../components/elements/Div';
+import { Label } from '../../components/elements/Label';
 import { RadioButtons } from '../../components/RadioButtons';
 import { byId } from '../../utils/DOMutils';
+import { flexAlignItemsCenter } from '../../utils/styles';
 import { UsersCheckboxes } from './UsersCheckboxes';
 
 export function EventPrivacy(
@@ -8,18 +10,23 @@ export function EventPrivacy(
   selectedUserIds: string[],
   onEventStateChange: (eventState: Partial<IEvent>) => void
 ) {
-  const el = Div({ styles: { padding: '12px' } });
+  const el = Div();
+  const sharedOptions = Div({
+    styles: { padding: '12px', ...flexAlignItemsCenter },
+  });
+  const label = Label({
+    attr: { innerText: 'Who can see this?' },
+    styles: { marginRight: '8px' },
+  });
 
   const isPrivateEvent =
     selectedUserIds?.length === 1 && selectedUserIds[0] === currentUserId;
 
-  let eventPrivacy: 'Private' | 'Public' = isPrivateEvent
-    ? 'Private'
-    : 'Public';
+  let eventPrivacy: 'Me' | 'Others' = isPrivateEvent ? 'Me' : 'Others';
 
   const privacyRadioButtons = RadioButtons({
     selected: eventPrivacy,
-    options: ['Private', 'Public'],
+    options: ['Me', 'Others'],
     onChange: onRadioButtonChange,
   });
 
@@ -32,20 +39,23 @@ export function EventPrivacy(
   );
 
   function onRadioButtonChange(privacyOption: string) {
-    if (privacyOption === 'Public') {
-      onEventStateChange({ users: [] });
+    onEventStateChange({
+      users: [currentUserId],
+    });
+    if (privacyOption === 'Others') {
       el.appendChild(usersCheckboxes);
     } else {
-      onEventStateChange({ users: [currentUserId] });
       const usersSelect = byId('users-select');
       usersSelect && el.removeChild(usersSelect);
     }
   }
 
-  el.appendChild(privacyRadioButtons);
+  sharedOptions.appendChild(label);
+  sharedOptions.appendChild(privacyRadioButtons);
+  el.appendChild(sharedOptions);
 
-  if (eventPrivacy === 'Public') {
-    el.appendChild(usersCheckboxes);
+  if (eventPrivacy === 'Others') {
+    el.append(usersCheckboxes);
   }
 
   return el;
