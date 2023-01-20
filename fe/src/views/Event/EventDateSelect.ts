@@ -51,7 +51,6 @@ export function EventDateSelect(
     selectors: {
       id: 'allDay',
     },
-    styles: { cursor: 'pointer' },
   });
   allDayContainer.appendChild(allDayInput);
 

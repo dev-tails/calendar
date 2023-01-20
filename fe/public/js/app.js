@@ -3210,8 +3210,7 @@
       },
       selectors: {
         id: "allDay"
-      },
-      styles: { cursor: "pointer" }
+      }
     });
     allDayContainer.appendChild(allDayInput);
     const allDayLabel = Label({
@@ -3355,7 +3354,7 @@
             props.onChange(e.target.value);
           }
         },
-        styles: { margin: "0 4px", cursor: "pointer" }
+        styles: { margin: "0 4px" }
       });
       el.appendChild(first);
       el.appendChild(firstLabel);
@@ -3380,9 +3379,7 @@
             styles: __spreadValues({ padding: "4px 0" }, flexAlignItemsCenter)
           });
           const { name, _id } = option;
-          const optionLabel = Label({
-            attr: { innerText: name, for: name }
-          });
+          const optionLabel = Label({ attr: { innerText: name, for: name } });
           const optionEl = Input({
             selectors: {
               id: _id
@@ -3406,7 +3403,6 @@
               }
             },
             styles: {
-              cursor: "pointer",
               marginRight: "8px"
             }
           });

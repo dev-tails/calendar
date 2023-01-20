@@ -2,7 +2,7 @@ import { fetchSelf, getUsers } from '../../apis/UserApi';
 import { Div } from '../../components/elements/Div';
 import { Input } from '../../components/elements/Input/Input';
 import { Label } from '../../components/elements/Label';
-import { flexAlignItemsCenter } from '../../utils/styles';
+import { basics, flexAlignItemsCenter } from '../../utils/styles';
 
 export function UsersCheckboxes(
   id: string,
@@ -30,9 +30,7 @@ export function UsersCheckboxes(
       });
       const { name, _id } = option;
 
-      const optionLabel = Label({
-        attr: { innerText: name, for: name },
-      });
+      const optionLabel = Label({ attr: { innerText: name, for: name } });
 
       const optionEl = Input({
         selectors: {
@@ -59,7 +57,6 @@ export function UsersCheckboxes(
           },
         },
         styles: {
-          cursor: 'pointer',
           marginRight: '8px',
         },
       });

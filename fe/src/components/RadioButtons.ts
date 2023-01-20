@@ -28,7 +28,7 @@ export function RadioButtons(props: RadioButtonsProps) {
           props.onChange((e.target as HTMLInputElement).value);
         },
       },
-      styles: { margin: '0 4px', cursor: 'pointer' },
+      styles: { margin: '0 4px' },
     });
     el.appendChild(first);
     el.appendChild(firstLabel);

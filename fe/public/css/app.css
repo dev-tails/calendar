@@ -44,6 +44,15 @@ textarea::placeholder {
   color: #cccccc;
 }
 
+input[type='checkbox'],
+input[type='radio'] {
+  cursor: pointer;
+}
+
+input[type='checkbox']:disabled {
+  cursor: not-allowed;
+}
+
 .show {
   display: 'block';
 }
