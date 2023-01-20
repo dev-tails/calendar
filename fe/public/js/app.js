@@ -3494,7 +3494,7 @@
             onmouseover: () => {
               const button = byId("cancel-btn");
               if (button) {
-                button.style.color = colors.lightOrange;
+                button.style.color = colors.mandarine;
               }
             },
             onmouseout: () => {
@@ -5898,13 +5898,99 @@
       return __async(this, null, function* () {
         var _a;
         users2 = yield getUsers();
+        const titleContainer = Div({
+          styles: {
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between"
+          }
+        });
         const title = H3({
           attr: {
             innerText: event.title
           },
-          styles: { padding: "4px 0" }
+          styles: { padding: "4px 0", marginRight: "8px" }
         });
-        el.appendChild(title);
+        const buttons = Div({
+          styles: __spreadProps(__spreadValues({}, styles2), {
+            display: "flex",
+            alignItems: "flex-start",
+            marginTop: "0"
+          })
+        });
+        const remove2 = Button({
+          selectors: { id: "remove-event-btn" },
+          attr: {
+            innerHTML: trash,
+            onclick: (e) => __async(this, null, function* () {
+              e.preventDefault();
+              try {
+                yield deleteEvent(event._id);
+                setURL("/");
+              } catch (e2) {
+                const temporaryError = Div({
+                  attr: {
+                    innerText: "Could not delete event"
+                  }
+                });
+                el.appendChild(temporaryError);
+              }
+            }),
+            onmouseover: () => {
+              const button = byId("remove-event-btn");
+              if (button) {
+                button.style.opacity = ".7";
+              }
+            },
+            onmouseout: () => {
+              const button = byId("remove-event-btn");
+              if (button) {
+                button.style.opacity = "1";
+              }
+            }
+          },
+          styles: __spreadProps(__spreadValues({}, buttonStyles), {
+            fontSize: "17px",
+            padding: "8px",
+            marginLeft: "4px",
+            background: "none",
+            color: colors.mandarine,
+            opacity: ".9"
+          })
+        });
+        const edit = Button({
+          selectors: { id: "edit-event-btn" },
+          attr: {
+            innerHTML: pencil,
+            onclick: (e) => __async(this, null, function* () {
+              e.preventDefault();
+              setURL(`/events/edit/${event._id}`);
+            }),
+            onmouseover: () => {
+              const button = byId("edit-event-btn");
+              if (button) {
+                button.style.opacity = ".7";
+              }
+            },
+            onmouseout: () => {
+              const button = byId("edit-event-btn");
+              if (button) {
+                button.style.opacity = "1";
+              }
+            }
+          },
+          styles: __spreadProps(__spreadValues({}, buttonStyles), {
+            fontSize: "17px",
+            background: "none",
+            color: colors.royalBlueLight,
+            padding: "8px"
+          })
+        });
+        buttons.appendChild(edit);
+        buttons.appendChild(remove2);
+        titleContainer.appendChild(title);
+        titleContainer.appendChild(buttons);
+        el.appendChild(titleContainer);
         if (event.description) {
           const description = Div({ styles: styles2 });
           description.innerHTML = es2015_default.link(event.description);
@@ -5932,7 +6018,7 @@
           end3.innerHTML = `End: ${endDate}`;
           el.appendChild(end3);
         }
-        const guests = Div({ styles: styles2 });
+        const guests = Div({ styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0 32px" }) });
         const usersList = ((_a = event.users) == null ? void 0 : _a.length) ? users2.filter((user) => {
           var _a2;
           return (_a2 = event.users) == null ? void 0 : _a2.includes(user._id);
@@ -5970,70 +6056,6 @@
           guests.appendChild(container);
         });
         el.appendChild(guests);
-        const buttons = Div({ styles: { marginTop: "32px" } });
-        const remove2 = Button({
-          selectors: { id: "remove-event-btn" },
-          attr: {
-            innerHTML: trash,
-            onclick: (e) => __async(this, null, function* () {
-              e.preventDefault();
-              try {
-                yield deleteEvent(event._id);
-                setURL("/");
-              } catch (e2) {
-                const temporaryError = Div({
-                  attr: {
-                    innerText: "Could not delete event"
-                  }
-                });
-                el.appendChild(temporaryError);
-              }
-            }),
-            onmouseover: () => {
-              const button = byId("remove-event-btn");
-              if (button) {
-                button.style.opacity = ".9";
-              }
-            },
-            onmouseout: () => {
-              const button = byId("remove-event-btn");
-              if (button) {
-                button.style.opacity = "1";
-              }
-            }
-          },
-          styles: __spreadProps(__spreadValues({}, buttonStyles), {
-            marginLeft: "12px",
-            backgroundColor: colors.lightOrange,
-            color: basics.whiteColor
-          })
-        });
-        const edit = Button({
-          selectors: { id: "edit-event-btn" },
-          attr: {
-            innerHTML: pencil,
-            onclick: (e) => __async(this, null, function* () {
-              e.preventDefault();
-              setURL(`/events/edit/${event._id}`);
-            }),
-            onmouseover: () => {
-              const button = byId("edit-event-btn");
-              if (button) {
-                button.style.opacity = ".9";
-              }
-            },
-            onmouseout: () => {
-              const button = byId("edit-event-btn");
-              if (button) {
-                button.style.opacity = "1";
-              }
-            }
-          },
-          styles: buttonStyles
-        });
-        buttons.appendChild(edit);
-        buttons.appendChild(remove2);
-        el.appendChild(buttons);
       });
     }
     init();

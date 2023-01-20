@@ -38,13 +38,105 @@ export function Event(event: IEvent) {
   async function init() {
     users = await getUsers();
 
+    const titleContainer = Div({
+      styles: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+      },
+    });
     const title = H3({
       attr: {
         innerText: event.title,
       },
-      styles: { padding: '4px 0' },
+      styles: { padding: '4px 0', marginRight: '8px' },
     });
-    el.appendChild(title);
+
+    const buttons = Div({
+      styles: {
+        ...styles,
+        display: 'flex',
+        alignItems: 'flex-start',
+        marginTop: '0',
+      },
+    });
+    const remove = Button({
+      selectors: { id: 'remove-event-btn' },
+      attr: {
+        innerHTML: trash,
+        onclick: async (e) => {
+          e.preventDefault();
+          try {
+            await deleteEvent(event._id);
+            setURL('/');
+          } catch (e) {
+            const temporaryError = Div({
+              attr: {
+                innerText: 'Could not delete event',
+              },
+            });
+            el.appendChild(temporaryError);
+          }
+        },
+        onmouseover: () => {
+          const button = byId('remove-event-btn');
+          if (button) {
+            button.style.opacity = '.7';
+          }
+        },
+        onmouseout: () => {
+          const button = byId('remove-event-btn');
+          if (button) {
+            button.style.opacity = '1';
+          }
+        },
+      },
+      styles: {
+        ...buttonStyles,
+        fontSize: '17px',
+        padding: '8px',
+        marginLeft: '4px',
+        background: 'none',
+        color: colors.mandarine,
+        opacity: '.9',
+      },
+    });
+    const edit = Button({
+      selectors: { id: 'edit-event-btn' },
+      attr: {
+        innerHTML: pencil,
+        onclick: async (e) => {
+          e.preventDefault();
+          setURL(`/events/edit/${event._id}`);
+        },
+        onmouseover: () => {
+          const button = byId('edit-event-btn');
+          if (button) {
+            button.style.opacity = '.7';
+          }
+        },
+        onmouseout: () => {
+          const button = byId('edit-event-btn');
+          if (button) {
+            button.style.opacity = '1';
+          }
+        },
+      },
+      styles: {
+        ...buttonStyles,
+        fontSize: '17px',
+        background: 'none',
+        color: colors.royalBlueLight,
+        padding: '8px',
+      },
+    });
+
+    buttons.appendChild(edit);
+    buttons.appendChild(remove);
+
+    titleContainer.appendChild(title);
+    titleContainer.appendChild(buttons);
+    el.appendChild(titleContainer);
 
     if (event.description) {
       const description = Div({ styles });
@@ -78,7 +170,7 @@ export function Event(event: IEvent) {
       el.appendChild(end);
     }
 
-    const guests = Div({ styles });
+    const guests = Div({ styles: { ...styles, margin: '8px 0 32px' } });
     const usersList = event.users?.length
       ? users.filter((user) => event.users?.includes(user._id))
       : users;
@@ -119,73 +211,6 @@ export function Event(event: IEvent) {
     });
 
     el.appendChild(guests);
-
-    const buttons = Div({ styles: { marginTop: '32px' } });
-    const remove = Button({
-      selectors: { id: 'remove-event-btn' },
-      attr: {
-        innerHTML: trash,
-        onclick: async (e) => {
-          e.preventDefault();
-          try {
-            await deleteEvent(event._id);
-            setURL('/');
-          } catch (e) {
-            const temporaryError = Div({
-              attr: {
-                innerText: 'Could not delete event',
-              },
-            });
-            el.appendChild(temporaryError);
-          }
-        },
-        onmouseover: () => {
-          const button = byId('remove-event-btn');
-          if (button) {
-            button.style.opacity = '.9';
-          }
-        },
-        onmouseout: () => {
-          const button = byId('remove-event-btn');
-          if (button) {
-            button.style.opacity = '1';
-          }
-        },
-      },
-      styles: {
-        ...buttonStyles,
-        marginLeft: '12px',
-        backgroundColor: colors.lightOrange,
-        color: basics.whiteColor,
-      },
-    });
-    const edit = Button({
-      selectors: { id: 'edit-event-btn' },
-      attr: {
-        innerHTML: pencil,
-        onclick: async (e) => {
-          e.preventDefault();
-          setURL(`/events/edit/${event._id}`);
-        },
-        onmouseover: () => {
-          const button = byId('edit-event-btn');
-          if (button) {
-            button.style.opacity = '.9';
-          }
-        },
-        onmouseout: () => {
-          const button = byId('edit-event-btn');
-          if (button) {
-            button.style.opacity = '1';
-          }
-        },
-      },
-      styles: buttonStyles,
-    });
-
-    buttons.appendChild(edit);
-    buttons.appendChild(remove);
-    el.appendChild(buttons);
   }
 
   init();

@@ -67,7 +67,7 @@ export function EventForm(event?: IEvent) {
         onmouseover: () => {
           const button = byId('cancel-btn');
           if (button) {
-            button.style.color = colors.lightOrange;
+            button.style.color = colors.mandarine;
           }
         },
         onmouseout: () => {
