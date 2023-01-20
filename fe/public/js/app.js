@@ -5886,107 +5886,153 @@
     marginTop: "8px"
   };
   function Event2(event) {
+    let users2 = [];
     const el = Div({
       styles: { padding: "12px", margin: "8px auto auto", maxWidth: "600px" }
     });
-    const title = H3({
-      attr: {
-        innerText: event.title
-      },
-      styles: { padding: "4px 0" }
-    });
-    el.appendChild(title);
-    if (event.description) {
-      const description = Div({ styles: styles2 });
-      description.innerHTML = es2015_default.link(event.description);
-      el.appendChild(description);
-    }
-    if (event.allDay) {
-      const day = Div({ styles: styles2 });
-      const localDay = convertMidnightUTCToLocalDay(event.start);
-      day.innerText = `${formatDateTime("en-CA", dateOptions, localDay)}`;
-      el.appendChild(day);
-    } else {
-      const start = Div({
-        attr: {
-          innerText: `Start: ${formatDateTime(
-            "en-CA",
-            dateTimeOptions,
-            event.start
-          )}`
-        },
-        styles: styles2
-      });
-      el.appendChild(start);
-      const end3 = Div({ styles: __spreadProps(__spreadValues({}, styles2), { marginTop: "0" }) });
-      const endDate = event.end ? `${formatDateTime("en-CA", dateTimeOptions, event.end)}` : "";
-      end3.innerHTML = `End: ${endDate}`;
-      el.appendChild(end3);
-    }
-    const buttons = Div({ styles: { marginTop: "40px" } });
-    const remove2 = Button({
-      selectors: { id: "remove-event-btn" },
-      attr: {
-        innerHTML: trash,
-        onclick: (e) => __async(this, null, function* () {
-          e.preventDefault();
-          try {
-            yield deleteEvent(event._id);
-            setURL("/");
-          } catch (e2) {
-            const temporaryError = Div({
-              attr: {
-                innerText: "Could not delete event"
+    function init() {
+      return __async(this, null, function* () {
+        var _a;
+        users2 = yield getUsers();
+        const title = H3({
+          attr: {
+            innerText: event.title
+          },
+          styles: { padding: "4px 0" }
+        });
+        el.appendChild(title);
+        if (event.description) {
+          const description = Div({ styles: styles2 });
+          description.innerHTML = es2015_default.link(event.description);
+          el.appendChild(description);
+        }
+        if (event.allDay) {
+          const day = Div({ styles: styles2 });
+          const localDay = convertMidnightUTCToLocalDay(event.start);
+          day.innerText = `${formatDateTime("en-CA", dateOptions, localDay)}`;
+          el.appendChild(day);
+        } else {
+          const start = Div({
+            attr: {
+              innerText: `Start: ${formatDateTime(
+                "en-CA",
+                dateTimeOptions,
+                event.start
+              )}`
+            },
+            styles: styles2
+          });
+          el.appendChild(start);
+          const end3 = Div({ styles: __spreadProps(__spreadValues({}, styles2), { marginTop: "0" }) });
+          const endDate = event.end ? `${formatDateTime("en-CA", dateTimeOptions, event.end)}` : "";
+          end3.innerHTML = `End: ${endDate}`;
+          el.appendChild(end3);
+        }
+        const guests = Div({ styles: styles2 });
+        const usersList = ((_a = event.users) == null ? void 0 : _a.length) ? users2.filter((user) => {
+          var _a2;
+          return (_a2 = event.users) == null ? void 0 : _a2.includes(user._id);
+        }) : users2;
+        const guestsLabel = Label({ attr: { innerHTML: "Guests:" } });
+        guests.appendChild(guestsLabel);
+        usersList.map((user) => {
+          const container = Div({
+            styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), { margin: "12px 0" })
+          });
+          const userIcon = Div({
+            styles: {
+              display: "flex",
+              flexShrink: "0",
+              justifyContent: "center",
+              alignItems: "center",
+              fontWeight: "bold",
+              borderRadius: "999px",
+              height: "30px",
+              width: "30px",
+              backgroundColor: user.color || "black",
+              color: "white",
+              textAlign: "center",
+              lineHeight: "30px",
+              marginRight: "10px",
+              fontSize: "12px"
+            }
+          });
+          const firstInitial = user.name.charAt(0);
+          const lastInitial = user.name.split(" ")[1].charAt(0);
+          userIcon.innerText = firstInitial + lastInitial;
+          const name = Div({ attr: { innerHTML: user.name } });
+          container.append(userIcon);
+          container.append(name);
+          guests.appendChild(container);
+        });
+        el.appendChild(guests);
+        const buttons = Div({ styles: { marginTop: "32px" } });
+        const remove2 = Button({
+          selectors: { id: "remove-event-btn" },
+          attr: {
+            innerHTML: trash,
+            onclick: (e) => __async(this, null, function* () {
+              e.preventDefault();
+              try {
+                yield deleteEvent(event._id);
+                setURL("/");
+              } catch (e2) {
+                const temporaryError = Div({
+                  attr: {
+                    innerText: "Could not delete event"
+                  }
+                });
+                el.appendChild(temporaryError);
               }
-            });
-            el.appendChild(temporaryError);
-          }
-        }),
-        onmouseover: () => {
-          const button = byId("remove-event-btn");
-          if (button) {
-            button.style.opacity = ".9";
-          }
-        },
-        onmouseout: () => {
-          const button = byId("remove-event-btn");
-          if (button) {
-            button.style.opacity = "1";
-          }
-        }
-      },
-      styles: __spreadProps(__spreadValues({}, buttonStyles), {
-        marginLeft: "12px",
-        backgroundColor: colors.lightOrange,
-        color: basics.whiteColor
-      })
-    });
-    const edit = Button({
-      selectors: { id: "edit-event-btn" },
-      attr: {
-        innerHTML: pencil,
-        onclick: (e) => __async(this, null, function* () {
-          e.preventDefault();
-          setURL(`/events/edit/${event._id}`);
-        }),
-        onmouseover: () => {
-          const button = byId("edit-event-btn");
-          if (button) {
-            button.style.opacity = ".9";
-          }
-        },
-        onmouseout: () => {
-          const button = byId("edit-event-btn");
-          if (button) {
-            button.style.opacity = "1";
-          }
-        }
-      },
-      styles: buttonStyles
-    });
-    buttons.appendChild(edit);
-    buttons.appendChild(remove2);
-    el.appendChild(buttons);
+            }),
+            onmouseover: () => {
+              const button = byId("remove-event-btn");
+              if (button) {
+                button.style.opacity = ".9";
+              }
+            },
+            onmouseout: () => {
+              const button = byId("remove-event-btn");
+              if (button) {
+                button.style.opacity = "1";
+              }
+            }
+          },
+          styles: __spreadProps(__spreadValues({}, buttonStyles), {
+            marginLeft: "12px",
+            backgroundColor: colors.lightOrange,
+            color: basics.whiteColor
+          })
+        });
+        const edit = Button({
+          selectors: { id: "edit-event-btn" },
+          attr: {
+            innerHTML: pencil,
+            onclick: (e) => __async(this, null, function* () {
+              e.preventDefault();
+              setURL(`/events/edit/${event._id}`);
+            }),
+            onmouseover: () => {
+              const button = byId("edit-event-btn");
+              if (button) {
+                button.style.opacity = ".9";
+              }
+            },
+            onmouseout: () => {
+              const button = byId("edit-event-btn");
+              if (button) {
+                button.style.opacity = "1";
+              }
+            }
+          },
+          styles: buttonStyles
+        });
+        buttons.appendChild(edit);
+        buttons.appendChild(remove2);
+        el.appendChild(buttons);
+      });
+    }
+    init();
     return el;
   }
 
