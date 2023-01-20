@@ -124,7 +124,7 @@ export function Day(date?: string) {
       styles: arrowStyles,
     });
 
-    onKeydown(document, changeActiveDay);
+    // onKeydown(document, changeActiveDay);
     headerDate.appendChild(prevDay);
     headerDate.appendChild(nextDay);
     headerDate.appendChild(title);

@@ -1,13 +1,16 @@
 import { httpGet } from './Api';
 
 let self: User | null = null;
+let selfPromise: User | null = null;
+
 let users: User[] | null = null;
 let usersPromise: User[] | null = null;
+
 let loggedIn = false;
 
 export async function initializeUserApi() {
   self = await fetchSelf();
-  return self;
+  users = await getUsers();
 }
 
 export function isLoggedIn() {
@@ -16,9 +19,11 @@ export function isLoggedIn() {
 
 export async function fetchSelf() {
   try {
-    const user = await httpGet<User>('/api/users/self');
+    if (!selfPromise) {
+      selfPromise = await httpGet(`/api/users/self`);
+    }
+    const user = selfPromise;
 
-    loggedIn = user ? true : false;
     return user;
   } catch (err) {
     loggedIn = false;
@@ -26,19 +31,18 @@ export async function fetchSelf() {
   }
 }
 
-export async function getUsers(): Promise<User[] | null> {
+export async function getUsers(): Promise<User[]> {
   try {
     if (!usersPromise) {
       usersPromise = await httpGet(`/api/users/`);
-      console.log('userPromius', usersPromise);
     }
 
-    const allUsers = await usersPromise;
+    const allUsers = usersPromise || [];
 
-    // bIsLoggedIn = true;
+    loggedIn = true;
     return allUsers;
   } catch (err) {
-    // bIsLoggedIn = false;
+    loggedIn = false;
     return [];
   }
 }

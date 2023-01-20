@@ -16,7 +16,6 @@ export function EventDateSelect(
   event: IEvent,
   onEventStateChange: (eventState: Partial<IEvent>) => void
 ) {
-  console.log('event', event);
   const el = Div({
     styles: {
       ...flexAlignItemsCenter,

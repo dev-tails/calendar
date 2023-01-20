@@ -2,6 +2,7 @@ import { Element, ElementAttributes, Selectors } from '../Element';
 
 interface InputAttributes extends ElementAttributes {
   checked?: boolean;
+  disabled?: boolean;
   placeholder?: string;
   required?: boolean;
   type?:
@@ -13,7 +14,7 @@ interface InputAttributes extends ElementAttributes {
     | 'password'
     | 'radio';
   value?: string;
-  onkeyup: (e: KeyboardEvent) => void;
+  onkeyup?: (e: KeyboardEvent) => void;
 }
 
 type InputProps = {

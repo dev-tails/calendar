@@ -4,11 +4,11 @@ import { Router } from './views/Router';
 async function run() {
   const root = document.getElementById('root');
 
-  const self = await initializeUserApi();
+  await initializeUserApi();
   const isAuthenticated = isLoggedIn();
 
   if (root) {
-    const router = Router(isAuthenticated, self);
+    const router = Router(isAuthenticated);
     root.append(router);
   }
 }

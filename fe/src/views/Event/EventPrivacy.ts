@@ -1,21 +1,21 @@
-import { fetchSelf } from '../../apis/UserApi';
 import { Div } from '../../components/elements/Div';
-import { Label } from '../../components/elements/Label';
 import { RadioButtons } from '../../components/RadioButtons';
 import { byId } from '../../utils/DOMutils';
-import { UsersSelect } from './UsersSelect';
+import { UsersCheckboxes } from './UsersCheckboxes';
 
 export function EventPrivacy(
-  selectedUsers: string[] | undefined,
   currentUserId: string,
+  selectedUserIds: string[],
   onEventStateChange: (eventState: Partial<IEvent>) => void
 ) {
   const el = Div({ styles: { padding: '12px' } });
-  const isPrivateEvent =
-    selectedUsers?.length === 1 && selectedUsers[0] === currentUserId;
-  const privacy = isPrivateEvent ? 'Private' : 'Public';
 
-  let eventPrivacy: 'Private' | 'Public' = privacy;
+  const isPrivateEvent =
+    selectedUserIds?.length === 1 && selectedUserIds[0] === currentUserId;
+
+  let eventPrivacy: 'Private' | 'Public' = isPrivateEvent
+    ? 'Private'
+    : 'Public';
 
   const privacyRadioButtons = RadioButtons({
     selected: eventPrivacy,
@@ -23,20 +23,30 @@ export function EventPrivacy(
     onChange: onRadioButtonChange,
   });
 
+  const usersCheckboxes = UsersCheckboxes(
+    'users-select',
+    selectedUserIds,
+    (ids: string[]) => {
+      onEventStateChange({ users: ids });
+    }
+  );
+
   function onRadioButtonChange(privacyOption: string) {
     if (privacyOption === 'Public') {
-      const usersSelect = UsersSelect('users-select');
-
-      el.appendChild(usersSelect);
-      onEventStateChange({ users: [currentUserId] });
+      onEventStateChange({ users: [] });
+      el.appendChild(usersCheckboxes);
     } else {
+      onEventStateChange({ users: [currentUserId] });
       const usersSelect = byId('users-select');
       usersSelect && el.removeChild(usersSelect);
-      onEventStateChange({ users: [] });
     }
   }
 
   el.appendChild(privacyRadioButtons);
+
+  if (eventPrivacy === 'Public') {
+    el.appendChild(usersCheckboxes);
+  }
 
   return el;
 }

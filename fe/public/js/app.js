@@ -61,12 +61,14 @@
 
   // src/apis/UserApi.ts
   var self = null;
+  var selfPromise = null;
+  var users = null;
   var usersPromise = null;
   var loggedIn = false;
   function initializeUserApi() {
     return __async(this, null, function* () {
       self = yield fetchSelf();
-      return self;
+      users = yield getUsers();
     });
   }
   function isLoggedIn() {
@@ -75,8 +77,10 @@
   function fetchSelf() {
     return __async(this, null, function* () {
       try {
-        const user = yield httpGet("/api/users/self");
-        loggedIn = user ? true : false;
+        if (!selfPromise) {
+          selfPromise = yield httpGet(`/api/users/self`);
+        }
+        const user = selfPromise;
         return user;
       } catch (err) {
         loggedIn = false;
@@ -89,11 +93,12 @@
       try {
         if (!usersPromise) {
           usersPromise = yield httpGet(`/api/users/`);
-          console.log("userPromius", usersPromise);
         }
-        const allUsers = yield usersPromise;
+        const allUsers = usersPromise || [];
+        loggedIn = true;
         return allUsers;
       } catch (err) {
+        loggedIn = false;
         return [];
       }
     });
@@ -110,9 +115,6 @@
       if (stylesKey)
         el.style[elementKey] = stylesKey;
     }
-  }
-  function onKeydown(el, handler) {
-    return el.addEventListener("keydown", handler, { once: true });
   }
 
   // src/components/elements/Element.ts
@@ -185,6 +187,36 @@
     } else {
       const error = (yield res.json()).error;
       throw new Error(error || "Events could not be fetched.");
+    }
+  });
+  var createEvent = (event) => __async(void 0, null, function* () {
+    const res = yield fetch(`/api/events`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(event)
+    });
+    if (res.ok) {
+      const eventId = yield res.json();
+      return eventId.data;
+    } else {
+      throw new Error(res.statusText || "Event could not be created.");
+    }
+  });
+  var editEvent = (event) => __async(void 0, null, function* () {
+    const res = yield fetch(`/api/events/${event._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id: event._id, body: event })
+    });
+    if (res.ok) {
+      const modifiedEvent = yield res.json();
+      return modifiedEvent;
+    } else {
+      throw new Error(res.statusText || "Event could not be edited.");
     }
   });
   var deleteEvent = (eventId) => __async(void 0, null, function* () {
@@ -2965,7 +2997,6 @@
           },
           styles: arrowStyles
         });
-        onKeydown(document, changeActiveDay);
         headerDate.appendChild(prevDay);
         headerDate.appendChild(nextDay);
         headerDate.appendChild(title);
@@ -3150,7 +3181,6 @@
 
   // src/views/Event/EventDateSelect.ts
   function EventDateSelect(event, onEventStateChange) {
-    console.log("event", event);
     const el = Div({
       styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
         padding: "12px"
@@ -3330,130 +3360,91 @@
     return el;
   }
 
-  // src/components/MultiSelect.ts
-  function MultiSelect(optionEntries, onChange2) {
-    const selectEl = document.createElement("select");
-    setStyle(selectEl, {
-      minHeight: "228px",
-      minWidth: "100px",
-      fontSize: "14px"
-    });
-    selectEl.multiple = true;
-    selectEl.required = true;
-    console.log("option entries", optionEntries);
-    optionEntries.forEach((option) => {
-      const { name, id } = option;
-      const optionEl = document.createElement("option");
-      optionEl.value = id;
-      optionEl.innerText = name;
-      optionEl.style.padding = "8px";
-      optionEl.onselect = onChange2;
-      selectEl.appendChild(optionEl);
-    });
-    return selectEl;
-  }
-
-  // src/views/Event/UsersSelect.ts
-  function UsersSelect(id) {
-    let userEntries = [];
-    const el = Div({ selectors: { id }, styles: { padding: "12px 0" } });
+  // src/views/Event/UsersCheckboxes.ts
+  function UsersCheckboxes(id, selectedUserIds, onChange2) {
+    const checkboxEl = Div({ selectors: { id } });
     function init() {
       return __async(this, null, function* () {
-        const users = yield getUsers();
-        users == null ? void 0 : users.forEach((user) => {
-          userEntries == null ? void 0 : userEntries.push({ id: user._id, name: user.name });
-        });
-        const selectEl = MultiSelect(userEntries, (e) => console.log("e", e));
-        const inputSearch = Div({
-          selectors: { id: "input-search" },
-          styles: {
-            position: "absolute",
-            backgroundColor: "#f6f6f6",
-            minWidth: "230px",
-            overflow: "auto",
-            zIndex: "1"
-          }
-        });
-        const input = Input({
-          selectors: { id: "myInput" },
-          attr: { placeholder: "Search user", onkeyup: filterFunction },
-          styles: __spreadProps(__spreadValues({}, inputStyles), { width: "230px" })
-        });
-        users == null ? void 0 : users.map((user) => {
-          const userOption = Div({
-            attr: { innerHTML: user.name },
-            styles: {
-              display: "none",
-              color: "black",
-              padding: "12px 16px",
-              textDecoration: "none"
+        const currentUser = yield fetchSelf();
+        const users2 = yield getUsers();
+        const isPrivateEvent = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === (currentUser == null ? void 0 : currentUser._id);
+        const everyone = !selectedUserIds.length;
+        let selectedIds = isPrivateEvent || everyone ? users2.map((user) => user._id) : selectedUserIds;
+        users2.forEach((option) => {
+          const optionContainer = Div();
+          const { name, _id } = option;
+          const optionLabel = Label({
+            attr: { innerText: name, for: name }
+          });
+          const optionEl = Input({
+            selectors: {
+              id: _id
+            },
+            attr: {
+              type: "checkbox",
+              disabled: (currentUser == null ? void 0 : currentUser._id) === _id,
+              checked: selectedIds.includes(_id),
+              value: name,
+              onchange: (e) => {
+                const isChecked = e.target.checked;
+                if (isChecked) {
+                  selectedIds.push(_id);
+                } else {
+                  selectedIds = selectedIds.filter(
+                    (optionSelected) => optionSelected !== _id
+                  );
+                }
+                const everyoneSelected = selectedIds.length === users2.length;
+                onChange2(everyoneSelected ? [] : selectedIds);
+              }
             }
           });
-          inputSearch.appendChild(userOption);
+          optionContainer.appendChild(optionEl);
+          optionContainer.appendChild(optionLabel);
+          checkboxEl.appendChild(optionContainer);
         });
-        el.appendChild(input);
-        el.appendChild(inputSearch);
-        function myFunction() {
-          var _a;
-          (_a = byId("input-search")) == null ? void 0 : _a.classList.toggle("show");
-        }
-        function filterFunction(e) {
-          const arrowDownKey = e.key === "ArrowDown";
-          const input2 = byId("myInput");
-          const typedInput = input2.value.toLowerCase();
-          const dropdown = byId("input-search");
-          if (!dropdown) {
-            return;
-          }
-          dropdown.style.display = typedInput || arrowDownKey ? "" : "none";
-          const options = dropdown == null ? void 0 : dropdown.getElementsByTagName("div");
-          if (options == null ? void 0 : options.length) {
-            Array.from(options).forEach((option) => {
-              const textValue = option.innerText;
-              const match = textValue.toLowerCase().indexOf(typedInput) > -1;
-              option.style.display = match ? "block" : "none";
-              option.onclick = () => console.log("option", option);
-            });
-          }
-        }
       });
     }
     init();
-    return el;
+    return checkboxEl;
   }
 
   // src/views/Event/EventPrivacy.ts
-  function EventPrivacy(selectedUsers, currentUserId, onEventStateChange) {
+  function EventPrivacy(currentUserId, selectedUserIds, onEventStateChange) {
     const el = Div({ styles: { padding: "12px" } });
-    const isPrivateEvent = (selectedUsers == null ? void 0 : selectedUsers.length) === 1 && selectedUsers[0] === currentUserId;
-    const privacy = isPrivateEvent ? "Private" : "Public";
-    let eventPrivacy = privacy;
+    const isPrivateEvent = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === currentUserId;
+    let eventPrivacy = isPrivateEvent ? "Private" : "Public";
     const privacyRadioButtons = RadioButtons({
       selected: eventPrivacy,
       options: ["Private", "Public"],
       onChange: onRadioButtonChange
     });
+    const usersCheckboxes = UsersCheckboxes(
+      "users-select",
+      selectedUserIds,
+      (ids) => {
+        onEventStateChange({ users: ids });
+      }
+    );
     function onRadioButtonChange(privacyOption) {
       if (privacyOption === "Public") {
-        const usersSelect = UsersSelect("users-select");
-        el.appendChild(usersSelect);
-        onEventStateChange({ users: [currentUserId] });
+        onEventStateChange({ users: [] });
+        el.appendChild(usersCheckboxes);
       } else {
+        onEventStateChange({ users: [currentUserId] });
         const usersSelect = byId("users-select");
         usersSelect && el.removeChild(usersSelect);
-        onEventStateChange({ users: [] });
       }
     }
     el.appendChild(privacyRadioButtons);
+    if (eventPrivacy === "Public") {
+      el.appendChild(usersCheckboxes);
+    }
     return el;
   }
 
   // src/views/Event/EventForm.ts
-  function EventForm(event, currentUserId) {
-    const eventState = __spreadValues({}, event);
-    const setEventState = (newValue) => {
-      Object.assign(eventState, newValue);
-    };
+  function EventForm(event) {
     const form = Form({
       styles: {
         maxWidth: "600px",
@@ -3462,128 +3453,159 @@
         marginRight: "auto"
       }
     });
-    const headerContainer = Div({
-      styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-        justifyContent: "space-between",
-        padding: "0px 12px"
-      })
-    });
-    const editEventHeader = H3({
-      attr: { innerText: `${eventState._id ? "Edit" : "Add"} event` }
-    });
-    const cancelButton = Button({
-      selectors: {
-        id: "cancel-btn"
-      },
-      attr: {
-        innerHTML: times,
-        onclick: () => setURL("/"),
-        onmouseover: () => {
-          const button = byId("cancel-btn");
-          if (button) {
-            button.style.color = colors.lightOrange;
-          }
-        },
-        onmouseout: () => {
-          const button = byId("cancel-btn");
-          if (button) {
-            button.style.color = basics.silver;
-          }
+    function init() {
+      return __async(this, null, function* () {
+        const currentUser = yield fetchSelf();
+        if (!currentUser) {
+          return;
         }
-      },
-      styles: {
-        background: "none",
-        border: "none",
-        color: basics.silver,
-        fontSize: "24px",
-        padding: "0"
-      }
-    });
-    headerContainer.appendChild(editEventHeader);
-    headerContainer.appendChild(cancelButton);
-    form.appendChild(headerContainer);
-    const titleContainer = Div({ styles: { padding: "12px" } });
-    const titleInput = Input({
-      attr: {
-        name: "title",
-        value: eventState["title"],
-        onchange: (e) => {
-          setEventState({ title: e.target.value });
-        },
-        placeholder: "Title",
-        required: true
-      },
-      styles: __spreadProps(__spreadValues({}, inputStyles), { width: "100%" })
-    });
-    titleContainer.appendChild(titleInput);
-    form.appendChild(titleContainer);
-    const descriptionContainer = Div({
-      styles: { padding: "12px", display: "flex", flexDirection: "column" }
-    });
-    const descriptionLabel = Label({
-      attr: { innerText: "Description:" },
-      styles: {
-        marginBottom: "4px"
-      }
-    });
-    const descriptionInput = Textarea({
-      attr: {
-        name: "description",
-        value: eventState["description"],
-        onchange: (e) => {
-          setEventState({
-            description: e.target.value
-          });
-        },
-        placeholder: "Write something..."
-      },
-      styles: __spreadProps(__spreadValues({}, inputStyles), { minHeight: "160px" })
-    });
-    descriptionContainer.appendChild(descriptionLabel);
-    descriptionContainer.appendChild(descriptionInput);
-    form.appendChild(descriptionContainer);
-    const dateContainer = EventDateSelect(eventState, setEventState);
-    form.appendChild(dateContainer);
-    const guests = EventPrivacy(eventState == null ? void 0 : eventState.users, currentUserId, setEventState);
-    form.appendChild(guests);
-    const buttons = Div({
-      styles: { marginTop: "8px", padding: "12px" }
-    });
-    const saveButton = Button({
-      selectors: { id: "save-btn" },
-      attr: {
-        textContent: "Save",
-        type: "submit",
-        onmouseover: () => {
-          const button = byId("save-btn");
-          if (button) {
-            button.style.opacity = ".9";
+        let eventTemplate = {
+          title: "",
+          description: "",
+          start: new Date(),
+          allDay: false,
+          users: [currentUser == null ? void 0 : currentUser._id]
+        };
+        const eventState = event ? __spreadValues({}, event) : __spreadValues({}, eventTemplate);
+        const setEventState = (newValue) => {
+          Object.assign(eventState, newValue);
+        };
+        const headerContainer = Div({
+          styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
+            justifyContent: "space-between",
+            padding: "0px 12px"
+          })
+        });
+        const editEventHeader = H3({
+          attr: { innerText: `${eventState._id ? "Edit" : "Add"} event` }
+        });
+        const cancelButton = Button({
+          selectors: {
+            id: "cancel-btn"
+          },
+          attr: {
+            innerHTML: times,
+            type: "button",
+            onclick: () => setURL("/"),
+            onmouseover: () => {
+              const button = byId("cancel-btn");
+              if (button) {
+                button.style.color = colors.lightOrange;
+              }
+            },
+            onmouseout: () => {
+              const button = byId("cancel-btn");
+              if (button) {
+                button.style.color = basics.silver;
+              }
+            }
+          },
+          styles: {
+            background: "none",
+            border: "none",
+            color: basics.silver,
+            fontSize: "24px",
+            padding: "0"
           }
-        },
-        onmouseout: () => {
-          const button = byId("save-btn");
-          if (button) {
-            button.style.opacity = "1";
+        });
+        headerContainer.appendChild(editEventHeader);
+        headerContainer.appendChild(cancelButton);
+        form.appendChild(headerContainer);
+        const titleContainer = Div({ styles: { padding: "12px" } });
+        const titleInput = Input({
+          attr: {
+            name: "title",
+            value: eventState["title"],
+            onchange: (e) => {
+              setEventState({ title: e.target.value });
+            },
+            placeholder: "Title",
+            required: true
+          },
+          styles: __spreadProps(__spreadValues({}, inputStyles), { width: "100%" })
+        });
+        titleContainer.appendChild(titleInput);
+        form.appendChild(titleContainer);
+        const descriptionContainer = Div({
+          styles: { padding: "12px", display: "flex", flexDirection: "column" }
+        });
+        const descriptionLabel = Label({
+          attr: { innerText: "Description:" },
+          styles: {
+            marginBottom: "4px"
           }
-        }
-      },
-      styles: buttonStyles
-    });
-    buttons.appendChild(saveButton);
-    form.appendChild(buttons);
-    form.onsubmit = (e) => __async(this, null, function* () {
-      e.preventDefault();
-      let start = eventState.start;
-      if (eventState.allDay) {
-        const midnightDate = new Date(eventState.start.getTime());
-        midnightDate.setUTCHours(0, 0, 0, 0);
-        start = midnightDate;
-        delete eventState.end;
-      }
-      setEventState({ start });
-      let eventId = eventState._id;
-      console.log("event state submitting", eventState);
-    });
+        });
+        const descriptionInput = Textarea({
+          attr: {
+            name: "description",
+            value: eventState["description"],
+            onchange: (e) => {
+              setEventState({
+                description: e.target.value
+              });
+            },
+            placeholder: "Write something..."
+          },
+          styles: __spreadProps(__spreadValues({}, inputStyles), { minHeight: "160px" })
+        });
+        descriptionContainer.appendChild(descriptionLabel);
+        descriptionContainer.appendChild(descriptionInput);
+        form.appendChild(descriptionContainer);
+        const dateContainer = EventDateSelect(eventState, setEventState);
+        form.appendChild(dateContainer);
+        const guests = EventPrivacy(
+          currentUser._id,
+          (eventState == null ? void 0 : eventState.users) || [],
+          setEventState
+        );
+        form.appendChild(guests);
+        const buttons = Div({
+          styles: { marginTop: "8px", padding: "12px" }
+        });
+        const saveButton = Button({
+          selectors: { id: "save-btn" },
+          attr: {
+            textContent: "Save",
+            type: "submit",
+            onmouseover: () => {
+              const button = byId("save-btn");
+              if (button) {
+                button.style.opacity = ".9";
+              }
+            },
+            onmouseout: () => {
+              const button = byId("save-btn");
+              if (button) {
+                button.style.opacity = "1";
+              }
+            }
+          },
+          styles: buttonStyles
+        });
+        buttons.appendChild(saveButton);
+        form.appendChild(buttons);
+        form.onsubmit = (e) => __async(this, null, function* () {
+          e.preventDefault();
+          let start = eventState.start;
+          if (eventState.allDay) {
+            const midnightDate = new Date(eventState.start.getTime());
+            midnightDate.setUTCHours(0, 0, 0, 0);
+            start = midnightDate;
+            delete eventState.end;
+          }
+          setEventState({ start });
+          let eventId = eventState._id;
+          console.log("submitting", eventState);
+          if (eventId) {
+            yield editEvent(eventState);
+          } else {
+            eventId = yield createEvent(eventState);
+          }
+          setURL(`/events/${eventId}`);
+        });
+      });
+    }
+    init();
     return form;
   }
 
@@ -6200,7 +6222,7 @@
   }
 
   // src/views/Router.ts
-  function Router(authenticated, self2) {
+  function Router(authenticated) {
     const router = Div({ styles: { height: "100%" } });
     function init() {
       handleRouteUpdated();
@@ -6256,19 +6278,12 @@
           case `/events/edit/${eventObject == null ? void 0 : eventObject._id}`:
             if (eventObject) {
               router.append(Header("edit"));
-              router.append(EventForm(eventObject, self2 == null ? void 0 : self2._id));
+              router.append(EventForm(eventObject));
             }
             break;
           case `/add`:
-            let eventTemplate = {
-              title: "",
-              description: "",
-              start: new Date(),
-              allDay: false,
-              users: self2._id ? [self2._id] : []
-            };
             router.append(Header("add"));
-            router.append(EventForm(eventTemplate, self2 == null ? void 0 : self2._id));
+            router.append(EventForm());
             break;
           default:
             break;
@@ -6283,10 +6298,10 @@
   function run() {
     return __async(this, null, function* () {
       const root = document.getElementById("root");
-      const self2 = yield initializeUserApi();
+      yield initializeUserApi();
       const isAuthenticated = isLoggedIn();
       if (root) {
-        const router = Router(isAuthenticated, self2);
+        const router = Router(isAuthenticated);
         root.append(router);
       }
     });
