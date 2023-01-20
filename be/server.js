@@ -81,29 +81,37 @@ async function run() {
   });
 
   server.get('/api/events', async (req, res) => {
-    const start = new Date(req.query.start);
-    const end = new Date(start);
-    end.setTime(end.getTime() + 24 * 60 * 60 * 1000);
+    try {
+      const start = new Date(req.query.start);
+      const end = new Date(start);
+      end.setTime(end.getTime() + 24 * 60 * 60 * 1000);
 
-    const startAllDayUTC = new Date(start);
-    startAllDayUTC.setUTCHours(0, 0, 0, 0);
-    const events = await Event.find({
-      $or: [
-        {
-          start: {
-            $gte: start,
-            $lte: end,
+      const startAllDayUTC = new Date(start);
+      startAllDayUTC.setUTCHours(0, 0, 0, 0);
+      const events = await Event.find({
+        $or: [
+          {
+            start: {
+              $gte: start,
+              $lte: end,
+            },
+            allDay: false,
           },
-          allDay: false,
-        },
-        {
-          start: startAllDayUTC,
-          allDay: true,
-        },
-      ],
-    }).toArray();
+          {
+            start: startAllDayUTC,
+            allDay: true,
+          },
+        ],
+      }).toArray();
 
-    return res.json({ data: events });
+      const userEvents = events.filter((event) => {
+        return event.users?.includes(req.user) || !event.users?.length;
+      });
+      return res.json({ data: userEvents });
+    } catch (err) {
+      console.error(err);
+      return res.sendStatus(400);
+    }
   });
 
   server.get('/api/events/:id', async (req, res) => {
@@ -119,7 +127,7 @@ async function run() {
 
   server.put('/api/events/:id', async (req, res) => {
     const eventId = mongodb.ObjectId(req.body.id);
-    const { title, description, start, end, allDay } = req.body.body;
+    const { title, description, start, end, allDay, users } = req.body.body;
 
     if (!title || !start || !eventId) {
       throw new Error('Event must include title and start date');
@@ -136,6 +144,7 @@ async function run() {
             end: end ? new Date(end) : null,
             allDay,
             updatedAt: new Date(),
+            users,
           },
         }
       );

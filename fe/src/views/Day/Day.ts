@@ -131,7 +131,6 @@ export function Day(date?: string) {
     el.appendChild(headerDate);
 
     const eventsList = Div();
-    console.log('day view', dayView);
     const events = await getEventsForDay(dayView);
 
     if (events.length) {
@@ -155,7 +154,7 @@ export function Day(date?: string) {
           const eventContainer = Div({
             styles: {
               borderRadius: '4px',
-              margin: '12px 20px',
+              margin: '0 20px',
               gridGap: '20px',
               ...flexAlignItemsCenter,
             },
@@ -167,7 +166,7 @@ export function Day(date?: string) {
               marginBottom: 'auto',
               maxWidth: '160px',
               width: '100%',
-              padding: '12px',
+              padding: '8px 12px',
             },
           });
           if (event.start && event.end) {

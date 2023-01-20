@@ -10,7 +10,7 @@ type RadioButtonsProps = {
 };
 
 export function RadioButtons(props: RadioButtonsProps) {
-  const el = Div();
+  const el = Div({ styles: { marginBottom: '12px' } });
 
   props.options?.map((option) => {
     const firstLabel = Label({

@@ -23,7 +23,9 @@ export function EventDateSelect(
     },
   });
 
-  const datesContainer = Div();
+  const datesContainer = Div({
+    styles: { marginRight: event.allDay ? '' : 'auto' },
+  });
   datesContainer.appendChild(
     event.allDay ? newStartDateInput() : newStartTimeInput()
   );
@@ -31,7 +33,7 @@ export function EventDateSelect(
   const toLabel = Label({
     attr: { innerText: 'to' },
     styles: {
-      marginRight: '12px',
+      marginRight: '8px',
     },
   });
   if (!event.allDay) {
@@ -86,7 +88,7 @@ export function EventDateSelect(
       },
       styles: {
         ...inputStyles,
-        marginRight: '12px',
+        marginRight: '8px',
       },
     });
   }
@@ -115,7 +117,7 @@ export function EventDateSelect(
       },
       styles: {
         ...inputStyles,
-        marginRight: '12px',
+        marginRight: '8px',
       },
     });
   }
@@ -134,7 +136,7 @@ export function EventDateSelect(
       },
       styles: {
         ...inputStyles,
-        marginRight: '12px',
+        marginRight: '8px',
       },
       selectors: { id: 'end' },
     });

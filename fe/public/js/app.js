@@ -3002,7 +3002,6 @@
         headerDate.appendChild(title);
         el.appendChild(headerDate);
         const eventsList = Div();
-        console.log("day view", dayView);
         const events = yield getEventsForDay(dayView);
         if (events.length) {
           events.sort(
@@ -3024,7 +3023,7 @@
               const eventContainer = Div({
                 styles: __spreadValues({
                   borderRadius: "4px",
-                  margin: "12px 20px",
+                  margin: "0 20px",
                   gridGap: "20px"
                 }, flexAlignItemsCenter)
               });
@@ -3034,7 +3033,7 @@
                   marginBottom: "auto",
                   maxWidth: "160px",
                   width: "100%",
-                  padding: "12px"
+                  padding: "8px 12px"
                 }
               });
               if (event.start && event.end) {
@@ -3186,14 +3185,16 @@
         padding: "12px"
       })
     });
-    const datesContainer = Div();
+    const datesContainer = Div({
+      styles: { marginRight: event.allDay ? "" : "auto" }
+    });
     datesContainer.appendChild(
       event.allDay ? newStartDateInput() : newStartTimeInput()
     );
     const toLabel = Label({
       attr: { innerText: "to" },
       styles: {
-        marginRight: "12px"
+        marginRight: "8px"
       }
     });
     if (!event.allDay) {
@@ -3240,7 +3241,7 @@
           }
         },
         styles: __spreadProps(__spreadValues({}, inputStyles), {
-          marginRight: "12px"
+          marginRight: "8px"
         })
       });
     }
@@ -3266,7 +3267,7 @@
           }
         },
         styles: __spreadProps(__spreadValues({}, inputStyles), {
-          marginRight: "12px"
+          marginRight: "8px"
         })
       });
     }
@@ -3283,7 +3284,7 @@
           }
         },
         styles: __spreadProps(__spreadValues({}, inputStyles), {
-          marginRight: "12px"
+          marginRight: "8px"
         }),
         selectors: { id: "end" }
       });
@@ -3335,7 +3336,7 @@
   // src/components/RadioButtons.ts
   function RadioButtons(props) {
     var _a;
-    const el = Div();
+    const el = Div({ styles: { marginBottom: "12px" } });
     (_a = props.options) == null ? void 0 : _a.map((option) => {
       const firstLabel = Label({
         attr: { for: option, innerText: option },
@@ -3371,7 +3372,7 @@
         const everyone = !selectedUserIds.length;
         let selectedIds = isPrivateEvent || everyone ? users2.map((user) => user._id) : selectedUserIds;
         users2.forEach((option) => {
-          const optionContainer = Div();
+          const optionContainer = Div({ styles: { padding: "4px 0" } });
           const { name, _id } = option;
           const optionLabel = Label({
             attr: { innerText: name, for: name }
@@ -3397,6 +3398,9 @@
                 const everyoneSelected = selectedIds.length === users2.length;
                 onChange2(everyoneSelected ? [] : selectedIds);
               }
+            },
+            styles: {
+              cursor: "pointer"
             }
           });
           optionContainer.appendChild(optionEl);
@@ -6239,7 +6243,6 @@
         textContent: "submit",
         onclick: (e) => __async(this, null, function* () {
           e.preventDefault();
-          console.log("log", logInState);
           try {
             yield logIn(logInState);
             window.location.reload();

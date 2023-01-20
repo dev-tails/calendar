@@ -27,7 +27,6 @@ export function LogIn() {
       textContent: 'submit',
       onclick: async (e) => {
         e.preventDefault();
-        console.log('log', logInState);
         try {
           await logIn(logInState);
           window.location.reload();

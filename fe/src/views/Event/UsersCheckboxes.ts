@@ -24,7 +24,7 @@ export function UsersCheckboxes(
         : selectedUserIds;
 
     users.forEach((option) => {
-      const optionContainer = Div();
+      const optionContainer = Div({ styles: { padding: '4px 0' } });
       const { name, _id } = option;
 
       const optionLabel = Label({
@@ -54,6 +54,9 @@ export function UsersCheckboxes(
 
             onChange(everyoneSelected ? [] : selectedIds);
           },
+        },
+        styles: {
+          cursor: 'pointer',
         },
       });
 
