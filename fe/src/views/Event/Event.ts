@@ -139,7 +139,7 @@ export function Event(event: IEvent) {
     el.appendChild(titleContainer);
 
     if (event.description) {
-      const description = Div({ styles });
+      const description = Div({ styles: { ...styles, whiteSpace: 'pre' } });
       description.innerHTML = autolinker.link(event.description);
       el.appendChild(description);
     }

@@ -6005,7 +6005,7 @@
         titleContainer.appendChild(buttons);
         el.appendChild(titleContainer);
         if (event.description) {
-          const description = Div({ styles: styles2 });
+          const description = Div({ styles: __spreadProps(__spreadValues({}, styles2), { whiteSpace: "pre" }) });
           description.innerHTML = es2015_default.link(event.description);
           el.appendChild(description);
         }
