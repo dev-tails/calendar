@@ -11,6 +11,10 @@ import { isLoggedIn } from '../../apis/UserApi';
 import { logOut } from '../../apis/AuthApi';
 import { byId } from '../../utils/DOMutils';
 import { chevronLeft, home } from '../../../public/assets/FontAwesomeIcons';
+import {
+  areNotificationsEnabled,
+  toggleNotificationsEnabled,
+} from '../../services/NotificationService';
 
 const headerTopLeftButton = {
   home: '',
@@ -188,5 +192,21 @@ export function Header(
     setURL(nextURL);
   }
 
+  function notificationsBtnText() {
+    return `${areNotificationsEnabled() ? 'Disable' : 'Allow'} notifications`;
+  }
+
+  const toggleNotifications = Button({
+    attr: {
+      type: 'button',
+      innerHTML: notificationsBtnText(),
+      onclick: () => {
+        toggleNotificationsEnabled();
+        toggleNotifications.innerHTML = notificationsBtnText();
+      },
+    },
+  });
+
+  header.append(toggleNotifications);
   return header;
 }

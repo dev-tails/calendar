@@ -6101,6 +6101,38 @@
     }
   });
 
+  // src/services/NotificationService.ts
+  var notificationsEnabled = false;
+  function checkNotificationPromise() {
+    try {
+      Notification.requestPermission().then();
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+    return true;
+  }
+  function initializeNotificationService() {
+    notificationsEnabled = localStorage.getItem("notifications") === "true";
+    if (!("Notification" in window)) {
+      return;
+    }
+    const isNotificationsPromiseSupported = checkNotificationPromise();
+    if (!isNotificationsPromiseSupported) {
+      Notification.requestPermission();
+    }
+  }
+  function areNotificationsEnabled() {
+    return notificationsEnabled;
+  }
+  function toggleNotificationsEnabled() {
+    notificationsEnabled = !notificationsEnabled;
+    localStorage.setItem(
+      "notifications",
+      notificationsEnabled ? "true" : "false"
+    );
+  }
+
   // src/views/Header/Header.ts
   var headerTopLeftButton = {
     home: "",
@@ -6257,6 +6289,20 @@
       }
       setURL(nextURL);
     }
+    function notificationsBtnText() {
+      return `${areNotificationsEnabled() ? "Disable" : "Allow"} notifications`;
+    }
+    const toggleNotifications = Button({
+      attr: {
+        type: "button",
+        innerHTML: notificationsBtnText(),
+        onclick: () => {
+          toggleNotificationsEnabled();
+          toggleNotifications.innerHTML = notificationsBtnText();
+        }
+      }
+    });
+    header.append(toggleNotifications);
     return header;
   }
 
@@ -6266,7 +6312,14 @@
       email: "",
       password: ""
     };
-    const form = Form();
+    const form = Form({
+      styles: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "start",
+        margin: "40px"
+      }
+    });
     const email = formInput("email");
     const password = formInput("password");
     const error = Div({
@@ -6380,11 +6433,136 @@
     return router;
   }
 
+  // src/apis/PushNotificationApi.ts
+  function getPublicKey() {
+    return __async(this, null, function* () {
+      const data = yield fetch("/api/subscriptions/publickey");
+      const jsonData = yield data.json();
+      return jsonData.publickey;
+    });
+  }
+
+  // src/services/PushNotificationService.ts
+  function initializePushNotificationService() {
+    function urlBase64ToUint8Array(base64String) {
+      const padding = "=".repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+    let swRegistration;
+    let isSubscribed = false;
+    const pushButton = byId("pushButton");
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      console.log("Service Worker and Push are supported");
+      navigator.serviceWorker.register("service-worker.js").then(function(swReg) {
+        console.log("Service Worker is registered", swReg);
+        swRegistration = swReg;
+        initializeUI();
+      }).catch(function(error) {
+        console.error("Service Worker Error", error);
+      });
+    } else {
+      console.warn("Push messaging is not supported");
+      pushButton.textContent = "Push Not Supported";
+    }
+    function initializeUI() {
+      pushButton.addEventListener("click", function() {
+        pushButton.disabled = true;
+        if (isSubscribed) {
+          unsubscribeUser();
+        } else {
+          subscribeUser();
+        }
+      });
+      swRegistration.pushManager.getSubscription().then(function(subscription) {
+        isSubscribed = !(subscription === null);
+        if (isSubscribed) {
+          console.log("User IS subscribed.");
+        } else {
+          console.log("User is NOT subscribed.");
+        }
+        updateBtn();
+      });
+    }
+    function updateBtn() {
+      if (Notification.permission === "denied") {
+        pushButton.textContent = "Push Messaging Blocked";
+        pushButton.disabled = true;
+        updateSubscriptionOnServer(null);
+        return;
+      }
+      if (isSubscribed) {
+        pushButton.textContent = "Disable Push Messaging";
+      } else {
+        pushButton.textContent = "Enable Push Messaging";
+      }
+      pushButton.disabled = false;
+    }
+    function subscribeUser() {
+      return __async(this, null, function* () {
+        const applicationServerKey = urlBase64ToUint8Array(yield getPublicKey());
+        swRegistration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey
+        }).then(function(subscription) {
+          console.log("User is subscribed.");
+          updateSubscriptionOnServer(subscription);
+          isSubscribed = true;
+          updateBtn();
+        }).catch(function(err) {
+          console.log("Failed to subscribe the user: ", err);
+          updateBtn();
+        });
+      });
+    }
+    function unsubscribeUser() {
+      swRegistration.pushManager.getSubscription().then(function(subscription) {
+        if (subscription) {
+          return subscription.unsubscribe();
+        }
+      }).catch(function(error) {
+        console.log("Error unsubscribing", error);
+      }).then(function() {
+        updateSubscriptionOnServer(null);
+        console.log("User is unsubscribed.");
+        isSubscribed = false;
+        updateBtn();
+      });
+    }
+  }
+  function updateSubscriptionOnServer(subscription) {
+    return __async(this, null, function* () {
+      if (subscription) {
+        console.log(JSON.stringify(subscription), "is visible");
+        const response = yield fetch("/api/subscriptions", {
+          method: "POST",
+          body: JSON.stringify(subscription),
+          headers: {
+            "content-type": "application/json"
+          }
+        });
+        console.log("response", response);
+        return response.json();
+      } else {
+        console.log("is-invisible");
+      }
+    });
+  }
+
   // src/app.ts
   function run() {
     return __async(this, null, function* () {
       const root = document.getElementById("root");
-      yield initializeUserApi();
+      yield Promise.all([
+        initializeNotificationService(),
+        initializePushNotificationService(),
+        initializeUserApi()
+      ]);
       const isAuthenticated = isLoggedIn();
       if (root) {
         const router = Router(isAuthenticated);
