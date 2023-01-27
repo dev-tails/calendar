@@ -10,7 +10,14 @@ export function LogIn() {
     password: '',
   };
 
-  const form = Form();
+  const form = Form({
+    styles: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'start',
+      margin: '40px',
+    },
+  });
 
   const email = formInput('email');
   const password = formInput('password');
