@@ -5,7 +5,6 @@ import {
   faChevronRight,
   faHome,
   faLink,
-  faList,
   faPencil,
   faTimesCircle,
   faTrash,
@@ -17,7 +16,6 @@ library.add(faChevronLeft);
 library.add(faChevronRight);
 library.add(faHome);
 library.add(faLink);
-library.add(faList);
 library.add(faPencil);
 library.add(faTimesCircle);
 library.add(faTrash);
@@ -31,7 +29,6 @@ export const chevronRight = icon({ prefix: 'fas', iconName: 'chevron-right' })
   .html[0];
 export const home = icon({ prefix: 'fas', iconName: 'home' }).html[0];
 export const link = icon({ prefix: 'fas', iconName: 'link' }).html[0];
-export const list = icon({ prefix: 'fas', iconName: 'list' }).html[0];
 export const pencil = icon({ prefix: 'fas', iconName: 'pencil' }).html[0];
 export const times = icon({ prefix: 'fas', iconName: 'times-circle' }).html[0];
 export const trash = icon({ prefix: 'fas', iconName: 'trash' }).html[0];

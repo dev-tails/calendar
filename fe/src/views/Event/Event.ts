@@ -2,7 +2,6 @@ import autolinker from 'autolinker';
 import {
   calendarWeek,
   link,
-  list,
   pencil,
   usersIcon,
   trash,
@@ -156,16 +155,12 @@ export function Event(event: IEvent) {
     el.appendChild(titleContainer);
 
     if (event.description) {
-      const description = Div({ styles: { ...styles, display: 'flex' } });
-      const icon = Span({ attr: { innerHTML: list }, styles: iconStyles });
-      const descriptionText = Div({
+      const description = Div({
         attr: {
           innerHTML: autolinker.link(event.description),
         },
-        styles: { whiteSpace: 'pre-line', marginLeft: '6px' },
+        styles: { ...styles, whiteSpace: 'pre-line' },
       });
-      description.appendChild(icon);
-      description.appendChild(descriptionText);
       el.appendChild(description);
     }
 
