@@ -4,6 +4,7 @@ interface ButtonAttributes extends ElementAttributes {
   type?: 'button' | 'submit';
   textContent?: string;
   onclick?: (e?: any) => void;
+  disabled?: boolean;
 }
 
 type ButtonProps = {
@@ -16,5 +17,5 @@ export function Button(props?: ButtonProps) {
   return Element({
     tag: 'button',
     ...props,
-  });
+  }) as HTMLButtonElement;
 }

@@ -15,6 +15,12 @@ import {
   areNotificationsEnabled,
   toggleNotificationsEnabled,
 } from '../../services/NotificationService';
+import {
+  arePushNotificationsEnabled,
+  checkPushNotificationsSupport,
+  subscribeUser,
+  unsubscribeUser,
+} from '../../services/PushNotificationService';
 
 const headerTopLeftButton = {
   home: '',
@@ -207,6 +213,37 @@ export function Header(
     },
   });
 
-  header.append(toggleNotifications);
+  const pushNotificationsButton = Button({
+    selectors: { id: 'pushButton' },
+    attr: {
+      type: 'button',
+      innerHTML: buttonText(),
+      disabled: buttonText() === 'Push notifications blocked',
+      onclick: async (e) => {
+        e.preventDefault();
+        pushNotificationsButton.disabled = true;
+
+        arePushNotificationsEnabled()
+          ? await unsubscribeUser()
+          : await subscribeUser();
+
+        pushNotificationsButton.innerHTML = buttonText();
+        pushNotificationsButton.disabled = false;
+      },
+    },
+  });
+
+  checkPushNotificationsSupport() && header.append(pushNotificationsButton);
+  // header.append(toggleNotifications);
   return header;
+}
+
+function buttonText() {
+  if (Notification.permission === 'denied') {
+    unsubscribeUser();
+    return 'Push notifications blocked';
+  }
+  return `${
+    arePushNotificationsEnabled() ? 'Disable ' : 'Enable '
+  } push notifications`;
 }

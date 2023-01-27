@@ -2,6 +2,7 @@ const express = require('express');
 const mongodb = require('mongodb');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
+const webpush = require('web-push');
 
 dotenv.config();
 const maxAgeInMilliseconds = 365 * 60 * 60 * 24 * 1000;
@@ -19,6 +20,8 @@ async function run() {
   const db = client.db();
   const Event = db.collection('events');
 
+  const PushNotification = db.collection('pushnotifications');
+
   const server = express();
   const port = process.env.PORT || 8080;
 
@@ -26,6 +29,16 @@ async function run() {
   server.use(express.json());
 
   server.use(express.static('../fe/public'));
+
+  webpush.setVapidDetails(
+    `mailto: ${process.env.WEB_PUSH_VAPID_MAIL_TO}`,
+    process.env.WEB_PUSH_VAPID_PUBLIC_KEY,
+    process.env.WEB_PUSH_VAPID_PRIVATE_KEY
+  );
+
+  const sendNotification = (subscription, dataToSend = '') => {
+    webpush.sendNotification(subscription, dataToSend);
+  };
 
   server.use((req, res, next) => {
     req.user = req.cookies['user'];
@@ -76,7 +89,7 @@ async function run() {
       ).toArray();
       res.json({ data: users });
     } else {
-      res.sendStatus(400);
+      res.redirect('/');
     }
   });
 
@@ -185,6 +198,43 @@ async function run() {
     } catch (err) {
       console.error(err);
       return res.sendStatus(400);
+    }
+  });
+
+  server.post('/api/subscriptions', async (req, res) => {
+    const currentUser = req.user;
+    const subscriptionInfo = req.body;
+
+    const payload = JSON.stringify({ title: 'Event coming up 🗓' });
+
+    try {
+      await PushNotification.insertOne({
+        user: mongodb.ObjectId(currentUser),
+        subscription: subscriptionInfo,
+      });
+
+      webpush.sendNotification(subscriptionInfo, payload);
+      res.status(201).json({});
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  server.get('/api/subscriptions/publickey', (req, res) => {
+    res.json({
+      publickey: process.env.WEB_PUSH_VAPID_PUBLIC_KEY,
+    });
+  });
+
+  server.delete('/api/subscriptions', async (req, res) => {
+    const currentUser = req.user;
+    try {
+      await PushNotification.deleteOne({
+        user: mongodb.ObjectId(currentUser),
+      });
+      res.sendStatus(200);
+    } catch (err) {
+      console.error(err);
     }
   });
 
