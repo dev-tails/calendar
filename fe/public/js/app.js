@@ -6123,12 +6123,15 @@
           var _a2;
           return (_a2 = event.users) == null ? void 0 : _a2.includes(user._id);
         }) : users2;
+        const oneGuest = usersList.length === 1;
         const guestsIcon = Span({
           attr: { innerHTML: usersIcon },
           styles: iconStyles
         });
         const guestsList = Div();
-        const guestsLabel = Label({ attr: { innerHTML: "Guests:" } });
+        const guestsLabel = Label({
+          attr: { innerHTML: `Guest${oneGuest ? "" : "s"}:` }
+        });
         guestsList.appendChild(guestsLabel);
         usersList.map((user) => {
           const container = Div({

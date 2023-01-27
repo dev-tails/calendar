@@ -236,6 +236,7 @@ export function Event(event: IEvent) {
     const usersList = event.users?.length
       ? users.filter((user) => event.users?.includes(user._id))
       : users;
+    const oneGuest = usersList.length === 1;
 
     const guestsIcon = Span({
       attr: { innerHTML: usersIcon },
@@ -243,7 +244,9 @@ export function Event(event: IEvent) {
     });
 
     const guestsList = Div();
-    const guestsLabel = Label({ attr: { innerHTML: 'Guests:' } });
+    const guestsLabel = Label({
+      attr: { innerHTML: `Guest${oneGuest ? '' : 's'}:` },
+    });
     guestsList.appendChild(guestsLabel);
 
     usersList.map((user) => {
