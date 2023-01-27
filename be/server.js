@@ -193,6 +193,7 @@ async function run() {
         allDay: req.body.allDay,
         users: req.body.users,
       });
+
       const { insertedId } = event;
       return res.json({ data: insertedId });
     } catch (err) {
@@ -213,7 +214,7 @@ async function run() {
         subscription: subscriptionInfo,
       });
 
-      webpush.sendNotification(subscriptionInfo, payload);
+      // webpush.sendNotification(subscriptionInfo, payload);
       res.status(201).json({});
     } catch (err) {
       console.error(err);

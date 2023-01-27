@@ -12,10 +12,6 @@ import { logOut } from '../../apis/AuthApi';
 import { byId } from '../../utils/DOMutils';
 import { chevronLeft, home } from '../../../public/assets/FontAwesomeIcons';
 import {
-  areNotificationsEnabled,
-  toggleNotificationsEnabled,
-} from '../../services/NotificationService';
-import {
   arePushNotificationsEnabled,
   checkPushNotificationsSupport,
   subscribeUser,
@@ -198,21 +194,6 @@ export function Header(
     setURL(nextURL);
   }
 
-  function notificationsBtnText() {
-    return `${areNotificationsEnabled() ? 'Disable' : 'Allow'} notifications`;
-  }
-
-  const toggleNotifications = Button({
-    attr: {
-      type: 'button',
-      innerHTML: notificationsBtnText(),
-      onclick: () => {
-        toggleNotificationsEnabled();
-        toggleNotifications.innerHTML = notificationsBtnText();
-      },
-    },
-  });
-
   const pushNotificationsButton = Button({
     selectors: { id: 'pushButton' },
     attr: {
@@ -233,8 +214,7 @@ export function Header(
     },
   });
 
-  checkPushNotificationsSupport() && header.append(pushNotificationsButton);
-  // header.append(toggleNotifications);
+  // checkPushNotificationsSupport() && header.append(pushNotificationsButton);
   return header;
 }
 

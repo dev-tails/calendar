@@ -6101,38 +6101,6 @@
     }
   });
 
-  // src/services/NotificationService.ts
-  var notificationsEnabled = false;
-  function checkNotificationPromise() {
-    try {
-      Notification.requestPermission().then();
-    } catch (err) {
-      console.error(err);
-      return false;
-    }
-    return true;
-  }
-  function initializeNotificationService() {
-    notificationsEnabled = localStorage.getItem("notifications") === "true";
-    if (!("Notification" in window)) {
-      return;
-    }
-    const isNotificationsPromiseSupported = checkNotificationPromise();
-    if (!isNotificationsPromiseSupported) {
-      Notification.requestPermission();
-    }
-  }
-  function areNotificationsEnabled() {
-    return notificationsEnabled;
-  }
-  function toggleNotificationsEnabled() {
-    notificationsEnabled = !notificationsEnabled;
-    localStorage.setItem(
-      "notifications",
-      notificationsEnabled ? "true" : "false"
-    );
-  }
-
   // src/apis/PushNotificationApi.ts
   function getPublicKey() {
     return __async(this, null, function* () {
@@ -6399,19 +6367,6 @@
       }
       setURL(nextURL);
     }
-    function notificationsBtnText() {
-      return `${areNotificationsEnabled() ? "Disable" : "Allow"} notifications`;
-    }
-    const toggleNotifications = Button({
-      attr: {
-        type: "button",
-        innerHTML: notificationsBtnText(),
-        onclick: () => {
-          toggleNotificationsEnabled();
-          toggleNotifications.innerHTML = notificationsBtnText();
-        }
-      }
-    });
     const pushNotificationsButton = Button({
       selectors: { id: "pushButton" },
       attr: {
@@ -6427,7 +6382,6 @@
         })
       }
     });
-    checkPushNotificationsSupport() && header.append(pushNotificationsButton);
     return header;
   }
   function buttonText() {
@@ -6569,11 +6523,7 @@
   function run() {
     return __async(this, null, function* () {
       const root = document.getElementById("root");
-      yield Promise.all([
-        initializeNotificationService(),
-        initializePushNotificationService(),
-        initializeUserApi()
-      ]);
+      yield Promise.all([initializePushNotificationService(), initializeUserApi()]);
       const isAuthenticated = isLoggedIn();
       if (root) {
         const router = Router(isAuthenticated);
