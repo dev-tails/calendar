@@ -1,5 +1,12 @@
 import autolinker from 'autolinker';
-import { pencil, trash } from '../../../public/assets/FontAwesomeIcons';
+import {
+  calendarWeek,
+  link,
+  list,
+  pencil,
+  usersIcon,
+  trash,
+} from '../../../public/assets/FontAwesomeIcons';
 import { buttonStyles } from '../../../public/css/componentStyles';
 import { deleteEvent } from '../../apis/EventApi';
 import { getUsers } from '../../apis/UserApi';
@@ -7,6 +14,7 @@ import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
 import { H3 } from '../../components/elements/H3';
 import { Label } from '../../components/elements/Label';
+import { Span } from '../../components/elements/Span';
 import {
   formatDateTime,
   dateOptions,
@@ -27,6 +35,15 @@ const styles = {
   fontSize: '14px',
   padding: '4px 0',
   marginTop: '8px',
+};
+
+const iconStyles = {
+  marginRight: '12px',
+  color: basics.spanishGray,
+  width: '20px',
+  height: '20px',
+  ...flexAlignItemsCenter,
+  justifyContent: 'center',
 };
 
 export function Event(event: IEvent) {
@@ -139,46 +156,96 @@ export function Event(event: IEvent) {
     el.appendChild(titleContainer);
 
     if (event.description) {
-      const description = Div({
-        styles: { ...styles, whiteSpace: 'pre-line' },
+      const description = Div({ styles: { ...styles, display: 'flex' } });
+      const icon = Span({ attr: { innerHTML: list }, styles: iconStyles });
+      const descriptionText = Div({
+        attr: {
+          innerHTML: autolinker.link(event.description),
+        },
+        styles: { whiteSpace: 'pre-line', marginLeft: '6px' },
       });
-      description.innerHTML = autolinker.link(event.description);
+      description.appendChild(icon);
+      description.appendChild(descriptionText);
       el.appendChild(description);
     }
 
+    const connect = Div({ styles: { ...styles, display: 'flex' } });
+    const connectIcon = Span({
+      attr: { innerHTML: link },
+      styles: iconStyles,
+    });
+    const connectLink = Span({
+      attr: {
+        innerHTML: autolinker.link(
+          `https://connect.xyzdigital.com/${event._id}`
+        ),
+      },
+    });
+    connect.appendChild(connectIcon);
+    connect.appendChild(connectLink);
+    el.appendChild(connect);
+
     if (event.allDay) {
-      const day = Div({ styles });
+      const day = Div({ styles: { ...styles, display: 'flex' } });
+      const icon = Span({
+        attr: { innerHTML: calendarWeek },
+        styles: iconStyles,
+      });
       const localDay = convertMidnightUTCToLocalDay(event.start);
-      day.innerText = `${formatDateTime('en-CA', dateOptions, localDay)}`;
+      const dayText = Span({
+        attr: {
+          innerHTML: `${formatDateTime('en-CA', dateOptions, localDay)}`,
+        },
+      });
+      day.appendChild(icon);
+      day.appendChild(dayText);
       el.appendChild(day);
     } else {
-      const start = Div({
-        attr: {
-          innerText: `Start: ${formatDateTime(
-            'en-CA',
-            dateTimeOptions,
-            event.start
-          )}`,
-        },
-        styles,
+      const datesContainer = Div({ styles: { ...styles, display: 'flex' } });
+      const startIcon = Span({
+        attr: { innerHTML: calendarWeek },
+        styles: iconStyles,
       });
-      el.appendChild(start);
 
-      const end = Div({ styles: { ...styles, marginTop: '0' } });
+      datesContainer.appendChild(startIcon);
+
+      const dates = Div();
+      const startTime = Span({
+        attr: {
+          innerHTML: `${formatDateTime('en-CA', dateTimeOptions, event.start)}`,
+        },
+      });
+      dates.appendChild(startTime);
+
+      const toLabel = Label({
+        attr: { innerHTML: '&nbsp; - &nbsp;' },
+      });
       const endDate = event.end
         ? `${formatDateTime('en-CA', dateTimeOptions, event.end)}`
         : '';
-      end.innerHTML = `End: ${endDate}`;
-      el.appendChild(end);
+      const endTime = Span({ attr: { innerHTML: endDate } });
+      dates.appendChild(toLabel);
+      dates.appendChild(endTime);
+      datesContainer.appendChild(dates);
+      el.appendChild(datesContainer);
     }
 
-    const guests = Div({ styles: { ...styles, margin: '8px 0 32px' } });
+    const guests = Div({
+      styles: { ...styles, margin: '8px 0 32px', display: 'flex' },
+    });
     const usersList = event.users?.length
       ? users.filter((user) => event.users?.includes(user._id))
       : users;
 
+    const guestsIcon = Span({
+      attr: { innerHTML: usersIcon },
+      styles: iconStyles,
+    });
+
+    const guestsList = Div();
     const guestsLabel = Label({ attr: { innerHTML: 'Guests:' } });
-    guests.appendChild(guestsLabel);
+    guestsList.appendChild(guestsLabel);
+
     usersList.map((user) => {
       const container = Div({
         styles: { ...flexAlignItemsCenter, margin: '12px 0' },
@@ -209,8 +276,11 @@ export function Event(event: IEvent) {
       const name = Div({ attr: { innerHTML: user.name } });
       container.append(userIcon);
       container.append(name);
-      guests.appendChild(container);
+      guestsList.appendChild(container);
     });
+
+    guests.appendChild(guestsIcon);
+    guests.appendChild(guestsList);
 
     el.appendChild(guests);
   }

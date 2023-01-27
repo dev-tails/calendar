@@ -2851,6 +2851,16 @@
     iconName: "pencil",
     icon: [512, 512, [9999, 61504, "pencil-alt"], "f303", "M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"]
   };
+  var faList = {
+    prefix: "fas",
+    iconName: "list",
+    icon: [512, 512, ["list-squares"], "f03a", "M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z"]
+  };
+  var faUsers = {
+    prefix: "fas",
+    iconName: "users",
+    icon: [640, 512, [], "f0c0", "M144 160c-44.2 0-80-35.8-80-80S99.8 0 144 0s80 35.8 80 80s-35.8 80-80 80zm368 0c-44.2 0-80-35.8-80-80s35.8-80 80-80s80 35.8 80 80s-35.8 80-80 80zM0 298.7C0 239.8 47.8 192 106.7 192h42.7c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0H21.3C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7h42.7C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3H405.3zM416 224c0 53-43 96-96 96s-96-43-96-96s43-96 96-96s96 43 96 96zM128 485.3C128 411.7 187.7 352 261.3 352H378.7C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7H154.7c-14.7 0-26.7-11.9-26.7-26.7z"]
+  };
   var faTrash = {
     prefix: "fas",
     iconName: "trash",
@@ -2866,6 +2876,11 @@
     prefix: "fas",
     iconName: "calendar-week",
     icon: [448, 512, [], "f784", "M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm80 64c-8.8 0-16 7.2-16 16v64c0 8.8 7.2 16 16 16H368c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80z"]
+  };
+  var faLink = {
+    prefix: "fas",
+    iconName: "link",
+    icon: [640, 512, [128279, "chain"], "f0c1", "M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"]
   };
   var faChevronLeft = {
     prefix: "fas",
@@ -2889,16 +2904,22 @@
   library$1.add(faChevronLeft);
   library$1.add(faChevronRight);
   library$1.add(faHome);
+  library$1.add(faLink);
+  library$1.add(faList);
   library$1.add(faPencil);
   library$1.add(faTimesCircle);
   library$1.add(faTrash);
+  library$1.add(faUsers);
   var calendarWeek = icon2({ prefix: "fas", iconName: "calendar-week" }).html[0];
   var chevronLeft = icon2({ prefix: "fas", iconName: "chevron-left" }).html[0];
   var chevronRight = icon2({ prefix: "fas", iconName: "chevron-right" }).html[0];
   var home = icon2({ prefix: "fas", iconName: "home" }).html[0];
+  var link = icon2({ prefix: "fas", iconName: "link" }).html[0];
+  var list = icon2({ prefix: "fas", iconName: "list" }).html[0];
   var pencil = icon2({ prefix: "fas", iconName: "pencil" }).html[0];
   var times = icon2({ prefix: "fas", iconName: "times-circle" }).html[0];
   var trash = icon2({ prefix: "fas", iconName: "trash" }).html[0];
+  var usersIcon = icon2({ prefix: "fas", iconName: "users" }).html[0];
 
   // src/views/Day/Day.ts
   var arrowStyles = {
@@ -3568,6 +3589,22 @@
         descriptionContainer.appendChild(descriptionLabel);
         descriptionContainer.appendChild(descriptionInput);
         form.appendChild(descriptionContainer);
+        const connect = Div({ styles: { padding: " 12px" } });
+        const connectLabel = Label({
+          attr: { innerText: "Connect:" }
+        });
+        const connectLink = Label({
+          attr: {
+            innerHTML: "Link will be created with event."
+          },
+          styles: {
+            marginLeft: "8px",
+            color: basics.spanishGray
+          }
+        });
+        connect.appendChild(connectLabel);
+        connect.appendChild(connectLink);
+        form.appendChild(connect);
         const dateContainer = EventDateSelect(eventState, setEventState);
         form.appendChild(dateContainer);
         const guests = EventPrivacy(
@@ -5902,6 +5939,14 @@
     padding: "4px 0",
     marginTop: "8px"
   };
+  var iconStyles = __spreadProps(__spreadValues({
+    marginRight: "12px",
+    color: basics.spanishGray,
+    width: "20px",
+    height: "20px"
+  }, flexAlignItemsCenter), {
+    justifyContent: "center"
+  });
   function Event2(event) {
     let users2 = [];
     const el = Div({
@@ -6005,41 +6050,86 @@
         titleContainer.appendChild(buttons);
         el.appendChild(titleContainer);
         if (event.description) {
-          const description = Div({
-            styles: __spreadProps(__spreadValues({}, styles2), { whiteSpace: "pre-line" })
+          const description = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "flex" }) });
+          const icon3 = Span({ attr: { innerHTML: list }, styles: iconStyles });
+          const descriptionText = Div({
+            attr: {
+              innerHTML: es2015_default.link(event.description)
+            },
+            styles: { whiteSpace: "pre-line", marginLeft: "6px" }
           });
-          description.innerHTML = es2015_default.link(event.description);
+          description.appendChild(icon3);
+          description.appendChild(descriptionText);
           el.appendChild(description);
         }
+        const connect = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "flex" }) });
+        const connectIcon = Span({
+          attr: { innerHTML: link },
+          styles: iconStyles
+        });
+        const connectLink = Span({
+          attr: {
+            innerHTML: es2015_default.link(
+              `https://connect.xyzdigital.com/${event._id}`
+            )
+          }
+        });
+        connect.appendChild(connectIcon);
+        connect.appendChild(connectLink);
+        el.appendChild(connect);
         if (event.allDay) {
-          const day = Div({ styles: styles2 });
+          const day = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "flex" }) });
+          const icon3 = Span({
+            attr: { innerHTML: calendarWeek },
+            styles: iconStyles
+          });
           const localDay = convertMidnightUTCToLocalDay(event.start);
-          day.innerText = `${formatDateTime("en-CA", dateOptions, localDay)}`;
+          const dayText = Span({
+            attr: {
+              innerHTML: `${formatDateTime("en-CA", dateOptions, localDay)}`
+            }
+          });
+          day.appendChild(icon3);
+          day.appendChild(dayText);
           el.appendChild(day);
         } else {
-          const start = Div({
-            attr: {
-              innerText: `Start: ${formatDateTime(
-                "en-CA",
-                dateTimeOptions,
-                event.start
-              )}`
-            },
-            styles: styles2
+          const datesContainer = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "flex" }) });
+          const startIcon = Span({
+            attr: { innerHTML: calendarWeek },
+            styles: iconStyles
           });
-          el.appendChild(start);
-          const end3 = Div({ styles: __spreadProps(__spreadValues({}, styles2), { marginTop: "0" }) });
+          datesContainer.appendChild(startIcon);
+          const dates = Div();
+          const startTime = Span({
+            attr: {
+              innerHTML: `${formatDateTime("en-CA", dateTimeOptions, event.start)}`
+            }
+          });
+          dates.appendChild(startTime);
+          const toLabel = Label({
+            attr: { innerHTML: "&nbsp; - &nbsp;" }
+          });
           const endDate = event.end ? `${formatDateTime("en-CA", dateTimeOptions, event.end)}` : "";
-          end3.innerHTML = `End: ${endDate}`;
-          el.appendChild(end3);
+          const endTime = Span({ attr: { innerHTML: endDate } });
+          dates.appendChild(toLabel);
+          dates.appendChild(endTime);
+          datesContainer.appendChild(dates);
+          el.appendChild(datesContainer);
         }
-        const guests = Div({ styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0 32px" }) });
+        const guests = Div({
+          styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0 32px", display: "flex" })
+        });
         const usersList = ((_a = event.users) == null ? void 0 : _a.length) ? users2.filter((user) => {
           var _a2;
           return (_a2 = event.users) == null ? void 0 : _a2.includes(user._id);
         }) : users2;
+        const guestsIcon = Span({
+          attr: { innerHTML: usersIcon },
+          styles: iconStyles
+        });
+        const guestsList = Div();
         const guestsLabel = Label({ attr: { innerHTML: "Guests:" } });
-        guests.appendChild(guestsLabel);
+        guestsList.appendChild(guestsLabel);
         usersList.map((user) => {
           const container = Div({
             styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), { margin: "12px 0" })
@@ -6068,8 +6158,10 @@
           const name = Div({ attr: { innerHTML: user.name } });
           container.append(userIcon);
           container.append(name);
-          guests.appendChild(container);
+          guestsList.appendChild(container);
         });
+        guests.appendChild(guestsIcon);
+        guests.appendChild(guestsList);
         el.appendChild(guests);
       });
     }

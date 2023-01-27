@@ -14,6 +14,7 @@ import { times } from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
+import { Span } from '../../components/elements/Span';
 
 export function EventForm(event?: IEvent) {
   const form = Form({
@@ -132,6 +133,23 @@ export function EventForm(event?: IEvent) {
     descriptionContainer.appendChild(descriptionLabel);
     descriptionContainer.appendChild(descriptionInput);
     form.appendChild(descriptionContainer);
+
+    const connect = Div({ styles: { padding: ' 12px' } });
+    const connectLabel = Label({
+      attr: { innerText: 'Connect:' },
+    });
+    const connectLink = Label({
+      attr: {
+        innerHTML: 'Link will be created with event.',
+      },
+      styles: {
+        marginLeft: '8px',
+        color: basics.spanishGray,
+      },
+    });
+    connect.appendChild(connectLabel);
+    connect.appendChild(connectLink);
+    form.appendChild(connect);
 
     const dateContainer = EventDateSelect(eventState, setEventState);
     form.appendChild(dateContainer);
