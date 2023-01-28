@@ -1,5 +1,4 @@
-import { Button } from '../../components/elements/Button';
-import { Div } from '../../components/elements/Div';
+import { Button, Div } from '../../components/elements';
 import {
   basics,
   colors,

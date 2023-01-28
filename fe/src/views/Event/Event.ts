@@ -12,11 +12,7 @@ import {
 import { buttonStyles } from '../../../public/css/componentStyles';
 import { deleteEvent } from '../../apis/EventApi';
 import { getUsers } from '../../apis/UserApi';
-import { Button } from '../../components/elements/Button';
-import { Div } from '../../components/elements/Div';
-import { H3 } from '../../components/elements/H3';
-import { Label } from '../../components/elements/Label';
-import { Span } from '../../components/elements/Span';
+import { Button, Div, H3, Label, Span } from '../../components/elements';
 import {
   addTimeZoneOptions,
   formatDateTime,

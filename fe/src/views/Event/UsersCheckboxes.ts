@@ -1,8 +1,6 @@
 import { fetchSelf, getUsers } from '../../apis/UserApi';
-import { Div } from '../../components/elements/Div';
-import { Input } from '../../components/elements/Input/Input';
-import { Label } from '../../components/elements/Label';
-import { basics, flexAlignItemsCenter } from '../../utils/styles';
+import { Div, Input, Label } from '../../components/elements';
+import { flexAlignItemsCenter } from '../../utils/styles';
 
 export function UsersCheckboxes(
   id: string,

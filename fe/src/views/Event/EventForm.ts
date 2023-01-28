@@ -1,22 +1,24 @@
 import autolinker from 'autolinker';
 
-import { Button } from '../../components/elements/Button';
-import { Div } from '../../components/elements/Div';
-import { Input } from '../../components/elements/Input/Input';
-import { Textarea } from '../../components/elements/Textarea';
+import {
+  Button,
+  Div,
+  Input,
+  Textarea,
+  Label,
+  H3,
+  Form,
+  Span,
+} from '../../components/elements';
 import { setURL } from '../../utils/HistoryUtils';
 import { basics, colors, flexAlignItemsCenter } from '../../utils/styles';
-import { Label } from '../../components/elements/Label';
-import { H3 } from '../../components/elements/H3';
 import { EventDateSelect } from './EventDateSelect';
-import { Form } from '../../components/elements/Form';
 import { createEvent, editEvent } from '../../apis/EventApi';
 import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
 import { link, times } from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
-import { Span } from '../../components/elements/Span';
 
 export function EventForm(event?: IEvent) {
   const form = Form({

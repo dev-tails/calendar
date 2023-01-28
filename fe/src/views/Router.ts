@@ -1,4 +1,4 @@
-import { Div } from '../components/elements/Div';
+import { Div } from '../components/elements';
 import { getEventById } from '../apis/EventApi';
 import {
   convertMidnightUTCToLocalDay,

@@ -5,9 +5,7 @@ import {
   formatDateTimeInputValue,
   formatSplitDate,
 } from '../../utils/dateHelpers';
-import { Div } from '../../components/elements/Div';
-import { Input } from '../../components/elements/Input/Input';
-import { Label } from '../../components/elements/Label';
+import { Div, Input, Label } from '../../components/elements';
 import { byId } from '../../utils/DOMutils';
 import { inputStyles } from '../../../public/css/componentStyles';
 import { flexAlignItemsCenter } from '../../utils/styles';

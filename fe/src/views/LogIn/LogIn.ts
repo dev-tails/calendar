@@ -1,8 +1,5 @@
 import { logIn } from '../../apis/AuthApi';
-import { Button } from '../../components/elements/Button';
-import { Div } from '../../components/elements/Div';
-import { Form } from '../../components/elements/Form';
-import { Input } from '../../components/elements/Input/Input';
+import { Button, Div, Form, Input } from '../../components/elements/index';
 
 export function LogIn() {
   let logInState = {

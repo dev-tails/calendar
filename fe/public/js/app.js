@@ -141,10 +141,66 @@
     return el;
   }
 
+  // src/components/elements/Button.ts
+  function Button(props) {
+    return Element(__spreadValues({
+      tag: "button"
+    }, props));
+  }
+
   // src/components/elements/Div.ts
   function Div(props) {
     return Element(__spreadValues({
       tag: "div"
+    }, props));
+  }
+
+  // src/components/elements/Form.ts
+  function Form(props) {
+    return Element(__spreadValues({
+      tag: "form"
+    }, props));
+  }
+
+  // src/components/elements/H1.ts
+  function H1(props) {
+    return Element(__spreadValues({
+      tag: "h1"
+    }, props));
+  }
+
+  // src/components/elements/H3.ts
+  function H3(props) {
+    return Element(__spreadValues({
+      tag: "h3"
+    }, props));
+  }
+
+  // src/components/elements/Input.ts
+  function Input(props) {
+    return Element(__spreadValues({
+      tag: "input"
+    }, props));
+  }
+
+  // src/components/elements/Label.ts
+  function Label(props) {
+    return Element(__spreadValues({
+      tag: "label"
+    }, props));
+  }
+
+  // src/components/elements/Span.ts
+  function Span(props) {
+    return Element(__spreadValues({
+      tag: "span"
+    }, props));
+  }
+
+  // src/components/elements/Textarea.ts
+  function Textarea(props) {
+    return Element(__spreadValues({
+      tag: "textarea"
     }, props));
   }
 
@@ -360,27 +416,6 @@
     display: "flex",
     alignItems: "center"
   };
-
-  // src/components/elements/Span.ts
-  function Span(props) {
-    return Element(__spreadValues({
-      tag: "span"
-    }, props));
-  }
-
-  // src/components/elements/Button.ts
-  function Button(props) {
-    return Element(__spreadValues({
-      tag: "button"
-    }, props));
-  }
-
-  // src/components/elements/H1.ts
-  function H1(props) {
-    return Element(__spreadValues({
-      tag: "h1"
-    }, props));
-  }
 
   // node_modules/@fortawesome/fontawesome-svg-core/index.mjs
   function ownKeys(object, enumerableOnly) {
@@ -5429,34 +5464,6 @@
   // node_modules/autolinker/dist/es2015/index.js
   var es2015_default = autolinker_default;
 
-  // src/components/elements/Input/Input.ts
-  function Input(props) {
-    return Element(__spreadValues({
-      tag: "input"
-    }, props));
-  }
-
-  // src/components/elements/Textarea.ts
-  function Textarea(props) {
-    return Element(__spreadValues({
-      tag: "textarea"
-    }, props));
-  }
-
-  // src/components/elements/Label.ts
-  function Label(props) {
-    return Element(__spreadValues({
-      tag: "label"
-    }, props));
-  }
-
-  // src/components/elements/H3.ts
-  function H3(props) {
-    return Element(__spreadValues({
-      tag: "h3"
-    }, props));
-  }
-
   // public/css/componentStyles.ts
   var inputStyles = {
     border: `1px solid ${basics.spanishGray}`,
@@ -5626,13 +5633,6 @@
     el.appendChild(datesContainer);
     el.appendChild(allDayContainer);
     return el;
-  }
-
-  // src/components/elements/Form.ts
-  function Form(props) {
-    return Element(__spreadValues({
-      tag: "form"
-    }, props));
   }
 
   // src/components/RadioButtons.ts

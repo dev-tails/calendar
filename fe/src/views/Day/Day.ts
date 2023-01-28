@@ -14,10 +14,7 @@ import {
   fonts,
   fontsWeight,
 } from '../../utils/styles';
-import { Div } from '../../components/elements/Div';
-import { Span } from '../../components/elements/Span';
-import { Button } from '../../components/elements/Button';
-import { H1 } from '../../components/elements/H1';
+import { Button, Div, Span, H1 } from '../../components/elements';
 import {
   chevronLeft,
   chevronRight,

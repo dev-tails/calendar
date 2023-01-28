@@ -1,6 +1,5 @@
-import { byId } from '../utils/DOMutils';
 import { Div } from './elements/Div';
-import { Input } from './elements/Input/Input';
+import { Input } from './elements/Input';
 import { Label } from './elements/Label';
 
 type RadioButtonsProps = {

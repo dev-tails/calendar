@@ -1,4 +1,4 @@
-import { Element, ElementAttributes, Selectors } from '../Element';
+import { Element, ElementAttributes, Selectors } from './Element';
 
 interface InputAttributes extends ElementAttributes {
   checked?: boolean;

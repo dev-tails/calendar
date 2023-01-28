@@ -1,5 +1,4 @@
-import { Div } from '../../components/elements/Div';
-import { Label } from '../../components/elements/Label';
+import { Div, Label } from '../../components/elements';
 import { RadioButtons } from '../../components/RadioButtons';
 import { byId } from '../../utils/DOMutils';
 import { flexAlignItemsCenter } from '../../utils/styles';
