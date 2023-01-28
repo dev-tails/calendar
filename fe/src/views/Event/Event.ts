@@ -1,4 +1,3 @@
-import { faHourglassStart } from '@fortawesome/free-solid-svg-icons';
 import autolinker from 'autolinker';
 import {
   calendarWeek,
@@ -40,11 +39,11 @@ const styles = {
   fontFamily: fonts.montserrat,
   fontSize: '14px',
   padding: '4px 0',
-  marginTop: '8px',
+  marginTop: '12px',
 };
 
 const iconStyles = {
-  marginRight: '12px',
+  marginRight: '8px',
   color: basics.spanishGray,
   width: '20px',
   height: '20px',
@@ -178,19 +177,6 @@ export function Event(event: IEvent) {
       el.append(description);
     }
 
-    const connect = Div({ styles });
-    const connectIcon = icon(link);
-    const connectLink = Span({
-      attr: {
-        innerHTML: autolinker.link(
-          `https://connect.xyzdigital.com/${event._id}`
-        ),
-      },
-    });
-    connect.append(connectIcon);
-    connect.append(connectLink);
-    el.append(connect);
-
     if (event.allDay) {
       const day = Div({ styles });
       const dateIcon = icon(calendarWeek);
@@ -204,13 +190,13 @@ export function Event(event: IEvent) {
       day.append(dayText);
       el.append(day);
     } else {
-      const datesContainer = Div({ styles: { ...styles, display: 'block' } });
+      const datesContainer = Div({ styles });
       const endsSameDay =
         event.start.toDateString() === event.end?.toDateString();
 
       const dates = Div({
         styles: endsSameDay
-          ? { ...flexAlignItemsCenter }
+          ? { ...flexAlignItemsCenter, width: '50%' }
           : { display: 'flex', alignItems: 'flex-start' },
       });
       const datesIcon = icon(endsSameDay ? calendarWeek : hourglassStart);
@@ -230,6 +216,7 @@ export function Event(event: IEvent) {
 
       if (!endsSameDay) {
         const hourglassEndIcon = icon(hourglassEnd);
+        hourglassEndIcon.style.justifyContent = 'flex-end';
         const endDateFormat = event.end
           ? `${formatDateTime(
               { ...dateTimeOptions, ...addTimeZoneOptions },
@@ -245,7 +232,10 @@ export function Event(event: IEvent) {
 
       if (endsSameDay) {
         const times = Div({
-          styles: { ...flexAlignItemsCenter, padding: '4px 0' },
+          styles: {
+            ...flexAlignItemsCenter,
+            width: '50%',
+          },
         });
         const timeIcon = icon(clockIcon);
         const startTime = Span({
@@ -277,6 +267,19 @@ export function Event(event: IEvent) {
 
       el.append(datesContainer);
     }
+
+    const connect = Div({ styles });
+    const connectIcon = icon(link);
+    const connectLink = Span({
+      attr: {
+        innerHTML: autolinker.link(
+          `https://preview-iyris.cloud.engramhq.xyz/${event._id}`
+        ),
+      },
+    });
+    connect.append(connectIcon);
+    connect.append(connectLink);
+    el.append(connect);
 
     const guests = Div({
       styles: { ...styles, margin: '8px 0 32px', alignItems: 'flex-start' },

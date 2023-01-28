@@ -3160,520 +3160,6 @@
     setURL(`/day/${dateString}`);
   }
 
-  // src/components/elements/Input/Input.ts
-  function Input(props) {
-    return Element(__spreadValues({
-      tag: "input"
-    }, props));
-  }
-
-  // src/components/elements/Textarea.ts
-  function Textarea(props) {
-    return Element(__spreadValues({
-      tag: "textarea"
-    }, props));
-  }
-
-  // src/components/elements/Label.ts
-  function Label(props) {
-    return Element(__spreadValues({
-      tag: "label"
-    }, props));
-  }
-
-  // src/components/elements/H3.ts
-  function H3(props) {
-    return Element(__spreadValues({
-      tag: "h3"
-    }, props));
-  }
-
-  // public/css/componentStyles.ts
-  var inputStyles = {
-    border: `1px solid ${basics.spanishGray}`,
-    borderRadius: "4px",
-    padding: "4px 8px",
-    fontSize: "14px",
-    outline: "none",
-    fontFamily: fonts.montserrat,
-    color: basics.darkCharcoal
-  };
-  var buttonStyles = {
-    background: colors.royalBlueLight,
-    border: "none",
-    color: basics.whiteColor,
-    fontFamily: fonts.montserrat,
-    fontWeight: "400",
-    fontSize: "14px",
-    borderRadius: "4px",
-    padding: "8px 16px",
-    letterSpacing: "1"
-  };
-
-  // src/views/Event/EventDateSelect.ts
-  function EventDateSelect(event, onEventStateChange) {
-    const el = Div({
-      styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-        padding: "12px"
-      })
-    });
-    const datesContainer = Div({
-      styles: { marginRight: event.allDay ? "" : "auto" }
-    });
-    datesContainer.appendChild(
-      event.allDay ? newStartDateInput() : newStartTimeInput()
-    );
-    const toLabel = Label({
-      attr: { innerText: "to" },
-      styles: {
-        marginRight: "8px"
-      }
-    });
-    if (!event.allDay) {
-      datesContainer.appendChild(toLabel);
-      datesContainer.appendChild(endTimeInput());
-    }
-    const allDayContainer = Div({ styles: __spreadValues({}, flexAlignItemsCenter) });
-    const allDayInput = Input({
-      attr: {
-        type: "checkbox",
-        checked: event.allDay,
-        onchange: onAllDayChange
-      },
-      selectors: {
-        id: "allDay"
-      }
-    });
-    allDayContainer.appendChild(allDayInput);
-    const allDayLabel = Label({
-      attr: { innerText: "All day", for: "allDay" },
-      styles: { marginLeft: "4px" }
-    });
-    allDayContainer.appendChild(allDayLabel);
-    function dateTimeString() {
-      return formatDateTimeInputValue(event.start);
-    }
-    function newStartTimeInput() {
-      return Input({
-        selectors: { id: "start" },
-        attr: {
-          type: "datetime-local",
-          value: event.start ? dateTimeString() : void 0,
-          required: true,
-          onchange: (e) => {
-            const selectedValue = e.target.value;
-            let newStartDate = new Date(selectedValue);
-            const endDateTime = byId("end");
-            const newEndDate = addMinutesToDate(newStartDate, 30);
-            const endDateTimeString = formatDateTimeInputValue(newEndDate);
-            endDateTime.value = endDateTimeString;
-            onEventStateChange({
-              start: newStartDate,
-              end: newEndDate
-            });
-          }
-        },
-        styles: __spreadProps(__spreadValues({}, inputStyles), {
-          marginRight: "8px"
-        })
-      });
-    }
-    function newStartDateInput() {
-      return Input({
-        selectors: { id: "start" },
-        attr: {
-          type: "date",
-          value: formatSplitDate(
-            convertMidnightUTCToLocalDay(event.start),
-            "-",
-            "yyyy-mm-dd"
-          ),
-          required: true,
-          onchange: (e) => {
-            const selectedValue = e.target.value;
-            let newStartDate = new Date(selectedValue);
-            newStartDate.setUTCHours(0, 0, 0, 0);
-            onEventStateChange({
-              start: newStartDate,
-              end: void 0
-            });
-          }
-        },
-        styles: __spreadProps(__spreadValues({}, inputStyles), {
-          marginRight: "8px"
-        })
-      });
-    }
-    function endTimeInput() {
-      return Input({
-        attr: {
-          type: "datetime-local",
-          value: event.end ? formatDateTimeInputValue(event.end) : "",
-          required: true,
-          onchange: (e) => {
-            onEventStateChange({
-              end: new Date(e.target.value)
-            });
-          }
-        },
-        styles: __spreadProps(__spreadValues({}, inputStyles), {
-          marginRight: "8px"
-        }),
-        selectors: { id: "end" }
-      });
-    }
-    function onAllDayChange(e) {
-      const isChecked = e.target.checked;
-      const dateInput = byId("start");
-      const endDatetimeInput = byId("end");
-      if (isChecked) {
-        datesContainer.removeChild(dateInput);
-        datesContainer.removeChild(toLabel);
-        datesContainer.removeChild(endDatetimeInput);
-        const copiedDate = new Date(event.start.getTime());
-        copiedDate.setHours(0, 0, 0, 0);
-        onEventStateChange({
-          start: copiedDate,
-          allDay: isChecked,
-          end: isChecked ? void 0 : event.end
-        });
-        datesContainer.style.marginRight = "0";
-        datesContainer.prepend(newStartDateInput());
-      } else {
-        const currentDate = convertMidnightUTCToLocalDay(event.start);
-        const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
-        datesContainer.removeChild(dateInput);
-        datesContainer.prepend(endTimeInput());
-        datesContainer.prepend(toLabel);
-        onEventStateChange({
-          start: selectedDateWithCurrentTime,
-          allDay: isChecked,
-          end: void 0
-        });
-        datesContainer.style.marginRight = "auto";
-        datesContainer.prepend(newStartTimeInput());
-      }
-    }
-    el.appendChild(datesContainer);
-    el.appendChild(allDayContainer);
-    return el;
-  }
-
-  // src/components/elements/Form.ts
-  function Form(props) {
-    return Element(__spreadValues({
-      tag: "form"
-    }, props));
-  }
-
-  // src/components/RadioButtons.ts
-  function RadioButtons(props) {
-    var _a;
-    const el = Div({ styles: { display: "flex" } });
-    (_a = props.options) == null ? void 0 : _a.map((option) => {
-      const firstLabel = Label({
-        attr: { for: option, innerText: option },
-        styles: { marginRight: "8px" }
-      });
-      const first = Input({
-        selectors: { id: option },
-        attr: {
-          checked: option === props.selected,
-          type: "radio",
-          name: "users",
-          value: option,
-          onchange: (e) => {
-            props.onChange(e.target.value);
-          }
-        },
-        styles: { margin: "0 4px" }
-      });
-      el.appendChild(first);
-      el.appendChild(firstLabel);
-    });
-    return el;
-  }
-
-  // src/views/Event/UsersCheckboxes.ts
-  function UsersCheckboxes(id, selectedUserIds, onChange2) {
-    const checkboxEl = Div({
-      selectors: { id },
-      styles: { padding: "0 12px 12px" }
-    });
-    function init2() {
-      return __async(this, null, function* () {
-        const currentUser = yield fetchSelf();
-        const users2 = yield getUsers();
-        const everyone = !selectedUserIds.length;
-        let selectedIds = everyone ? users2.map((user) => user._id) : selectedUserIds;
-        users2.forEach((option) => {
-          const optionContainer = Div({
-            styles: __spreadValues({ padding: "4px 0" }, flexAlignItemsCenter)
-          });
-          const { name, _id } = option;
-          const optionLabel = Label({ attr: { innerText: name, for: name } });
-          const optionEl = Input({
-            selectors: {
-              id: _id
-            },
-            attr: {
-              type: "checkbox",
-              disabled: (currentUser == null ? void 0 : currentUser._id) === _id,
-              checked: selectedIds.includes(_id),
-              value: name,
-              onchange: (e) => {
-                const isChecked = e.target.checked;
-                if (isChecked) {
-                  selectedIds.push(_id);
-                } else {
-                  selectedIds = selectedIds.filter(
-                    (optionSelected) => optionSelected !== _id
-                  );
-                }
-                const everyoneSelected = selectedIds.length === users2.length;
-                onChange2(everyoneSelected ? [] : selectedIds);
-              }
-            },
-            styles: {
-              marginRight: "8px"
-            }
-          });
-          optionContainer.appendChild(optionEl);
-          optionContainer.appendChild(optionLabel);
-          checkboxEl.appendChild(optionContainer);
-        });
-      });
-    }
-    init2();
-    return checkboxEl;
-  }
-
-  // src/views/Event/EventPrivacy.ts
-  function EventPrivacy(currentUserId, selectedUserIds, onEventStateChange) {
-    const el = Div();
-    const sharedOptions = Div({
-      styles: __spreadValues({ padding: "12px" }, flexAlignItemsCenter)
-    });
-    const label = Label({
-      attr: { innerText: "Who can see this?" },
-      styles: { marginRight: "8px" }
-    });
-    const isPrivateEvent = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === currentUserId;
-    let eventPrivacy = isPrivateEvent ? "Me" : "Others";
-    const privacyRadioButtons = RadioButtons({
-      selected: eventPrivacy,
-      options: ["Me", "Others"],
-      onChange: onRadioButtonChange
-    });
-    const usersCheckboxes = UsersCheckboxes(
-      "users-select",
-      selectedUserIds,
-      (ids) => {
-        onEventStateChange({ users: ids });
-      }
-    );
-    function onRadioButtonChange(privacyOption) {
-      onEventStateChange({
-        users: [currentUserId]
-      });
-      if (privacyOption === "Others") {
-        el.appendChild(usersCheckboxes);
-      } else {
-        const usersSelect = byId("users-select");
-        usersSelect && el.removeChild(usersSelect);
-      }
-    }
-    sharedOptions.appendChild(label);
-    sharedOptions.appendChild(privacyRadioButtons);
-    el.appendChild(sharedOptions);
-    if (eventPrivacy === "Others") {
-      el.append(usersCheckboxes);
-    }
-    return el;
-  }
-
-  // src/views/Event/EventForm.ts
-  function EventForm(event) {
-    const form = Form({
-      styles: {
-        maxWidth: "600px",
-        paddingTop: "24px",
-        marginLeft: "auto",
-        marginRight: "auto"
-      }
-    });
-    function init2() {
-      return __async(this, null, function* () {
-        const currentUser = yield fetchSelf();
-        if (!currentUser) {
-          return;
-        }
-        let eventTemplate = {
-          title: "",
-          description: "",
-          start: new Date(),
-          allDay: false,
-          users: [currentUser == null ? void 0 : currentUser._id]
-        };
-        const eventState = event ? __spreadValues({}, event) : __spreadValues({}, eventTemplate);
-        const setEventState = (newValue) => {
-          Object.assign(eventState, newValue);
-        };
-        const headerContainer = Div({
-          styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-            justifyContent: "space-between",
-            padding: "0px 12px"
-          })
-        });
-        const editEventHeader = H3({
-          attr: { innerText: `${eventState._id ? "Edit" : "Add"} event` }
-        });
-        const cancelButton = Button({
-          selectors: {
-            id: "cancel-btn"
-          },
-          attr: {
-            innerHTML: times,
-            type: "button",
-            onclick: () => setURL("/"),
-            onmouseover: () => {
-              const button = byId("cancel-btn");
-              if (button) {
-                button.style.color = colors.mandarine;
-              }
-            },
-            onmouseout: () => {
-              const button = byId("cancel-btn");
-              if (button) {
-                button.style.color = basics.silver;
-              }
-            }
-          },
-          styles: {
-            background: "none",
-            border: "none",
-            color: basics.silver,
-            fontSize: "24px",
-            padding: "0"
-          }
-        });
-        headerContainer.appendChild(editEventHeader);
-        headerContainer.appendChild(cancelButton);
-        form.appendChild(headerContainer);
-        const titleContainer = Div({ styles: { padding: "12px" } });
-        const titleInput = Input({
-          attr: {
-            name: "title",
-            value: eventState["title"],
-            onchange: (e) => {
-              setEventState({ title: e.target.value });
-            },
-            placeholder: "Title",
-            required: true
-          },
-          styles: __spreadProps(__spreadValues({}, inputStyles), { width: "100%" })
-        });
-        titleContainer.appendChild(titleInput);
-        form.appendChild(titleContainer);
-        const descriptionContainer = Div({
-          styles: { padding: "12px", display: "flex", flexDirection: "column" }
-        });
-        const descriptionLabel = Label({
-          attr: { innerText: "Description:" },
-          styles: {
-            marginBottom: "4px"
-          }
-        });
-        const descriptionInput = Textarea({
-          attr: {
-            name: "description",
-            value: eventState["description"],
-            onchange: (e) => {
-              setEventState({
-                description: e.target.value
-              });
-            },
-            placeholder: "Write something..."
-          },
-          styles: __spreadProps(__spreadValues({}, inputStyles), { minHeight: "160px" })
-        });
-        descriptionContainer.appendChild(descriptionLabel);
-        descriptionContainer.appendChild(descriptionInput);
-        form.appendChild(descriptionContainer);
-        const connect = Div({ styles: { padding: " 12px" } });
-        const connectLabel = Label({
-          attr: { innerText: "Connect:" }
-        });
-        const connectLink = Label({
-          attr: {
-            innerHTML: "Link will be created with event."
-          },
-          styles: {
-            marginLeft: "8px",
-            color: basics.spanishGray
-          }
-        });
-        connect.appendChild(connectLabel);
-        connect.appendChild(connectLink);
-        form.appendChild(connect);
-        const dateContainer = EventDateSelect(eventState, setEventState);
-        form.appendChild(dateContainer);
-        const guests = EventPrivacy(
-          currentUser._id,
-          (eventState == null ? void 0 : eventState.users) || [],
-          setEventState
-        );
-        form.appendChild(guests);
-        const buttons = Div({
-          styles: { marginTop: "8px", padding: "12px" }
-        });
-        const saveButton = Button({
-          selectors: { id: "save-btn" },
-          attr: {
-            textContent: "Save",
-            type: "submit",
-            onmouseover: () => {
-              const button = byId("save-btn");
-              if (button) {
-                button.style.opacity = ".9";
-              }
-            },
-            onmouseout: () => {
-              const button = byId("save-btn");
-              if (button) {
-                button.style.opacity = "1";
-              }
-            }
-          },
-          styles: buttonStyles
-        });
-        buttons.appendChild(saveButton);
-        form.appendChild(buttons);
-        form.onsubmit = (e) => __async(this, null, function* () {
-          e.preventDefault();
-          let start = eventState.start;
-          if (eventState.allDay) {
-            const midnightDate = new Date(eventState.start.getTime());
-            midnightDate.setUTCHours(0, 0, 0, 0);
-            start = midnightDate;
-            delete eventState.end;
-          }
-          setEventState({ start });
-          let eventId = eventState._id;
-          console.log("submitting", eventState);
-          if (eventId) {
-            yield editEvent(eventState);
-          } else {
-            eventId = yield createEvent(eventState);
-          }
-          setURL(`/events/${eventId}`);
-        });
-      });
-    }
-    init2();
-    return form;
-  }
-
   // node_modules/autolinker/dist/es2015/version.js
   var version = "4.0.0";
 
@@ -5943,15 +5429,532 @@
   // node_modules/autolinker/dist/es2015/index.js
   var es2015_default = autolinker_default;
 
+  // src/components/elements/Input/Input.ts
+  function Input(props) {
+    return Element(__spreadValues({
+      tag: "input"
+    }, props));
+  }
+
+  // src/components/elements/Textarea.ts
+  function Textarea(props) {
+    return Element(__spreadValues({
+      tag: "textarea"
+    }, props));
+  }
+
+  // src/components/elements/Label.ts
+  function Label(props) {
+    return Element(__spreadValues({
+      tag: "label"
+    }, props));
+  }
+
+  // src/components/elements/H3.ts
+  function H3(props) {
+    return Element(__spreadValues({
+      tag: "h3"
+    }, props));
+  }
+
+  // public/css/componentStyles.ts
+  var inputStyles = {
+    border: `1px solid ${basics.spanishGray}`,
+    borderRadius: "4px",
+    padding: "4px 8px",
+    fontSize: "14px",
+    outline: "none",
+    fontFamily: fonts.montserrat,
+    color: basics.darkCharcoal
+  };
+  var buttonStyles = {
+    background: colors.royalBlueLight,
+    border: "none",
+    color: basics.whiteColor,
+    fontFamily: fonts.montserrat,
+    fontWeight: "400",
+    fontSize: "14px",
+    borderRadius: "4px",
+    padding: "8px 16px",
+    letterSpacing: "1"
+  };
+
+  // src/views/Event/EventDateSelect.ts
+  function EventDateSelect(event, onEventStateChange) {
+    const el = Div({
+      styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
+        padding: "12px"
+      })
+    });
+    const datesContainer = Div({
+      styles: { marginRight: event.allDay ? "" : "auto" }
+    });
+    datesContainer.appendChild(
+      event.allDay ? newStartDateInput() : newStartTimeInput()
+    );
+    const toLabel = Label({
+      attr: { innerText: "to" },
+      styles: {
+        marginRight: "8px"
+      }
+    });
+    if (!event.allDay) {
+      datesContainer.appendChild(toLabel);
+      datesContainer.appendChild(endTimeInput());
+    }
+    const allDayContainer = Div({ styles: __spreadValues({}, flexAlignItemsCenter) });
+    const allDayInput = Input({
+      attr: {
+        type: "checkbox",
+        checked: event.allDay,
+        onchange: onAllDayChange
+      },
+      selectors: {
+        id: "allDay"
+      }
+    });
+    allDayContainer.appendChild(allDayInput);
+    const allDayLabel = Label({
+      attr: { innerText: "All day", for: "allDay" },
+      styles: { marginLeft: "4px" }
+    });
+    allDayContainer.appendChild(allDayLabel);
+    function dateTimeString() {
+      return formatDateTimeInputValue(event.start);
+    }
+    function newStartTimeInput() {
+      return Input({
+        selectors: { id: "start" },
+        attr: {
+          type: "datetime-local",
+          value: event.start ? dateTimeString() : void 0,
+          required: true,
+          onchange: (e) => {
+            const selectedValue = e.target.value;
+            let newStartDate = new Date(selectedValue);
+            const endDateTime = byId("end");
+            const newEndDate = addMinutesToDate(newStartDate, 30);
+            const endDateTimeString = formatDateTimeInputValue(newEndDate);
+            endDateTime.value = endDateTimeString;
+            onEventStateChange({
+              start: newStartDate,
+              end: newEndDate
+            });
+          }
+        },
+        styles: __spreadProps(__spreadValues({}, inputStyles), {
+          marginRight: "8px"
+        })
+      });
+    }
+    function newStartDateInput() {
+      return Input({
+        selectors: { id: "start" },
+        attr: {
+          type: "date",
+          value: formatSplitDate(
+            convertMidnightUTCToLocalDay(event.start),
+            "-",
+            "yyyy-mm-dd"
+          ),
+          required: true,
+          onchange: (e) => {
+            const selectedValue = e.target.value;
+            let newStartDate = new Date(selectedValue);
+            newStartDate.setUTCHours(0, 0, 0, 0);
+            onEventStateChange({
+              start: newStartDate,
+              end: void 0
+            });
+          }
+        },
+        styles: __spreadProps(__spreadValues({}, inputStyles), {
+          marginRight: "8px"
+        })
+      });
+    }
+    function endTimeInput() {
+      return Input({
+        attr: {
+          type: "datetime-local",
+          value: event.end ? formatDateTimeInputValue(event.end) : "",
+          required: true,
+          onchange: (e) => {
+            onEventStateChange({
+              end: new Date(e.target.value)
+            });
+          }
+        },
+        styles: __spreadProps(__spreadValues({}, inputStyles), {
+          marginRight: "8px"
+        }),
+        selectors: { id: "end" }
+      });
+    }
+    function onAllDayChange(e) {
+      const isChecked = e.target.checked;
+      const dateInput = byId("start");
+      const endDatetimeInput = byId("end");
+      if (isChecked) {
+        datesContainer.removeChild(dateInput);
+        datesContainer.removeChild(toLabel);
+        datesContainer.removeChild(endDatetimeInput);
+        const copiedDate = new Date(event.start.getTime());
+        copiedDate.setHours(0, 0, 0, 0);
+        onEventStateChange({
+          start: copiedDate,
+          allDay: isChecked,
+          end: isChecked ? void 0 : event.end
+        });
+        datesContainer.style.marginRight = "0";
+        datesContainer.prepend(newStartDateInput());
+      } else {
+        const currentDate = convertMidnightUTCToLocalDay(event.start);
+        const selectedDateWithCurrentTime = addLocalTimeToDate(currentDate);
+        datesContainer.removeChild(dateInput);
+        datesContainer.prepend(endTimeInput());
+        datesContainer.prepend(toLabel);
+        onEventStateChange({
+          start: selectedDateWithCurrentTime,
+          allDay: isChecked,
+          end: void 0
+        });
+        datesContainer.style.marginRight = "auto";
+        datesContainer.prepend(newStartTimeInput());
+      }
+    }
+    el.appendChild(datesContainer);
+    el.appendChild(allDayContainer);
+    return el;
+  }
+
+  // src/components/elements/Form.ts
+  function Form(props) {
+    return Element(__spreadValues({
+      tag: "form"
+    }, props));
+  }
+
+  // src/components/RadioButtons.ts
+  function RadioButtons(props) {
+    var _a;
+    const el = Div({ styles: { display: "flex" } });
+    (_a = props.options) == null ? void 0 : _a.map((option) => {
+      const firstLabel = Label({
+        attr: { for: option, innerText: option },
+        styles: { marginRight: "8px" }
+      });
+      const first = Input({
+        selectors: { id: option },
+        attr: {
+          checked: option === props.selected,
+          type: "radio",
+          name: "users",
+          value: option,
+          onchange: (e) => {
+            props.onChange(e.target.value);
+          }
+        },
+        styles: { margin: "0 4px" }
+      });
+      el.appendChild(first);
+      el.appendChild(firstLabel);
+    });
+    return el;
+  }
+
+  // src/views/Event/UsersCheckboxes.ts
+  function UsersCheckboxes(id, selectedUserIds, onChange2) {
+    const checkboxEl = Div({
+      selectors: { id },
+      styles: { padding: "0 12px 12px" }
+    });
+    function init2() {
+      return __async(this, null, function* () {
+        const currentUser = yield fetchSelf();
+        const users2 = yield getUsers();
+        const everyone = !selectedUserIds.length;
+        let selectedIds = everyone ? users2.map((user) => user._id) : selectedUserIds;
+        users2.forEach((option) => {
+          const optionContainer = Div({
+            styles: __spreadValues({ padding: "4px 0" }, flexAlignItemsCenter)
+          });
+          const { name, _id } = option;
+          const optionLabel = Label({ attr: { innerText: name, for: name } });
+          const optionEl = Input({
+            selectors: {
+              id: _id
+            },
+            attr: {
+              type: "checkbox",
+              disabled: (currentUser == null ? void 0 : currentUser._id) === _id,
+              checked: selectedIds.includes(_id),
+              value: name,
+              onchange: (e) => {
+                const isChecked = e.target.checked;
+                if (isChecked) {
+                  selectedIds.push(_id);
+                } else {
+                  selectedIds = selectedIds.filter(
+                    (optionSelected) => optionSelected !== _id
+                  );
+                }
+                const everyoneSelected = selectedIds.length === users2.length;
+                onChange2(everyoneSelected ? [] : selectedIds);
+              }
+            },
+            styles: {
+              marginRight: "8px"
+            }
+          });
+          optionContainer.appendChild(optionEl);
+          optionContainer.appendChild(optionLabel);
+          checkboxEl.appendChild(optionContainer);
+        });
+      });
+    }
+    init2();
+    return checkboxEl;
+  }
+
+  // src/views/Event/EventPrivacy.ts
+  function EventPrivacy(currentUserId, selectedUserIds, onEventStateChange) {
+    const el = Div();
+    const sharedOptions = Div({
+      styles: __spreadValues({ padding: "12px" }, flexAlignItemsCenter)
+    });
+    const label = Label({
+      attr: { innerText: "Who can see this?" },
+      styles: { marginRight: "8px" }
+    });
+    const isPrivateEvent = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === currentUserId;
+    let eventPrivacy = isPrivateEvent ? "Me" : "Others";
+    const privacyRadioButtons = RadioButtons({
+      selected: eventPrivacy,
+      options: ["Me", "Others"],
+      onChange: onRadioButtonChange
+    });
+    const usersCheckboxes = UsersCheckboxes(
+      "users-select",
+      selectedUserIds,
+      (ids) => {
+        onEventStateChange({ users: ids });
+      }
+    );
+    function onRadioButtonChange(privacyOption) {
+      onEventStateChange({
+        users: [currentUserId]
+      });
+      if (privacyOption === "Others") {
+        el.appendChild(usersCheckboxes);
+      } else {
+        const usersSelect = byId("users-select");
+        usersSelect && el.removeChild(usersSelect);
+      }
+    }
+    sharedOptions.appendChild(label);
+    sharedOptions.appendChild(privacyRadioButtons);
+    el.appendChild(sharedOptions);
+    if (eventPrivacy === "Others") {
+      el.append(usersCheckboxes);
+    }
+    return el;
+  }
+
+  // src/views/Event/EventForm.ts
+  function EventForm(event) {
+    const form = Form({
+      styles: {
+        maxWidth: "600px",
+        paddingTop: "24px",
+        marginLeft: "auto",
+        marginRight: "auto"
+      }
+    });
+    function init2() {
+      return __async(this, null, function* () {
+        const currentUser = yield fetchSelf();
+        if (!currentUser) {
+          return;
+        }
+        let eventTemplate = {
+          title: "",
+          description: "",
+          start: new Date(),
+          allDay: false,
+          users: [currentUser == null ? void 0 : currentUser._id]
+        };
+        const eventState = event ? __spreadValues({}, event) : __spreadValues({}, eventTemplate);
+        const setEventState = (newValue) => {
+          Object.assign(eventState, newValue);
+        };
+        const headerContainer = Div({
+          styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
+            justifyContent: "space-between",
+            padding: "0px 12px"
+          })
+        });
+        const editEventHeader = H3({
+          attr: { innerText: `${eventState._id ? "Edit" : "Add"} event` }
+        });
+        const cancelButton = Button({
+          selectors: {
+            id: "cancel-btn"
+          },
+          attr: {
+            innerHTML: times,
+            type: "button",
+            onclick: () => setURL("/"),
+            onmouseover: () => {
+              const button = byId("cancel-btn");
+              if (button) {
+                button.style.color = colors.mandarine;
+              }
+            },
+            onmouseout: () => {
+              const button = byId("cancel-btn");
+              if (button) {
+                button.style.color = basics.silver;
+              }
+            }
+          },
+          styles: {
+            background: "none",
+            border: "none",
+            color: basics.silver,
+            fontSize: "24px",
+            padding: "0"
+          }
+        });
+        headerContainer.appendChild(editEventHeader);
+        headerContainer.appendChild(cancelButton);
+        form.appendChild(headerContainer);
+        const titleContainer = Div({ styles: { padding: "12px" } });
+        const titleInput = Input({
+          attr: {
+            name: "title",
+            value: eventState["title"],
+            onchange: (e) => {
+              setEventState({ title: e.target.value });
+            },
+            placeholder: "Title",
+            required: true
+          },
+          styles: __spreadProps(__spreadValues({}, inputStyles), { width: "100%" })
+        });
+        titleContainer.appendChild(titleInput);
+        form.appendChild(titleContainer);
+        const descriptionContainer = Div({
+          styles: { padding: "12px", display: "flex", flexDirection: "column" }
+        });
+        const descriptionLabel = Label({
+          attr: { innerText: "Description:" },
+          styles: {
+            marginBottom: "4px"
+          }
+        });
+        const descriptionInput = Textarea({
+          attr: {
+            name: "description",
+            value: eventState["description"],
+            onchange: (e) => {
+              setEventState({
+                description: e.target.value
+              });
+            },
+            placeholder: "Write something..."
+          },
+          styles: __spreadProps(__spreadValues({}, inputStyles), { minHeight: "160px" })
+        });
+        descriptionContainer.appendChild(descriptionLabel);
+        descriptionContainer.appendChild(descriptionInput);
+        form.appendChild(descriptionContainer);
+        const dateContainer = EventDateSelect(eventState, setEventState);
+        form.appendChild(dateContainer);
+        const connect = Div({ styles: { padding: "12px" } });
+        const connectLabel = Span({
+          attr: { innerHTML: link },
+          styles: { color: basics.spanishGray }
+        });
+        const connectLink = Label({
+          attr: {
+            innerHTML: eventState._id ? es2015_default.link(
+              `https://preview-iyris.cloud.engramhq.xyz/${eventState._id}`
+            ) : "Connect link will be created with event."
+          },
+          styles: {
+            marginLeft: "8px",
+            color: basics.spanishGray
+          }
+        });
+        connect.appendChild(connectLabel);
+        connect.appendChild(connectLink);
+        form.appendChild(connect);
+        const guests = EventPrivacy(
+          currentUser._id,
+          (eventState == null ? void 0 : eventState.users) || [],
+          setEventState
+        );
+        form.appendChild(guests);
+        const buttons = Div({
+          styles: { marginTop: "8px", padding: "12px" }
+        });
+        const saveButton = Button({
+          selectors: { id: "save-btn" },
+          attr: {
+            textContent: "Save",
+            type: "submit",
+            onmouseover: () => {
+              const button = byId("save-btn");
+              if (button) {
+                button.style.opacity = ".9";
+              }
+            },
+            onmouseout: () => {
+              const button = byId("save-btn");
+              if (button) {
+                button.style.opacity = "1";
+              }
+            }
+          },
+          styles: buttonStyles
+        });
+        buttons.appendChild(saveButton);
+        form.appendChild(buttons);
+        form.onsubmit = (e) => __async(this, null, function* () {
+          e.preventDefault();
+          let start = eventState.start;
+          if (eventState.allDay) {
+            const midnightDate = new Date(eventState.start.getTime());
+            midnightDate.setUTCHours(0, 0, 0, 0);
+            start = midnightDate;
+            delete eventState.end;
+          }
+          setEventState({ start });
+          let eventId = eventState._id;
+          console.log("submitting", eventState);
+          if (eventId) {
+            yield editEvent(eventState);
+          } else {
+            eventId = yield createEvent(eventState);
+          }
+          setURL(`/events/${eventId}`);
+        });
+      });
+    }
+    init2();
+    return form;
+  }
+
   // src/views/Event/Event.ts
   var styles2 = __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
     fontFamily: fonts.montserrat,
     fontSize: "14px",
     padding: "4px 0",
-    marginTop: "8px"
+    marginTop: "12px"
   });
   var iconStyles = __spreadProps(__spreadValues({
-    marginRight: "12px",
+    marginRight: "8px",
     color: basics.spanishGray,
     width: "20px",
     height: "20px"
@@ -6075,18 +6078,6 @@
           });
           el.append(description);
         }
-        const connect = Div({ styles: styles2 });
-        const connectIcon = icon3(link);
-        const connectLink = Span({
-          attr: {
-            innerHTML: es2015_default.link(
-              `https://connect.xyzdigital.com/${event._id}`
-            )
-          }
-        });
-        connect.append(connectIcon);
-        connect.append(connectLink);
-        el.append(connect);
         if (event.allDay) {
           const day = Div({ styles: styles2 });
           const dateIcon = icon3(calendarWeek);
@@ -6100,10 +6091,10 @@
           day.append(dayText);
           el.append(day);
         } else {
-          const datesContainer = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "block" }) });
+          const datesContainer = Div({ styles: styles2 });
           const endsSameDay = event.start.toDateString() === ((_a = event.end) == null ? void 0 : _a.toDateString());
           const dates = Div({
-            styles: endsSameDay ? __spreadValues({}, flexAlignItemsCenter) : { display: "flex", alignItems: "flex-start" }
+            styles: endsSameDay ? __spreadProps(__spreadValues({}, flexAlignItemsCenter), { width: "50%" }) : { display: "flex", alignItems: "flex-start" }
           });
           const datesIcon = icon3(endsSameDay ? calendarWeek : hourglassStart);
           const startDate = Span({
@@ -6118,6 +6109,7 @@
           dates.append(startDate);
           if (!endsSameDay) {
             const hourglassEndIcon = icon3(hourglassEnd);
+            hourglassEndIcon.style.justifyContent = "flex-end";
             const endDateFormat = event.end ? `${formatDateTime(
               __spreadValues(__spreadValues({}, dateTimeOptions), addTimeZoneOptions),
               event.end
@@ -6129,7 +6121,9 @@
           datesContainer.append(dates);
           if (endsSameDay) {
             const times2 = Div({
-              styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), { padding: "4px 0" })
+              styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
+                width: "50%"
+              })
             });
             const timeIcon = icon3(clockIcon);
             const startTime = Span({
@@ -6154,6 +6148,18 @@
           }
           el.append(datesContainer);
         }
+        const connect = Div({ styles: styles2 });
+        const connectIcon = icon3(link);
+        const connectLink = Span({
+          attr: {
+            innerHTML: es2015_default.link(
+              `https://preview-iyris.cloud.engramhq.xyz/${event._id}`
+            )
+          }
+        });
+        connect.append(connectIcon);
+        connect.append(connectLink);
+        el.append(connect);
         const guests = Div({
           styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0 32px", alignItems: "flex-start" })
         });

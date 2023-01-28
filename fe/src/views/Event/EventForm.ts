@@ -1,3 +1,5 @@
+import autolinker from 'autolinker';
+
 import { Button } from '../../components/elements/Button';
 import { Div } from '../../components/elements/Div';
 import { Input } from '../../components/elements/Input/Input';
@@ -10,7 +12,7 @@ import { EventDateSelect } from './EventDateSelect';
 import { Form } from '../../components/elements/Form';
 import { createEvent, editEvent } from '../../apis/EventApi';
 import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
-import { times } from '../../../public/assets/FontAwesomeIcons';
+import { link, times } from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
@@ -134,13 +136,22 @@ export function EventForm(event?: IEvent) {
     descriptionContainer.appendChild(descriptionInput);
     form.appendChild(descriptionContainer);
 
-    const connect = Div({ styles: { padding: ' 12px' } });
-    const connectLabel = Label({
-      attr: { innerText: 'Connect:' },
+    const dateContainer = EventDateSelect(eventState, setEventState);
+    form.appendChild(dateContainer);
+
+    const connect = Div({ styles: { padding: '12px' } });
+    const connectLabel = Span({
+      attr: { innerHTML: link },
+      styles: { color: basics.spanishGray },
     });
+
     const connectLink = Label({
       attr: {
-        innerHTML: 'Link will be created with event.',
+        innerHTML: eventState._id
+          ? autolinker.link(
+              `https://preview-iyris.cloud.engramhq.xyz/${eventState._id}`
+            )
+          : 'Connect link will be created with event.',
       },
       styles: {
         marginLeft: '8px',
@@ -150,9 +161,6 @@ export function EventForm(event?: IEvent) {
     connect.appendChild(connectLabel);
     connect.appendChild(connectLink);
     form.appendChild(connect);
-
-    const dateContainer = EventDateSelect(eventState, setEventState);
-    form.appendChild(dateContainer);
 
     const guests = EventPrivacy(
       currentUser._id,
