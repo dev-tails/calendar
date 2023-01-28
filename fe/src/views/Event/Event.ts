@@ -1,3 +1,4 @@
+import { faHourglassStart } from '@fortawesome/free-solid-svg-icons';
 import autolinker from 'autolinker';
 import {
   calendarWeek,
@@ -5,6 +6,9 @@ import {
   pencil,
   usersIcon,
   trash,
+  clockIcon,
+  hourglassEnd,
+  hourglassStart,
 } from '../../../public/assets/FontAwesomeIcons';
 import { buttonStyles } from '../../../public/css/componentStyles';
 import { deleteEvent } from '../../apis/EventApi';
@@ -15,10 +19,12 @@ import { H3 } from '../../components/elements/H3';
 import { Label } from '../../components/elements/Label';
 import { Span } from '../../components/elements/Span';
 import {
+  addTimeZoneOptions,
   formatDateTime,
   dateOptions,
   dateTimeOptions,
   convertMidnightUTCToLocalDay,
+  timeOptions,
 } from '../../utils/dateHelpers';
 import { byId } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
@@ -30,6 +36,7 @@ import {
 } from '../../utils/styles';
 
 const styles = {
+  ...flexAlignItemsCenter,
   fontFamily: fonts.montserrat,
   fontSize: '14px',
   padding: '4px 0',
@@ -44,6 +51,13 @@ const iconStyles = {
   ...flexAlignItemsCenter,
   justifyContent: 'center',
 };
+
+function icon(iconName: string) {
+  return Span({
+    attr: { innerHTML: iconName },
+    styles: iconStyles,
+  });
+}
 
 export function Event(event: IEvent) {
   let users: User[] = [];
@@ -91,7 +105,7 @@ export function Event(event: IEvent) {
                 innerText: 'Could not delete event',
               },
             });
-            el.appendChild(temporaryError);
+            el.append(temporaryError);
           }
         },
         onmouseover: () => {
@@ -147,12 +161,12 @@ export function Event(event: IEvent) {
       },
     });
 
-    buttons.appendChild(edit);
-    buttons.appendChild(remove);
+    buttons.append(edit);
+    buttons.append(remove);
 
-    titleContainer.appendChild(title);
-    titleContainer.appendChild(buttons);
-    el.appendChild(titleContainer);
+    titleContainer.append(title);
+    titleContainer.append(buttons);
+    el.append(titleContainer);
 
     if (event.description) {
       const description = Div({
@@ -161,14 +175,11 @@ export function Event(event: IEvent) {
         },
         styles: { ...styles, whiteSpace: 'pre-line' },
       });
-      el.appendChild(description);
+      el.append(description);
     }
 
-    const connect = Div({ styles: { ...styles, display: 'flex' } });
-    const connectIcon = Span({
-      attr: { innerHTML: link },
-      styles: iconStyles,
-    });
+    const connect = Div({ styles });
+    const connectIcon = icon(link);
     const connectLink = Span({
       attr: {
         innerHTML: autolinker.link(
@@ -176,73 +187,111 @@ export function Event(event: IEvent) {
         ),
       },
     });
-    connect.appendChild(connectIcon);
-    connect.appendChild(connectLink);
-    el.appendChild(connect);
+    connect.append(connectIcon);
+    connect.append(connectLink);
+    el.append(connect);
 
     if (event.allDay) {
-      const day = Div({ styles: { ...styles, display: 'flex' } });
-      const icon = Span({
-        attr: { innerHTML: calendarWeek },
-        styles: iconStyles,
-      });
+      const day = Div({ styles });
+      const dateIcon = icon(calendarWeek);
       const localDay = convertMidnightUTCToLocalDay(event.start);
       const dayText = Span({
         attr: {
-          innerHTML: `${formatDateTime('en-CA', dateOptions, localDay)}`,
+          innerHTML: `${formatDateTime(dateOptions, localDay)}`,
         },
       });
-      day.appendChild(icon);
-      day.appendChild(dayText);
-      el.appendChild(day);
+      day.append(dateIcon);
+      day.append(dayText);
+      el.append(day);
     } else {
-      const datesContainer = Div({ styles: { ...styles, display: 'flex' } });
-      const startIcon = Span({
-        attr: { innerHTML: calendarWeek },
-        styles: iconStyles,
+      const datesContainer = Div({ styles: { ...styles, display: 'block' } });
+      const endsSameDay =
+        event.start.toDateString() === event.end?.toDateString();
+
+      const dates = Div({
+        styles: endsSameDay
+          ? { ...flexAlignItemsCenter }
+          : { display: 'flex', alignItems: 'flex-start' },
       });
+      const datesIcon = icon(endsSameDay ? calendarWeek : hourglassStart);
 
-      datesContainer.appendChild(startIcon);
-
-      const dates = Div();
-      const startTime = Span({
+      const startDate = Span({
         attr: {
-          innerHTML: `${formatDateTime('en-CA', dateTimeOptions, event.start)}`,
+          innerHTML: `${formatDateTime(
+            endsSameDay
+              ? dateOptions
+              : { ...dateTimeOptions, ...addTimeZoneOptions },
+            event.start
+          )}`,
         },
       });
-      dates.appendChild(startTime);
+      dates.append(datesIcon);
+      dates.append(startDate);
 
-      const toLabel = Label({
-        attr: { innerHTML: '&nbsp; - &nbsp;' },
-      });
-      const endDate = event.end
-        ? `${formatDateTime('en-CA', dateTimeOptions, event.end)}`
-        : '';
-      const endTime = Span({ attr: { innerHTML: endDate } });
-      dates.appendChild(toLabel);
-      dates.appendChild(endTime);
-      datesContainer.appendChild(dates);
-      el.appendChild(datesContainer);
+      if (!endsSameDay) {
+        const hourglassEndIcon = icon(hourglassEnd);
+        const endDateFormat = event.end
+          ? `${formatDateTime(
+              { ...dateTimeOptions, ...addTimeZoneOptions },
+              event.end
+            )}`
+          : '';
+        const endDate = Span({ attr: { innerHTML: endDateFormat } });
+        dates.append(hourglassEndIcon);
+        dates.append(endDate);
+      }
+
+      datesContainer.append(dates);
+
+      if (endsSameDay) {
+        const times = Div({
+          styles: { ...flexAlignItemsCenter, padding: '4px 0' },
+        });
+        const timeIcon = icon(clockIcon);
+        const startTime = Span({
+          attr: {
+            innerHTML: `${formatDateTime(timeOptions, event.start)}`,
+          },
+        });
+
+        const toLabel = Label({
+          attr: { innerHTML: '-' },
+          styles: { padding: '0 8px' },
+        });
+
+        const endTimeFormat = event.end
+          ? `${formatDateTime(
+              { ...timeOptions, ...addTimeZoneOptions },
+              event.end
+            )}`
+          : '';
+
+        const endTime = Span({ attr: { innerHTML: endTimeFormat } });
+
+        times.append(timeIcon);
+        times.append(startTime);
+        times.append(toLabel);
+        times.append(endTime);
+        datesContainer.append(times);
+      }
+
+      el.append(datesContainer);
     }
 
     const guests = Div({
-      styles: { ...styles, margin: '8px 0 32px', display: 'flex' },
+      styles: { ...styles, margin: '8px 0 32px', alignItems: 'flex-start' },
     });
     const usersList = event.users?.length
       ? users.filter((user) => event.users?.includes(user._id))
       : users;
     const oneGuest = usersList.length === 1;
 
-    const guestsIcon = Span({
-      attr: { innerHTML: usersIcon },
-      styles: iconStyles,
-    });
-
+    const guestsIcon = icon(usersIcon);
     const guestsList = Div();
     const guestsLabel = Label({
       attr: { innerHTML: `Guest${oneGuest ? '' : 's'}:` },
     });
-    guestsList.appendChild(guestsLabel);
+    guestsList.append(guestsLabel);
 
     usersList.map((user) => {
       const container = Div({
@@ -274,13 +323,13 @@ export function Event(event: IEvent) {
       const name = Div({ attr: { innerHTML: user.name } });
       container.append(userIcon);
       container.append(name);
-      guestsList.appendChild(container);
+      guestsList.append(container);
     });
 
-    guests.appendChild(guestsIcon);
-    guests.appendChild(guestsList);
+    guests.append(guestsIcon);
+    guests.append(guestsList);
 
-    el.appendChild(guests);
+    el.append(guests);
   }
 
   init();

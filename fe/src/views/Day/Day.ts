@@ -170,17 +170,9 @@ export function Day(date?: string) {
             },
           });
           if (event.start && event.end) {
-            const startTime = `${formatDateTime(
-              'en-CA',
-              timeOptions,
-              event.start
-            )} `;
+            const startTime = `${formatDateTime(timeOptions, event.start)} `;
 
-            const endTime = `${formatDateTime(
-              'en-CA',
-              timeOptions,
-              event.end
-            )}`;
+            const endTime = `${formatDateTime(timeOptions, event.end)}`;
 
             const timesText = Span({
               attr: {

@@ -17,16 +17,19 @@ export const dateTimeOptions = {
   day: 'numeric',
   hour: '2-digit',
   minute: '2-digit',
+};
+
+export const addTimeZoneOptions = {
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   timeZoneName: 'short',
 };
 
 export const formatDateTime = (
-  locales: string,
   options: {},
-  time: number | Date
+  time: number | Date,
+  locales?: string
 ) => {
-  return new Intl.DateTimeFormat(locales, options).format(time);
+  return new Intl.DateTimeFormat(locales || 'en-CA', options).format(time);
 };
 
 export const formatSplitDate = (

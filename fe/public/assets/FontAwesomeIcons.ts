@@ -3,7 +3,10 @@ import {
   faCalendarWeek,
   faChevronLeft,
   faChevronRight,
+  faClock,
   faHome,
+  faHourglassEnd,
+  faHourglassStart,
   faLink,
   faPencil,
   faTimesCircle,
@@ -14,7 +17,10 @@ import {
 library.add(faCalendarWeek);
 library.add(faChevronLeft);
 library.add(faChevronRight);
+library.add(faClock);
 library.add(faHome);
+library.add(faHourglassEnd);
+library.add(faHourglassStart);
 library.add(faLink);
 library.add(faPencil);
 library.add(faTimesCircle);
@@ -27,7 +33,14 @@ export const chevronLeft = icon({ prefix: 'fas', iconName: 'chevron-left' })
   .html[0];
 export const chevronRight = icon({ prefix: 'fas', iconName: 'chevron-right' })
   .html[0];
+export const clockIcon = icon({ prefix: 'fas', iconName: 'clock' }).html[0];
 export const home = icon({ prefix: 'fas', iconName: 'home' }).html[0];
+export const hourglassEnd = icon({ prefix: 'fas', iconName: 'hourglass-end' })
+  .html[0];
+export const hourglassStart = icon({
+  prefix: 'fas',
+  iconName: 'hourglass-start',
+}).html[0];
 export const link = icon({ prefix: 'fas', iconName: 'link' }).html[0];
 export const pencil = icon({ prefix: 'fas', iconName: 'pencil' }).html[0];
 export const times = icon({ prefix: 'fas', iconName: 'times-circle' }).html[0];

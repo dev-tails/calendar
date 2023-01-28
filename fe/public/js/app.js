@@ -254,12 +254,14 @@
     month: "long",
     day: "numeric",
     hour: "2-digit",
-    minute: "2-digit",
+    minute: "2-digit"
+  };
+  var addTimeZoneOptions = {
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     timeZoneName: "short"
   };
-  var formatDateTime = (locales, options, time) => {
-    return new Intl.DateTimeFormat(locales, options).format(time);
+  var formatDateTime = (options, time, locales) => {
+    return new Intl.DateTimeFormat(locales || "en-CA", options).format(time);
   };
   var formatSplitDate = (date, divider, format) => {
     const fullYear = date.getFullYear();
@@ -999,12 +1001,12 @@
   }
   function normalizeIcons(icons) {
     return Object.keys(icons).reduce(function(acc, iconName) {
-      var icon3 = icons[iconName];
-      var expanded = !!icon3.icon;
+      var icon4 = icons[iconName];
+      var expanded = !!icon4.icon;
       if (expanded) {
-        acc[icon3.iconName] = icon3.icon;
+        acc[icon4.iconName] = icon4.icon;
       } else {
-        acc[iconName] = icon3;
+        acc[iconName] = icon4;
       }
       return acc;
     }, {});
@@ -1055,12 +1057,12 @@
         return o;
       }, {});
     };
-    _byUnicode = lookup(function(acc, icon3, iconName) {
-      if (icon3[3]) {
-        acc[icon3[3]] = iconName;
+    _byUnicode = lookup(function(acc, icon4, iconName) {
+      if (icon4[3]) {
+        acc[icon4[3]] = iconName;
       }
-      if (icon3[2]) {
-        var aliases = icon3[2].filter(function(a) {
+      if (icon4[2]) {
+        var aliases = icon4[2].filter(function(a) {
           return typeof a === "number";
         });
         aliases.forEach(function(alias) {
@@ -1069,10 +1071,10 @@
       }
       return acc;
     });
-    _byLigature = lookup(function(acc, icon3, iconName) {
+    _byLigature = lookup(function(acc, icon4, iconName) {
       acc[iconName] = iconName;
-      if (icon3[2]) {
-        var aliases = icon3[2].filter(function(a) {
+      if (icon4[2]) {
+        var aliases = icon4[2].filter(function(a) {
           return typeof a === "string";
         });
         aliases.forEach(function(alias) {
@@ -1081,8 +1083,8 @@
       }
       return acc;
     });
-    _byAlias = lookup(function(acc, icon3, iconName) {
-      var aliases = icon3[2];
+    _byAlias = lookup(function(acc, icon4, iconName) {
+      var aliases = icon4[2];
       acc[iconName] = iconName;
       aliases.forEach(function(alias) {
         acc[alias] = iconName;
@@ -1267,18 +1269,18 @@
           0: definition
         } : definition;
         Object.keys(normalized).map(function(key) {
-          var _normalized$key = normalized[key], prefix = _normalized$key.prefix, iconName = _normalized$key.iconName, icon3 = _normalized$key.icon;
-          var aliases = icon3[2];
+          var _normalized$key = normalized[key], prefix = _normalized$key.prefix, iconName = _normalized$key.iconName, icon4 = _normalized$key.icon;
+          var aliases = icon4[2];
           if (!additions[prefix])
             additions[prefix] = {};
           if (aliases.length > 0) {
             aliases.forEach(function(alias) {
               if (typeof alias === "string") {
-                additions[prefix][alias] = icon3;
+                additions[prefix][alias] = icon4;
               }
             });
           }
-          additions[prefix][iconName] = icon3;
+          additions[prefix][iconName] = icon4;
         });
         return additions;
       }
@@ -1638,10 +1640,10 @@
     return val;
   }
   var styles$1 = namespace.styles;
-  function asFoundIcon(icon3) {
-    var width = icon3[0];
-    var height = icon3[1];
-    var _icon$slice = icon3.slice(4), _icon$slice2 = _slicedToArray(_icon$slice, 1), vectorData = _icon$slice2[0];
+  function asFoundIcon(icon4) {
+    var width = icon4[0];
+    var height = icon4[1];
+    var _icon$slice = icon4.slice(4), _icon$slice2 = _slicedToArray(_icon$slice, 1), vectorData = _icon$slice2[0];
     var element = null;
     if (Array.isArray(vectorData)) {
       element = {
@@ -1709,8 +1711,8 @@
         prefix = shim.prefix || prefix;
       }
       if (iconName && prefix && styles$1[prefix] && styles$1[prefix][iconName]) {
-        var icon3 = styles$1[prefix][iconName];
-        return resolve(asFoundIcon(icon3));
+        var icon4 = styles$1[prefix][iconName];
+        return resolve(asFoundIcon(icon4));
       }
       maybeNotifyMissing(iconName, prefix);
       resolve(_objectSpread2(_objectSpread2({}, missingIconResolutionMixin), {}, {
@@ -1747,8 +1749,8 @@
   }
   function hasPrefixAndIcon(node) {
     var prefix = node.getAttribute ? node.getAttribute(DATA_PREFIX) : null;
-    var icon3 = node.getAttribute ? node.getAttribute(DATA_ICON) : null;
-    return prefix && icon3;
+    var icon4 = node.getAttribute ? node.getAttribute(DATA_ICON) : null;
+    return prefix && icon4;
   }
   function hasBeenReplaced(node) {
     return node && node.classList && node.classList.contains && node.classList.contains(config.replacementClass);
@@ -2133,7 +2135,7 @@
     var _params$transform = params.transform, transform = _params$transform === void 0 ? meaninglessTransform : _params$transform, _params$symbol = params.symbol, symbol = _params$symbol === void 0 ? false : _params$symbol, _params$mask = params.mask, mask = _params$mask === void 0 ? null : _params$mask, _params$maskId = params.maskId, maskId = _params$maskId === void 0 ? null : _params$maskId, _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$titleId = params.titleId, titleId = _params$titleId === void 0 ? null : _params$titleId, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles3 = _params$styles === void 0 ? {} : _params$styles;
     if (!iconDefinition)
       return;
-    var prefix = iconDefinition.prefix, iconName = iconDefinition.iconName, icon3 = iconDefinition.icon;
+    var prefix = iconDefinition.prefix, iconName = iconDefinition.iconName, icon4 = iconDefinition.icon;
     return domVariants(_objectSpread2({
       type: "icon"
     }, iconDefinition), function() {
@@ -2151,7 +2153,7 @@
       }
       return makeInlineSvgAbstract({
         icons: {
-          main: asFoundIcon(icon3),
+          main: asFoundIcon(icon4),
           mask: mask ? asFoundIcon(mask.icon) : {
             found: false,
             width: null,
@@ -2851,15 +2853,30 @@
     iconName: "pencil",
     icon: [512, 512, [9999, 61504, "pencil-alt"], "f303", "M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"]
   };
+  var faHourglassEnd = {
+    prefix: "fas",
+    iconName: "hourglass-end",
+    icon: [384, 512, [8987, "hourglass-3"], "f253", "M32 0C14.3 0 0 14.3 0 32S14.3 64 32 64V75c0 42.4 16.9 83.1 46.9 113.1L146.7 256 78.9 323.9C48.9 353.9 32 394.6 32 437v11c-17.7 0-32 14.3-32 32s14.3 32 32 32H64 320h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V437c0-42.4-16.9-83.1-46.9-113.1L237.3 256l67.9-67.9c30-30 46.9-70.7 46.9-113.1V64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320 64 32zM96 75V64H288V75c0 25.5-10.1 49.9-28.1 67.9L192 210.7l-67.9-67.9C106.1 124.9 96 100.4 96 75z"]
+  };
   var faUsers = {
     prefix: "fas",
     iconName: "users",
     icon: [640, 512, [], "f0c0", "M144 160c-44.2 0-80-35.8-80-80S99.8 0 144 0s80 35.8 80 80s-35.8 80-80 80zm368 0c-44.2 0-80-35.8-80-80s35.8-80 80-80s80 35.8 80 80s-35.8 80-80 80zM0 298.7C0 239.8 47.8 192 106.7 192h42.7c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0H21.3C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7h42.7C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3H405.3zM416 224c0 53-43 96-96 96s-96-43-96-96s43-96 96-96s96 43 96 96zM128 485.3C128 411.7 187.7 352 261.3 352H378.7C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7H154.7c-14.7 0-26.7-11.9-26.7-26.7z"]
   };
+  var faHourglassStart = {
+    prefix: "fas",
+    iconName: "hourglass-start",
+    icon: [384, 512, ["hourglass-1"], "f251", "M32 0C14.3 0 0 14.3 0 32S14.3 64 32 64V75c0 42.4 16.9 83.1 46.9 113.1L146.7 256 78.9 323.9C48.9 353.9 32 394.6 32 437v11c-17.7 0-32 14.3-32 32s14.3 32 32 32H64 320h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V437c0-42.4-16.9-83.1-46.9-113.1L237.3 256l67.9-67.9c30-30 46.9-70.7 46.9-113.1V64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320 64 32zM288 437v11H96V437c0-25.5 10.1-49.9 28.1-67.9L192 301.3l67.9 67.9c18 18 28.1 42.4 28.1 67.9z"]
+  };
   var faTrash = {
     prefix: "fas",
     iconName: "trash",
     icon: [448, 512, [], "f1f8", "M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"]
+  };
+  var faClock = {
+    prefix: "fas",
+    iconName: "clock",
+    icon: [512, 512, [128339, "clock-four"], "f017", "M256 512C114.6 512 0 397.4 0 256S114.6 0 256 0S512 114.6 512 256s-114.6 256-256 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"]
   };
   var faHouse = {
     prefix: "fas",
@@ -2898,7 +2915,10 @@
   library$1.add(faCalendarWeek);
   library$1.add(faChevronLeft);
   library$1.add(faChevronRight);
+  library$1.add(faClock);
   library$1.add(faHome);
+  library$1.add(faHourglassEnd);
+  library$1.add(faHourglassStart);
   library$1.add(faLink);
   library$1.add(faPencil);
   library$1.add(faTimesCircle);
@@ -2907,7 +2927,13 @@
   var calendarWeek = icon2({ prefix: "fas", iconName: "calendar-week" }).html[0];
   var chevronLeft = icon2({ prefix: "fas", iconName: "chevron-left" }).html[0];
   var chevronRight = icon2({ prefix: "fas", iconName: "chevron-right" }).html[0];
+  var clockIcon = icon2({ prefix: "fas", iconName: "clock" }).html[0];
   var home = icon2({ prefix: "fas", iconName: "home" }).html[0];
+  var hourglassEnd = icon2({ prefix: "fas", iconName: "hourglass-end" }).html[0];
+  var hourglassStart = icon2({
+    prefix: "fas",
+    iconName: "hourglass-start"
+  }).html[0];
   var link = icon2({ prefix: "fas", iconName: "link" }).html[0];
   var pencil = icon2({ prefix: "fas", iconName: "pencil" }).html[0];
   var times = icon2({ prefix: "fas", iconName: "times-circle" }).html[0];
@@ -3051,16 +3077,8 @@
                 }
               });
               if (event.start && event.end) {
-                const startTime = `${formatDateTime(
-                  "en-CA",
-                  timeOptions,
-                  event.start
-                )} `;
-                const endTime = `${formatDateTime(
-                  "en-CA",
-                  timeOptions,
-                  event.end
-                )}`;
+                const startTime = `${formatDateTime(timeOptions, event.start)} `;
+                const endTime = `${formatDateTime(timeOptions, event.end)}`;
                 const timesText = Span({
                   attr: {
                     innerText: `${startTime} - ${endTime}`.replace(/\./g, "")
@@ -5926,12 +5944,12 @@
   var es2015_default = autolinker_default;
 
   // src/views/Event/Event.ts
-  var styles2 = {
+  var styles2 = __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
     fontFamily: fonts.montserrat,
     fontSize: "14px",
     padding: "4px 0",
     marginTop: "8px"
-  };
+  });
   var iconStyles = __spreadProps(__spreadValues({
     marginRight: "12px",
     color: basics.spanishGray,
@@ -5940,6 +5958,12 @@
   }, flexAlignItemsCenter), {
     justifyContent: "center"
   });
+  function icon3(iconName) {
+    return Span({
+      attr: { innerHTML: iconName },
+      styles: iconStyles
+    });
+  }
   function Event2(event) {
     let users2 = [];
     const el = Div({
@@ -5947,7 +5971,7 @@
     });
     function init2() {
       return __async(this, null, function* () {
-        var _a;
+        var _a, _b;
         users2 = yield getUsers();
         const titleContainer = Div({
           styles: {
@@ -5984,7 +6008,7 @@
                     innerText: "Could not delete event"
                   }
                 });
-                el.appendChild(temporaryError);
+                el.append(temporaryError);
               }
             }),
             onmouseover: () => {
@@ -6037,11 +6061,11 @@
             padding: "8px"
           })
         });
-        buttons.appendChild(edit);
-        buttons.appendChild(remove2);
-        titleContainer.appendChild(title);
-        titleContainer.appendChild(buttons);
-        el.appendChild(titleContainer);
+        buttons.append(edit);
+        buttons.append(remove2);
+        titleContainer.append(title);
+        titleContainer.append(buttons);
+        el.append(titleContainer);
         if (event.description) {
           const description = Div({
             attr: {
@@ -6049,13 +6073,10 @@
             },
             styles: __spreadProps(__spreadValues({}, styles2), { whiteSpace: "pre-line" })
           });
-          el.appendChild(description);
+          el.append(description);
         }
-        const connect = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "flex" }) });
-        const connectIcon = Span({
-          attr: { innerHTML: link },
-          styles: iconStyles
-        });
+        const connect = Div({ styles: styles2 });
+        const connectIcon = icon3(link);
         const connectLink = Span({
           attr: {
             innerHTML: es2015_default.link(
@@ -6063,65 +6084,90 @@
             )
           }
         });
-        connect.appendChild(connectIcon);
-        connect.appendChild(connectLink);
-        el.appendChild(connect);
+        connect.append(connectIcon);
+        connect.append(connectLink);
+        el.append(connect);
         if (event.allDay) {
-          const day = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "flex" }) });
-          const icon3 = Span({
-            attr: { innerHTML: calendarWeek },
-            styles: iconStyles
-          });
+          const day = Div({ styles: styles2 });
+          const dateIcon = icon3(calendarWeek);
           const localDay = convertMidnightUTCToLocalDay(event.start);
           const dayText = Span({
             attr: {
-              innerHTML: `${formatDateTime("en-CA", dateOptions, localDay)}`
+              innerHTML: `${formatDateTime(dateOptions, localDay)}`
             }
           });
-          day.appendChild(icon3);
-          day.appendChild(dayText);
-          el.appendChild(day);
+          day.append(dateIcon);
+          day.append(dayText);
+          el.append(day);
         } else {
-          const datesContainer = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "flex" }) });
-          const startIcon = Span({
-            attr: { innerHTML: calendarWeek },
-            styles: iconStyles
+          const datesContainer = Div({ styles: __spreadProps(__spreadValues({}, styles2), { display: "block" }) });
+          const endsSameDay = event.start.toDateString() === ((_a = event.end) == null ? void 0 : _a.toDateString());
+          const dates = Div({
+            styles: endsSameDay ? __spreadValues({}, flexAlignItemsCenter) : { display: "flex", alignItems: "flex-start" }
           });
-          datesContainer.appendChild(startIcon);
-          const dates = Div();
-          const startTime = Span({
+          const datesIcon = icon3(endsSameDay ? calendarWeek : hourglassStart);
+          const startDate = Span({
             attr: {
-              innerHTML: `${formatDateTime("en-CA", dateTimeOptions, event.start)}`
+              innerHTML: `${formatDateTime(
+                endsSameDay ? dateOptions : __spreadValues(__spreadValues({}, dateTimeOptions), addTimeZoneOptions),
+                event.start
+              )}`
             }
           });
-          dates.appendChild(startTime);
-          const toLabel = Label({
-            attr: { innerHTML: "&nbsp; - &nbsp;" }
-          });
-          const endDate = event.end ? `${formatDateTime("en-CA", dateTimeOptions, event.end)}` : "";
-          const endTime = Span({ attr: { innerHTML: endDate } });
-          dates.appendChild(toLabel);
-          dates.appendChild(endTime);
-          datesContainer.appendChild(dates);
-          el.appendChild(datesContainer);
+          dates.append(datesIcon);
+          dates.append(startDate);
+          if (!endsSameDay) {
+            const hourglassEndIcon = icon3(hourglassEnd);
+            const endDateFormat = event.end ? `${formatDateTime(
+              __spreadValues(__spreadValues({}, dateTimeOptions), addTimeZoneOptions),
+              event.end
+            )}` : "";
+            const endDate = Span({ attr: { innerHTML: endDateFormat } });
+            dates.append(hourglassEndIcon);
+            dates.append(endDate);
+          }
+          datesContainer.append(dates);
+          if (endsSameDay) {
+            const times2 = Div({
+              styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), { padding: "4px 0" })
+            });
+            const timeIcon = icon3(clockIcon);
+            const startTime = Span({
+              attr: {
+                innerHTML: `${formatDateTime(timeOptions, event.start)}`
+              }
+            });
+            const toLabel = Label({
+              attr: { innerHTML: "-" },
+              styles: { padding: "0 8px" }
+            });
+            const endTimeFormat = event.end ? `${formatDateTime(
+              __spreadValues(__spreadValues({}, timeOptions), addTimeZoneOptions),
+              event.end
+            )}` : "";
+            const endTime = Span({ attr: { innerHTML: endTimeFormat } });
+            times2.append(timeIcon);
+            times2.append(startTime);
+            times2.append(toLabel);
+            times2.append(endTime);
+            datesContainer.append(times2);
+          }
+          el.append(datesContainer);
         }
         const guests = Div({
-          styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0 32px", display: "flex" })
+          styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0 32px", alignItems: "flex-start" })
         });
-        const usersList = ((_a = event.users) == null ? void 0 : _a.length) ? users2.filter((user) => {
+        const usersList = ((_b = event.users) == null ? void 0 : _b.length) ? users2.filter((user) => {
           var _a2;
           return (_a2 = event.users) == null ? void 0 : _a2.includes(user._id);
         }) : users2;
         const oneGuest = usersList.length === 1;
-        const guestsIcon = Span({
-          attr: { innerHTML: usersIcon },
-          styles: iconStyles
-        });
+        const guestsIcon = icon3(usersIcon);
         const guestsList = Div();
         const guestsLabel = Label({
           attr: { innerHTML: `Guest${oneGuest ? "" : "s"}:` }
         });
-        guestsList.appendChild(guestsLabel);
+        guestsList.append(guestsLabel);
         usersList.map((user) => {
           const container = Div({
             styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), { margin: "12px 0" })
@@ -6150,11 +6196,11 @@
           const name = Div({ attr: { innerHTML: user.name } });
           container.append(userIcon);
           container.append(name);
-          guestsList.appendChild(container);
+          guestsList.append(container);
         });
-        guests.appendChild(guestsIcon);
-        guests.appendChild(guestsList);
-        el.appendChild(guests);
+        guests.append(guestsIcon);
+        guests.append(guestsList);
+        el.append(guests);
       });
     }
     init2();
