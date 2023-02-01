@@ -27,8 +27,13 @@ export function UsersCheckboxes(
         styles: { padding: '4px 0', ...flexAlignItemsCenter },
       });
       const { name, _id } = option;
-
-      const optionLabel = Label({ attr: { innerText: name, for: name } });
+      const isCurrentUser = currentUser?._id === _id;
+      const optionLabel = Label({
+        attr: {
+          innerText: `${name}${isCurrentUser ? ' (Organizer)' : ''}`,
+          for: name,
+        },
+      });
 
       const optionEl = Input({
         selectors: {
@@ -36,7 +41,7 @@ export function UsersCheckboxes(
         },
         attr: {
           type: 'checkbox',
-          disabled: currentUser?._id === _id,
+          disabled: isCurrentUser,
           checked: selectedIds.includes(_id),
           value: name,
           onchange: (e: Event) => {

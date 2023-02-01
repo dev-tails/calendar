@@ -16,12 +16,12 @@ export function EventPrivacy(
   });
 
   const privacyTypeRadioButtons = RadioButtons({
-    selected: visibility === 'private' ? 'Only me' : 'Everyone',
-    options: ['Only me', 'Everyone'],
+    selected: visibility === 'private' ? 'Only guests' : 'Everyone',
+    options: ['Only guests', 'Everyone'],
     name: 'privacy',
     onChange: (e) => {
       onEventStateChange({
-        visibility: e === 'Only me' ? 'private' : 'public',
+        visibility: e === 'Only guests' ? 'private' : 'public',
       });
     },
   });

@@ -43,6 +43,7 @@ export function EventForm(event?: IEvent) {
       allDay: false,
       users: [currentUser?._id],
       visibility: 'private',
+      owner: currentUser._id,
     };
 
     const eventState: IEvent = event ? { ...event } : { ...eventTemplate };
@@ -173,7 +174,10 @@ export function EventForm(event?: IEvent) {
     );
     form.appendChild(guests);
 
-    const privacy = EventPrivacy(eventState.visibility || "private", setEventState);
+    const privacy = EventPrivacy(
+      eventState.visibility || 'private',
+      setEventState
+    );
     form.appendChild(privacy);
 
     const buttons = Div({

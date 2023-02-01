@@ -200,6 +200,7 @@ async function run() {
         allDay: req.body.allDay,
         users: req.body.users,
         visibility: req.body.visibility,
+        owner: mongodb.ObjectId(req.body.owner),
       });
 
       const { insertedId } = event;

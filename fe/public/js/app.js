@@ -5691,14 +5691,20 @@
             styles: __spreadValues({ padding: "4px 0" }, flexAlignItemsCenter)
           });
           const { name, _id } = option;
-          const optionLabel = Label({ attr: { innerText: name, for: name } });
+          const isCurrentUser = (currentUser == null ? void 0 : currentUser._id) === _id;
+          const optionLabel = Label({
+            attr: {
+              innerText: `${name}${isCurrentUser ? " (Organizer)" : ""}`,
+              for: name
+            }
+          });
           const optionEl = Input({
             selectors: {
               id: _id
             },
             attr: {
               type: "checkbox",
-              disabled: (currentUser == null ? void 0 : currentUser._id) === _id,
+              disabled: isCurrentUser,
               checked: selectedIds.includes(_id),
               value: name,
               onchange: (e) => {
@@ -5783,12 +5789,12 @@
       styles: { marginRight: "8px" }
     });
     const privacyTypeRadioButtons = RadioButtons({
-      selected: visibility === "private" ? "Only me" : "Everyone",
-      options: ["Only me", "Everyone"],
+      selected: visibility === "private" ? "Only guests" : "Everyone",
+      options: ["Only guests", "Everyone"],
       name: "privacy",
       onChange: (e) => {
         onEventStateChange({
-          visibility: e === "Only me" ? "private" : "public"
+          visibility: e === "Only guests" ? "private" : "public"
         });
       }
     });
@@ -5819,7 +5825,8 @@
           start: new Date(),
           allDay: false,
           users: [currentUser == null ? void 0 : currentUser._id],
-          visibility: "private"
+          visibility: "private",
+          owner: currentUser._id
         };
         const eventState = event ? __spreadValues({}, event) : __spreadValues({}, eventTemplate);
         const setEventState = (newValue) => {
@@ -5933,7 +5940,10 @@
           setEventState
         );
         form.appendChild(guests);
-        const privacy = EventPrivacy(eventState.visibility || "private", setEventState);
+        const privacy = EventPrivacy(
+          eventState.visibility || "private",
+          setEventState
+        );
         form.appendChild(privacy);
         const buttons = Div({
           styles: { marginTop: "8px", padding: "12px" }
@@ -6007,7 +6017,6 @@
     });
   }
   function Event2(event) {
-    let users2 = [];
     const el = Div({
       styles: {
         padding: "12px",
@@ -6018,7 +6027,8 @@
     function init2() {
       return __async(this, null, function* () {
         var _a, _b;
-        users2 = yield getUsers();
+        const users2 = yield getUsers();
+        const currentUser = yield fetchSelf();
         const titleContainer = Div({
           styles: {
             display: "flex",
@@ -6039,96 +6049,80 @@
         });
         const visibilityTooltip = Div({
           attr: {
-            innerHTML: event.visibility ? "Visible to guests only." : "Visible to all users."
+            innerHTML: event.visibility === "private" ? "Event visible to guests only." : "Event visible to all users."
           },
           styles: {
-            display: "none"
+            display: "none",
+            position: "absolute",
+            top: " -36px",
+            width: "max-content",
+            background: "#555555",
+            padding: " 4px 8px",
+            borderRadius: "4px",
+            fontStyle: "italic",
+            color: basics.whiteColor
           }
         });
         const visibility = Div({
           attr: {
             innerHTML: eyeIcon,
-            onmouseover: () => {
-              visibilityTooltip.style.display = "block";
-            },
-            onmouseout: () => {
-              visibilityTooltip.style.display = "none";
-            }
+            onmouseover: () => visibilityTooltip.style.display = "block",
+            onmouseout: () => visibilityTooltip.style.display = "none"
           },
-          styles: iconStyles
+          styles: __spreadProps(__spreadValues({}, iconStyles), { position: "relative" })
         });
         visibility.append(visibilityTooltip);
-        const remove2 = Button({
-          selectors: { id: "remove-event-btn" },
-          attr: {
-            innerHTML: trash,
-            onclick: (e) => __async(this, null, function* () {
-              e.preventDefault();
-              try {
-                yield deleteEvent(event._id);
-                setURL("/");
-              } catch (e2) {
-                const temporaryError = Div({
-                  attr: {
-                    innerText: "Could not delete event"
-                  }
-                });
-                el.append(temporaryError);
-              }
-            }),
-            onmouseover: () => {
-              const button = byId("remove-event-btn");
-              if (button) {
-                button.style.opacity = ".7";
-              }
-            },
-            onmouseout: () => {
-              const button = byId("remove-event-btn");
-              if (button) {
-                button.style.opacity = "1";
-              }
-            }
-          },
-          styles: __spreadProps(__spreadValues({}, buttonStyles), {
-            fontSize: "17px",
-            padding: "8px",
-            marginLeft: "4px",
-            background: "none",
-            color: colors.mandarine,
-            opacity: ".9"
-          })
-        });
-        const edit = Button({
-          selectors: { id: "edit-event-btn" },
-          attr: {
-            innerHTML: pencil,
-            onclick: (e) => __async(this, null, function* () {
-              e.preventDefault();
-              setURL(`/events/edit/${event._id}`);
-            }),
-            onmouseover: () => {
-              const button = byId("edit-event-btn");
-              if (button) {
-                button.style.opacity = ".7";
-              }
-            },
-            onmouseout: () => {
-              const button = byId("edit-event-btn");
-              if (button) {
-                button.style.opacity = "1";
-              }
-            }
-          },
-          styles: __spreadProps(__spreadValues({}, buttonStyles), {
-            fontSize: "17px",
-            background: "none",
-            color: colors.royalBlueLight,
-            padding: "8px"
-          })
-        });
         buttons.append(visibility);
-        buttons.append(edit);
-        buttons.append(remove2);
+        if (event.owner === (currentUser == null ? void 0 : currentUser._id)) {
+          const removeBtn = Button({
+            attr: {
+              innerHTML: trash,
+              onclick: (e) => __async(this, null, function* () {
+                e.preventDefault();
+                try {
+                  yield deleteEvent(event._id);
+                  setURL("/");
+                } catch (e2) {
+                  const temporaryError = Div({
+                    attr: {
+                      innerText: "Could not delete event"
+                    }
+                  });
+                  el.append(temporaryError);
+                }
+              }),
+              onmouseover: () => removeBtn.style.opacity = ".7",
+              onmouseout: () => removeBtn.style.opacity = "1"
+            },
+            styles: __spreadProps(__spreadValues({}, buttonStyles), {
+              fontSize: "17px",
+              padding: "8px",
+              marginLeft: "4px",
+              background: "none",
+              color: colors.mandarine,
+              opacity: ".9"
+            })
+          });
+          const editBtn = Button({
+            attr: {
+              innerHTML: pencil,
+              onclick: (e) => __async(this, null, function* () {
+                e.preventDefault();
+                setURL(`/events/edit/${event._id}`);
+              }),
+              onmouseover: () => editBtn.style.opacity = ".7",
+              onmouseout: () => editBtn.style.opacity = "1"
+            },
+            styles: __spreadProps(__spreadValues({}, buttonStyles), {
+              fontSize: "17px",
+              background: "none",
+              color: colors.royalBlueLight,
+              padding: "8px"
+            })
+          });
+          buttons.append(editBtn);
+          buttons.append(removeBtn);
+        }
         titleContainer.append(title);
         titleContainer.append(buttons);
         el.append(titleContainer);
@@ -6262,7 +6256,11 @@
           const firstInitial = user.name.charAt(0);
           const lastInitial = user.name.split(" ")[1].charAt(0);
           userIcon.innerText = firstInitial + lastInitial;
-          const name = Div({ attr: { innerHTML: user.name } });
+          const name = Div({
+            attr: {
+              innerHTML: `${user.name} ${user._id === event.owner ? "(Organizer)" : ""}`
+            }
+          });
           container.append(userIcon);
           container.append(name);
           guestsList.append(container);

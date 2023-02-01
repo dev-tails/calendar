@@ -8,4 +8,5 @@ interface IEvent {
   users?: string[]; //to be User[]
   updatedAt?: Date;
   visibility: 'private' | 'public';
+  owner: string;
 }

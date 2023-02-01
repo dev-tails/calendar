@@ -12,7 +12,7 @@ import {
 } from '../../../public/assets/FontAwesomeIcons';
 import { buttonStyles } from '../../../public/css/componentStyles';
 import { deleteEvent } from '../../apis/EventApi';
-import { getUsers } from '../../apis/UserApi';
+import { fetchSelf, getUsers } from '../../apis/UserApi';
 import { Button, Div, H3, Label, Span } from '../../components/elements';
 import {
   addTimeZoneOptions,
@@ -22,7 +22,6 @@ import {
   convertMidnightUTCToLocalDay,
   timeOptions,
 } from '../../utils/dateHelpers';
-import { byId } from '../../utils/DOMutils';
 import { setURL } from '../../utils/HistoryUtils';
 import {
   basics,
@@ -56,7 +55,6 @@ function icon(iconName: string) {
 }
 
 export function Event(event: IEvent) {
-  let users: User[] = [];
   const el = Div({
     styles: {
       padding: '12px',
@@ -66,7 +64,8 @@ export function Event(event: IEvent) {
   });
 
   async function init() {
-    users = await getUsers();
+    const users = await getUsers();
+    const currentUser = await fetchSelf();
 
     const titleContainer = Div({
       styles: {
@@ -92,104 +91,90 @@ export function Event(event: IEvent) {
 
     const visibilityTooltip = Div({
       attr: {
-        innerHTML: event.visibility
-          ? 'Visible to guests only.'
-          : 'Visible to all users.',
+        innerHTML:
+          event.visibility === 'private'
+            ? 'Event visible to guests only.'
+            : 'Event visible to all users.',
       },
       styles: {
         display: 'none',
+        position: 'absolute',
+        top: ' -36px',
+        width: 'max-content',
+        background: '#555555',
+        padding: ' 4px 8px',
+        borderRadius: '4px',
+        fontStyle: 'italic',
+        color: basics.whiteColor,
       },
     });
 
     const visibility = Div({
       attr: {
         innerHTML: eyeIcon,
-        onmouseover: () => {
-          visibilityTooltip.style.display = 'block';
-        },
-        onmouseout: () => {
-          visibilityTooltip.style.display = 'none';
-        },
+        onmouseover: () => (visibilityTooltip.style.display = 'block'),
+        onmouseout: () => (visibilityTooltip.style.display = 'none'),
       },
-      styles: iconStyles,
+      styles: { ...iconStyles, position: 'relative' },
     });
 
     visibility.append(visibilityTooltip);
-
-    const remove = Button({
-      selectors: { id: 'remove-event-btn' },
-      attr: {
-        innerHTML: trash,
-        onclick: async (e) => {
-          e.preventDefault();
-          try {
-            await deleteEvent(event._id);
-            setURL('/');
-          } catch (e) {
-            const temporaryError = Div({
-              attr: {
-                innerText: 'Could not delete event',
-              },
-            });
-            el.append(temporaryError);
-          }
-        },
-        onmouseover: () => {
-          const button = byId('remove-event-btn');
-          if (button) {
-            button.style.opacity = '.7';
-          }
-        },
-        onmouseout: () => {
-          const button = byId('remove-event-btn');
-          if (button) {
-            button.style.opacity = '1';
-          }
-        },
-      },
-      styles: {
-        ...buttonStyles,
-        fontSize: '17px',
-        padding: '8px',
-        marginLeft: '4px',
-        background: 'none',
-        color: colors.mandarine,
-        opacity: '.9',
-      },
-    });
-    const edit = Button({
-      selectors: { id: 'edit-event-btn' },
-      attr: {
-        innerHTML: pencil,
-        onclick: async (e) => {
-          e.preventDefault();
-          setURL(`/events/edit/${event._id}`);
-        },
-        onmouseover: () => {
-          const button = byId('edit-event-btn');
-          if (button) {
-            button.style.opacity = '.7';
-          }
-        },
-        onmouseout: () => {
-          const button = byId('edit-event-btn');
-          if (button) {
-            button.style.opacity = '1';
-          }
-        },
-      },
-      styles: {
-        ...buttonStyles,
-        fontSize: '17px',
-        background: 'none',
-        color: colors.royalBlueLight,
-        padding: '8px',
-      },
-    });
-
     buttons.append(visibility);
-    buttons.append(edit);
-    buttons.append(remove);
+
+    if (event.owner === currentUser?._id) {
+      const removeBtn = Button({
+        attr: {
+          innerHTML: trash,
+          onclick: async (e) => {
+            e.preventDefault();
+            try {
+              await deleteEvent(event._id);
+              setURL('/');
+            } catch (e) {
+              const temporaryError = Div({
+                attr: {
+                  innerText: 'Could not delete event',
+                },
+              });
+              el.append(temporaryError);
+            }
+          },
+          onmouseover: () => (removeBtn.style.opacity = '.7'),
+          onmouseout: () => (removeBtn.style.opacity = '1'),
+        },
+        styles: {
+          ...buttonStyles,
+          fontSize: '17px',
+          padding: '8px',
+          marginLeft: '4px',
+          background: 'none',
+          color: colors.mandarine,
+          opacity: '.9',
+        },
+      });
+
+      const editBtn = Button({
+        attr: {
+          innerHTML: pencil,
+          onclick: async (e) => {
+            e.preventDefault();
+            setURL(`/events/edit/${event._id}`);
+          },
+          onmouseover: () => (editBtn.style.opacity = '.7'),
+          onmouseout: () => (editBtn.style.opacity = '1'),
+        },
+        styles: {
+          ...buttonStyles,
+          fontSize: '17px',
+          background: 'none',
+          color: colors.royalBlueLight,
+          padding: '8px',
+        },
+      });
+
+      buttons.append(editBtn);
+      buttons.append(removeBtn);
+    }
 
     titleContainer.append(title);
     titleContainer.append(buttons);
@@ -351,7 +336,13 @@ export function Event(event: IEvent) {
       const lastInitial = user.name.split(' ')[1].charAt(0);
 
       userIcon.innerText = firstInitial + lastInitial;
-      const name = Div({ attr: { innerHTML: user.name } });
+      const name = Div({
+        attr: {
+          innerHTML: `${user.name} ${
+            user._id === event.owner ? '(Organizer)' : ''
+          }`,
+        },
+      });
       container.append(userIcon);
       container.append(name);
       guestsList.append(container);
