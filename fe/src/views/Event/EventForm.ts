@@ -17,6 +17,7 @@ import { createEvent, editEvent } from '../../apis/EventApi';
 import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
 import { link, times } from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
+import { EventGuests } from './EventGuests';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
 
@@ -41,6 +42,7 @@ export function EventForm(event?: IEvent) {
       start: new Date(),
       allDay: false,
       users: [currentUser?._id],
+      visibility: 'private',
     };
 
     const eventState: IEvent = event ? { ...event } : { ...eventTemplate };
@@ -164,12 +166,15 @@ export function EventForm(event?: IEvent) {
     connect.appendChild(connectLink);
     form.appendChild(connect);
 
-    const guests = EventPrivacy(
+    const guests = EventGuests(
       currentUser._id,
       eventState?.users || [],
       setEventState
     );
     form.appendChild(guests);
+
+    const privacy = EventPrivacy(eventState.visibility || "private", setEventState);
+    form.appendChild(privacy);
 
     const buttons = Div({
       styles: { marginTop: '8px', padding: '12px' },

@@ -7,4 +7,5 @@ interface IEvent {
   allDay: boolean;
   users?: string[]; //to be User[]
   updatedAt?: Date;
+  visibility: 'private' | 'public';
 }

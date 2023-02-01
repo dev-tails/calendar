@@ -8,6 +8,7 @@ import {
   clockIcon,
   hourglassEnd,
   hourglassStart,
+  eyeIcon,
 } from '../../../public/assets/FontAwesomeIcons';
 import { buttonStyles } from '../../../public/css/componentStyles';
 import { deleteEvent } from '../../apis/EventApi';
@@ -57,7 +58,11 @@ function icon(iconName: string) {
 export function Event(event: IEvent) {
   let users: User[] = [];
   const el = Div({
-    styles: { padding: '12px', margin: '8px auto auto', maxWidth: '600px' },
+    styles: {
+      padding: '12px',
+      margin: '8px auto 32px auto',
+      maxWidth: '600px',
+    },
   });
 
   async function init() {
@@ -74,17 +79,43 @@ export function Event(event: IEvent) {
       attr: {
         innerText: event.title,
       },
-      styles: { padding: '4px 0', marginRight: '8px' },
+      styles: { padding: '4px 0', marginRight: '16px' },
     });
 
     const buttons = Div({
       styles: {
         ...styles,
-        display: 'flex',
-        alignItems: 'flex-start',
+
         marginTop: '0',
       },
     });
+
+    const visibilityTooltip = Div({
+      attr: {
+        innerHTML: event.visibility
+          ? 'Visible to guests only.'
+          : 'Visible to all users.',
+      },
+      styles: {
+        display: 'none',
+      },
+    });
+
+    const visibility = Div({
+      attr: {
+        innerHTML: eyeIcon,
+        onmouseover: () => {
+          visibilityTooltip.style.display = 'block';
+        },
+        onmouseout: () => {
+          visibilityTooltip.style.display = 'none';
+        },
+      },
+      styles: iconStyles,
+    });
+
+    visibility.append(visibilityTooltip);
+
     const remove = Button({
       selectors: { id: 'remove-event-btn' },
       attr: {
@@ -156,6 +187,7 @@ export function Event(event: IEvent) {
       },
     });
 
+    buttons.append(visibility);
     buttons.append(edit);
     buttons.append(remove);
 
@@ -278,7 +310,7 @@ export function Event(event: IEvent) {
     el.append(connect);
 
     const guests = Div({
-      styles: { ...styles, margin: '8px 0 32px', alignItems: 'flex-start' },
+      styles: { ...styles, margin: '8px 0', alignItems: 'flex-start' },
     });
     const usersList = event.users?.length
       ? users.filter((user) => event.users?.includes(user._id))

@@ -1,5 +1,9 @@
 export function byId(id: string) {
-  return document.getElementById(id);
+  const el = document.getElementById(id);
+  if (!el) {
+    throw Error(`No element with id ${id}`);
+  }
+  return el;
 }
 
 export function setStyle(

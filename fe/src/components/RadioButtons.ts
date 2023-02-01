@@ -1,10 +1,9 @@
-import { Div } from './elements/Div';
-import { Input } from './elements/Input';
-import { Label } from './elements/Label';
+import { Div, Input, Label } from './elements';
 
 type RadioButtonsProps = {
   selected: string;
   options: string[];
+  name: string;
   onChange: (option: string) => void;
 };
 
@@ -21,7 +20,7 @@ export function RadioButtons(props: RadioButtonsProps) {
       attr: {
         checked: option === props.selected,
         type: 'radio',
-        name: 'users',
+        name: props.name,
         value: option,
         onchange: (e) => {
           props.onChange((e.target as HTMLInputElement).value);
@@ -32,5 +31,6 @@ export function RadioButtons(props: RadioButtonsProps) {
     el.appendChild(first);
     el.appendChild(firstLabel);
   });
+
   return el;
 }

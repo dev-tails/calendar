@@ -118,8 +118,13 @@ async function run() {
       }).toArray();
 
       const userEvents = events.filter((event) => {
-        return event.users?.includes(req.user) || !event.users?.length;
+        return (
+          event.users?.includes(req.user) ||
+          !event.users?.length ||
+          event.visibility === 'public'
+        );
       });
+
       return res.json({ data: userEvents });
     } catch (err) {
       console.error(err);
@@ -140,7 +145,8 @@ async function run() {
 
   server.put('/api/events/:id', async (req, res) => {
     const eventId = mongodb.ObjectId(req.body.id);
-    const { title, description, start, end, allDay, users } = req.body.body;
+    const { title, description, start, end, allDay, users, visibility } =
+      req.body.body;
 
     if (!title || !start || !eventId) {
       throw new Error('Event must include title and start date');
@@ -158,6 +164,7 @@ async function run() {
             allDay,
             updatedAt: new Date(),
             users,
+            visibility,
           },
         }
       );
@@ -192,6 +199,7 @@ async function run() {
         end: req.body.end ? new Date(req.body.end) : undefined,
         allDay: req.body.allDay,
         users: req.body.users,
+        visibility: req.body.visibility,
       });
 
       const { insertedId } = event;

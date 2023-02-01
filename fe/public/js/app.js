@@ -106,7 +106,11 @@
 
   // src/utils/DOMutils.ts
   function byId(id) {
-    return document.getElementById(id);
+    const el = document.getElementById(id);
+    if (!el) {
+      throw Error(`No element with id ${id}`);
+    }
+    return el;
   }
   function setStyle(el, styles3) {
     for (const key of Object.keys(styles3)) {
@@ -2903,6 +2907,11 @@
     iconName: "hourglass-start",
     icon: [384, 512, ["hourglass-1"], "f251", "M32 0C14.3 0 0 14.3 0 32S14.3 64 32 64V75c0 42.4 16.9 83.1 46.9 113.1L146.7 256 78.9 323.9C48.9 353.9 32 394.6 32 437v11c-17.7 0-32 14.3-32 32s14.3 32 32 32H64 320h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V437c0-42.4-16.9-83.1-46.9-113.1L237.3 256l67.9-67.9c30-30 46.9-70.7 46.9-113.1V64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320 64 32zM288 437v11H96V437c0-25.5 10.1-49.9 28.1-67.9L192 301.3l67.9 67.9c18 18 28.1 42.4 28.1 67.9z"]
   };
+  var faEye = {
+    prefix: "fas",
+    iconName: "eye",
+    icon: [576, 512, [128065], "f06e", "M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"]
+  };
   var faTrash = {
     prefix: "fas",
     iconName: "trash",
@@ -2951,6 +2960,7 @@
   library$1.add(faChevronLeft);
   library$1.add(faChevronRight);
   library$1.add(faClock);
+  library$1.add(faEye);
   library$1.add(faHome);
   library$1.add(faHourglassEnd);
   library$1.add(faHourglassStart);
@@ -2963,6 +2973,7 @@
   var chevronLeft = icon2({ prefix: "fas", iconName: "chevron-left" }).html[0];
   var chevronRight = icon2({ prefix: "fas", iconName: "chevron-right" }).html[0];
   var clockIcon = icon2({ prefix: "fas", iconName: "clock" }).html[0];
+  var eyeIcon = icon2({ prefix: "fas", iconName: "eye" }).html[0];
   var home = icon2({ prefix: "fas", iconName: "home" }).html[0];
   var hourglassEnd = icon2({ prefix: "fas", iconName: "hourglass-end" }).html[0];
   var hourglassStart = icon2({
@@ -5649,7 +5660,7 @@
         attr: {
           checked: option === props.selected,
           type: "radio",
-          name: "users",
+          name: props.name,
           value: option,
           onchange: (e) => {
             props.onChange(e.target.value);
@@ -5717,21 +5728,22 @@
     return checkboxEl;
   }
 
-  // src/views/Event/EventPrivacy.ts
-  function EventPrivacy(currentUserId, selectedUserIds, onEventStateChange) {
+  // src/views/Event/EventGuests.ts
+  function EventGuests(currentUserId, selectedUserIds, onEventStateChange) {
     const el = Div();
     const sharedOptions = Div({
       styles: __spreadValues({ padding: "12px" }, flexAlignItemsCenter)
     });
     const label = Label({
-      attr: { innerText: "Who can see this?" },
+      attr: { innerText: "Guests:" },
       styles: { marginRight: "8px" }
     });
-    const isPrivateEvent = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === currentUserId;
-    let eventPrivacy = isPrivateEvent ? "Me" : "Others";
-    const privacyRadioButtons = RadioButtons({
-      selected: eventPrivacy,
+    const currentGuests = (selectedUserIds == null ? void 0 : selectedUserIds.length) === 1 && selectedUserIds[0] === currentUserId;
+    let guests = currentGuests ? "Me" : "Others";
+    const guestsRadioButtons = RadioButtons({
+      selected: guests,
       options: ["Me", "Others"],
+      name: "users",
       onChange: onRadioButtonChange
     });
     const usersCheckboxes = UsersCheckboxes(
@@ -5741,11 +5753,11 @@
         onEventStateChange({ users: ids });
       }
     );
-    function onRadioButtonChange(privacyOption) {
+    function onRadioButtonChange(option) {
       onEventStateChange({
         users: [currentUserId]
       });
-      if (privacyOption === "Others") {
+      if (option === "Others") {
         el.appendChild(usersCheckboxes);
       } else {
         const usersSelect = byId("users-select");
@@ -5753,11 +5765,35 @@
       }
     }
     sharedOptions.appendChild(label);
-    sharedOptions.appendChild(privacyRadioButtons);
+    sharedOptions.appendChild(guestsRadioButtons);
     el.appendChild(sharedOptions);
-    if (eventPrivacy === "Others") {
+    if (guests === "Others") {
       el.append(usersCheckboxes);
     }
+    return el;
+  }
+
+  // src/views/Event/EventPrivacy.ts
+  function EventPrivacy(visibility, onEventStateChange) {
+    const el = Div({
+      styles: __spreadValues({ padding: "12px" }, flexAlignItemsCenter)
+    });
+    const label = Label({
+      attr: { innerText: "Who can see this?" },
+      styles: { marginRight: "8px" }
+    });
+    const privacyTypeRadioButtons = RadioButtons({
+      selected: visibility === "private" ? "Only me" : "Everyone",
+      options: ["Only me", "Everyone"],
+      name: "privacy",
+      onChange: (e) => {
+        onEventStateChange({
+          visibility: e === "Only me" ? "private" : "public"
+        });
+      }
+    });
+    el.append(label);
+    el.append(privacyTypeRadioButtons);
     return el;
   }
 
@@ -5782,7 +5818,8 @@
           description: "",
           start: new Date(),
           allDay: false,
-          users: [currentUser == null ? void 0 : currentUser._id]
+          users: [currentUser == null ? void 0 : currentUser._id],
+          visibility: "private"
         };
         const eventState = event ? __spreadValues({}, event) : __spreadValues({}, eventTemplate);
         const setEventState = (newValue) => {
@@ -5890,12 +5927,14 @@
         connect.appendChild(connectLabel);
         connect.appendChild(connectLink);
         form.appendChild(connect);
-        const guests = EventPrivacy(
+        const guests = EventGuests(
           currentUser._id,
           (eventState == null ? void 0 : eventState.users) || [],
           setEventState
         );
         form.appendChild(guests);
+        const privacy = EventPrivacy(eventState.visibility || "private", setEventState);
+        form.appendChild(privacy);
         const buttons = Div({
           styles: { marginTop: "8px", padding: "12px" }
         });
@@ -5970,7 +6009,11 @@
   function Event2(event) {
     let users2 = [];
     const el = Div({
-      styles: { padding: "12px", margin: "8px auto auto", maxWidth: "600px" }
+      styles: {
+        padding: "12px",
+        margin: "8px auto 32px auto",
+        maxWidth: "600px"
+      }
     });
     function init2() {
       return __async(this, null, function* () {
@@ -5987,15 +6030,34 @@
           attr: {
             innerText: event.title
           },
-          styles: { padding: "4px 0", marginRight: "8px" }
+          styles: { padding: "4px 0", marginRight: "16px" }
         });
         const buttons = Div({
           styles: __spreadProps(__spreadValues({}, styles2), {
-            display: "flex",
-            alignItems: "flex-start",
             marginTop: "0"
           })
         });
+        const visibilityTooltip = Div({
+          attr: {
+            innerHTML: event.visibility ? "Visible to guests only." : "Visible to all users."
+          },
+          styles: {
+            display: "none"
+          }
+        });
+        const visibility = Div({
+          attr: {
+            innerHTML: eyeIcon,
+            onmouseover: () => {
+              visibilityTooltip.style.display = "block";
+            },
+            onmouseout: () => {
+              visibilityTooltip.style.display = "none";
+            }
+          },
+          styles: iconStyles
+        });
+        visibility.append(visibilityTooltip);
         const remove2 = Button({
           selectors: { id: "remove-event-btn" },
           attr: {
@@ -6064,6 +6126,7 @@
             padding: "8px"
           })
         });
+        buttons.append(visibility);
         buttons.append(edit);
         buttons.append(remove2);
         titleContainer.append(title);
@@ -6161,7 +6224,7 @@
         connect.append(connectLink);
         el.append(connect);
         const guests = Div({
-          styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0 32px", alignItems: "flex-start" })
+          styles: __spreadProps(__spreadValues({}, styles2), { margin: "8px 0", alignItems: "flex-start" })
         });
         const usersList = ((_b = event.users) == null ? void 0 : _b.length) ? users2.filter((user) => {
           var _a2;
