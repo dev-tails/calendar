@@ -20,6 +20,7 @@ import { byId } from '../../utils/DOMutils';
 import { EventGuests } from './EventGuests';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
+import { EventEmail } from './EventEmail';
 
 export function EventForm(event?: IEvent) {
   const form = Form({
@@ -47,6 +48,7 @@ export function EventForm(event?: IEvent) {
     };
 
     const eventState: IEvent = event ? { ...event } : { ...eventTemplate };
+    let sendEmail = true;
 
     const setEventState = (newValue: Partial<IEvent>) => {
       Object.assign(eventState, newValue);
@@ -180,6 +182,9 @@ export function EventForm(event?: IEvent) {
     );
     form.appendChild(privacy);
 
+    const sendEventEmail = EventEmail(true, setSendEmail);
+    form.appendChild(sendEventEmail);
+
     const buttons = Div({
       styles: { marginTop: '8px', padding: '12px' },
     });
@@ -208,6 +213,10 @@ export function EventForm(event?: IEvent) {
     buttons.appendChild(saveButton);
     form.appendChild(buttons);
 
+    function setSendEmail() {
+      sendEmail = !sendEmail;
+    }
+
     form.onsubmit = async (e) => {
       e.preventDefault();
       let start = eventState.start;
@@ -223,9 +232,9 @@ export function EventForm(event?: IEvent) {
       let eventId = eventState._id;
       console.log('submitting', eventState);
       if (eventId) {
-        await editEvent(eventState);
+        await editEvent(eventState, sendEmail);
       } else {
-        eventId = await createEvent(eventState);
+        eventId = await createEvent(eventState, sendEmail);
       }
       setURL(`/events/${eventId}`);
     };

@@ -3,6 +3,7 @@ const mongodb = require('mongodb');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const webpush = require('web-push');
+const nodemailer = require('nodemailer');
 
 dotenv.config();
 const maxAgeInMilliseconds = 365 * 60 * 60 * 24 * 1000;
@@ -28,6 +29,7 @@ async function run() {
   server.use(cookieParser());
   server.use(express.json());
 
+  // server.use(express.static('./fe/public'));
   server.use(express.static('../fe/public'));
 
   webpush.setVapidDetails(
@@ -191,19 +193,26 @@ async function run() {
   });
 
   server.post('/api/events', async (req, res) => {
-    try {
-      const event = await Event.insertOne({
-        title: req.body.title,
-        description: req.body.description,
-        start: new Date(req.body.start),
-        end: req.body.end ? new Date(req.body.end) : undefined,
-        allDay: req.body.allDay,
-        users: req.body.users,
-        visibility: req.body.visibility,
-        owner: mongodb.ObjectId(req.body.owner),
-      });
+    const { sendEmail } = req.query;
 
+    const newEvent = {
+      title: req.body.title,
+      description: req.body.description,
+      start: new Date(req.body.start),
+      end: req.body.end ? new Date(req.body.end) : undefined,
+      allDay: req.body.allDay,
+      users: req.body.users,
+      visibility: req.body.visibility,
+      owner: mongodb.ObjectId(req.body.owner),
+    };
+
+    try {
+      const event = await Event.insertOne(newEvent);
       const { insertedId } = event;
+
+      if (insertedId && sendEmail) {
+        sendEventEmail({ ...newEvent, id: insertedId });
+      }
       return res.json({ data: insertedId });
     } catch (err) {
       console.error(err);
@@ -254,6 +263,82 @@ async function run() {
   server.listen(port, () => {
     console.log(`Listening on port ${port}`);
   });
+
+  async function sendEventEmail(upcomingEvent) {
+    const transporter = nodemailer.createTransport({
+      host: 'mail.xyzdigital.com',
+      port: 465,
+      secure: true, // true for 465, false for other ports
+      auth: {
+        user: 'noreply@xyzdigital.com',
+        pass: 'Sp2xQIAAOzv2YGHD',
+      },
+    });
+
+    let receivers = [];
+    if (upcomingEvent.users.length) {
+      const guestsIds = [...upcomingEvent.users].map((user) =>
+        mongodb.ObjectId(user)
+      );
+
+      receivers = await User.find(
+        { _id: { $in: guestsIds } },
+        { projection: { _id: 1, email: 1, name: 1 } }
+      ).toArray();
+    } else {
+      receivers = await User.find(
+        {},
+        { projection: { _id: 1, email: 1, name: 1 } }
+      ).toArray();
+    }
+
+    const sender = receivers.find(
+      (receiver) => String(receiver._id) === String(upcomingEvent.owner)
+    );
+
+    const guests = receivers.filter(
+      (receiver) => receiver.email !== sender.email
+    );
+
+    const receiversEmails = guests.map((guest) => guest.email);
+    const receiversNames = guests.map((guest) => guest.name).join(', ');
+
+    function date() {
+      let stringDate = '';
+      if (upcomingEvent.allDay) {
+        const splitDate = upcomingEvent.start.toString().split('T');
+        const slicedDate = splitDate[0];
+        stringDate = `${slicedDate} - All day`;
+      } else {
+        stringDate = `${upcomingEvent.start} - ${upcomingEvent.end}`;
+      }
+      return stringDate;
+    }
+
+    const description = upcomingEvent.description
+      ? `<p><b>Description:</b> ${upcomingEvent.description}</p>`
+      : '';
+
+    const info = await transporter.sendMail({
+      from: `"${sender.name}" <noreply@xyzdigital.com>`,
+      to: receiversEmails,
+      subject: `🗓  ${upcomingEvent.title}`,
+      html: `<p>You have been invited to the following event by ${
+        sender.name
+      }:</p>
+      <p><b>Title: </b>${upcomingEvent.title}</p>
+      <p><b>Date: </b>${date()}</p>
+      ${description}
+      <p><b>Link: </b> <a href="https://preview-iyris.cloud.engramhq.xyz/${
+        upcomingEvent.id
+      }" target="_blank"> preview-iyris.cloud.engramhq.xyz/${
+        upcomingEvent.id
+      }</a></p>
+      <p><b>Guests: </b>${receiversNames}</p>`,
+    });
+
+    console.log('Message sent:', info);
+  }
 }
 
 run();

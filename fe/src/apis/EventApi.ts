@@ -45,8 +45,11 @@ export const getEventsForDay = async (date: Date) => {
   }
 };
 
-export const createEvent = async (event: Partial<IEvent>) => {
-  const res = await fetch(`/api/events`, {
+export const createEvent = async (
+  event: Partial<IEvent>,
+  sendEmail?: boolean
+) => {
+  const res = await fetch(`/api/events?sendEmail=${sendEmail}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -61,8 +64,8 @@ export const createEvent = async (event: Partial<IEvent>) => {
   }
 };
 
-export const editEvent = async (event: IEvent) => {
-  const res = await fetch(`/api/events/${event._id}`, {
+export const editEvent = async (event: IEvent, sendEmail?: boolean) => {
+  const res = await fetch(`/api/events/${event._id}?sendEmail=${sendEmail}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
