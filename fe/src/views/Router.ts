@@ -12,7 +12,10 @@ import { Header } from './Header/Header';
 import { LogIn } from './LogIn/LogIn';
 
 export function Router(authenticated: boolean) {
-  const router = Div({ styles: { height: '100%' } });
+  const router = Div({
+    selectors: { id: 'router' },
+    styles: { height: '100%' },
+  });
 
   function init() {
     handleRouteUpdated();

@@ -4,6 +4,7 @@ import {
   faChevronLeft,
   faChevronRight,
   faClock,
+  faEnvelope,
   faEye,
   faHome,
   faHourglassEnd,
@@ -19,6 +20,7 @@ library.add(faCalendarWeek);
 library.add(faChevronLeft);
 library.add(faChevronRight);
 library.add(faClock);
+library.add(faEnvelope);
 library.add(faEye);
 library.add(faHome);
 library.add(faHourglassEnd);
@@ -36,6 +38,8 @@ export const chevronLeft = icon({ prefix: 'fas', iconName: 'chevron-left' })
 export const chevronRight = icon({ prefix: 'fas', iconName: 'chevron-right' })
   .html[0];
 export const clockIcon = icon({ prefix: 'fas', iconName: 'clock' }).html[0];
+export const envelopIcon = icon({ prefix: 'fas', iconName: 'envelope' })
+  .html[0];
 export const eyeIcon = icon({ prefix: 'fas', iconName: 'eye' }).html[0];
 export const home = icon({ prefix: 'fas', iconName: 'home' }).html[0];
 export const hourglassEnd = icon({ prefix: 'fas', iconName: 'hourglass-end' })

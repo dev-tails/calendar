@@ -21,6 +21,7 @@ import { EventGuests } from './EventGuests';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
 import { EventEmail } from './EventEmail';
+import { Modal } from '../../components/Modal';
 
 export function EventForm(event?: IEvent) {
   const form = Form({
@@ -77,7 +78,7 @@ export function EventForm(event?: IEvent) {
         onmouseover: () => {
           const button = byId('cancel-btn');
           if (button) {
-            button.style.color = colors.mandarine;
+            button.style.color = colors.lightOrange;
           }
         },
         onmouseout: () => {
@@ -182,7 +183,7 @@ export function EventForm(event?: IEvent) {
     );
     form.appendChild(privacy);
 
-    const sendEventEmail = EventEmail(true, setSendEmail);
+    const sendEventEmail = EventEmail(!!eventState._id, setSendEmail);
     form.appendChild(sendEventEmail);
 
     const buttons = Div({
@@ -217,7 +218,7 @@ export function EventForm(event?: IEvent) {
       sendEmail = !sendEmail;
     }
 
-    form.onsubmit = async (e) => {
+    form.onsubmit = (e) => {
       e.preventDefault();
       let start = eventState.start;
 
@@ -228,16 +229,21 @@ export function EventForm(event?: IEvent) {
         delete eventState.end;
       }
       setEventState({ start });
+      Modal(onModalResponse);
+    };
 
+    async function onModalResponse(sendEmail: boolean) {
       let eventId = eventState._id;
       console.log('submitting', eventState);
+
       if (eventId) {
         await editEvent(eventState, sendEmail);
       } else {
         eventId = await createEvent(eventState, sendEmail);
       }
+
       setURL(`/events/${eventId}`);
-    };
+    }
   }
   init();
   return form;
