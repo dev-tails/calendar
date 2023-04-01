@@ -20,7 +20,6 @@ import { byId } from '../../utils/DOMutils';
 import { EventGuests } from './EventGuests';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
-import { EventEmail } from './EventEmail';
 import { Modal } from '../../components/Modal';
 
 export function EventForm(event?: IEvent) {
@@ -182,9 +181,6 @@ export function EventForm(event?: IEvent) {
       setEventState
     );
     form.appendChild(privacy);
-
-    const sendEventEmail = EventEmail(!!eventState._id, setSendEmail);
-    form.appendChild(sendEventEmail);
 
     const buttons = Div({
       styles: { marginTop: '8px', padding: '12px' },
