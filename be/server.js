@@ -146,6 +146,12 @@ async function run() {
   });
 
   server.put('/api/events/:id', async (req, res) => {
+    const { sendEmail } = req.query;
+
+    // TODO: add owner in put requests
+    // TODO: send email in put rqeuets
+    // TODO: send email in delete requests
+
     const eventId = mongodb.ObjectId(req.body.id);
     const { title, description, start, end, allDay, users, visibility } =
       req.body.body;
@@ -155,7 +161,7 @@ async function run() {
     }
 
     try {
-      await Event.updateOne(
+      const editEvent = await Event.findOneAndUpdate(
         { _id: eventId },
         {
           $set: {
@@ -168,13 +174,17 @@ async function run() {
             users,
             visibility,
           },
-        }
+        },
+        { returnDocument: 'after' }
       );
 
-      const editedEvent = await Event.findOne({
-        _id: eventId,
-      });
-      return res.json({ data: editedEvent });
+      const updatedEvent = editEvent.value;
+
+      if (sendEmail) {
+        sendEventEmail(updatedEvent, 'edit');
+      }
+
+      return res.json({ data: updatedEvent });
     } catch (err) {
       console.error(err);
       return res.sendStatus(400);
@@ -184,6 +194,13 @@ async function run() {
   server.delete('/api/events/:id', async (req, res) => {
     try {
       const { id } = req.params;
+      const { sendEmail } = req.query;
+
+      if (sendEmail) {
+        const event = await Event.findOne({ _id: mongodb.ObjectId(id) });
+        sendEventEmail({ ...event, id }, 'delete');
+      }
+
       const event = await Event.deleteOne({ _id: mongodb.ObjectId(id) });
       return res.json({ data: event });
     } catch (err) {
@@ -211,7 +228,7 @@ async function run() {
       const { insertedId } = event;
 
       if (insertedId && sendEmail) {
-        sendEventEmail({ ...newEvent, id: insertedId });
+        sendEventEmail({ ...newEvent, id: insertedId }, 'create');
       }
       return res.json({ data: insertedId });
     } catch (err) {
@@ -263,18 +280,18 @@ async function run() {
   server.listen(port, () => {
     console.log(`Listening on port ${port}`);
   });
+  //////////
+  const transporter = nodemailer.createTransport({
+    host: 'mail.xyzdigital.com',
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: 'noreply@xyzdigital.com',
+      pass: 'Sp2xQIAAOzv2YGHD',
+    },
+  });
 
-  async function sendEventEmail(upcomingEvent) {
-    const transporter = nodemailer.createTransport({
-      host: 'mail.xyzdigital.com',
-      port: 465,
-      secure: true, // true for 465, false for other ports
-      auth: {
-        user: 'noreply@xyzdigital.com',
-        pass: 'Sp2xQIAAOzv2YGHD',
-      },
-    });
-
+  async function sendEventEmail(upcomingEvent, type) {
     let receivers = [];
     if (upcomingEvent.users.length) {
       const guestsIds = [...upcomingEvent.users].map((user) =>
@@ -303,6 +320,14 @@ async function run() {
     const receiversEmails = guests.map((guest) => guest.email);
     const receiversNames = guests.map((guest) => guest.name).join(', ');
 
+    const eventIntro = {
+      create: `<p>You have been invited to the following event by ${sender.name}:</p>`,
+      edit: `<p>The following event has been edited by ${sender.name}. Find details below:</p>`,
+      delete: `<p>Your ${
+        upcomingEvent.title
+      } event on ${date()} has been cancelled by ${sender.name}:</p>`,
+    };
+
     function date() {
       let stringDate = '';
       if (upcomingEvent.allDay) {
@@ -320,12 +345,14 @@ async function run() {
       : '';
 
     const info = await transporter.sendMail({
-      from: `"${sender.name}" <noreply@xyzdigital.com>`,
+      from: `"XYZ Digital" <noreply@xyzdigital.com>`,
       to: receiversEmails,
       subject: `🗓  ${upcomingEvent.title}`,
-      html: `<p>You have been invited to the following event by ${
-        sender.name
-      }:</p>
+      html: `
+      ${eventIntro[type]}
+      <div style="text-decoration:${
+        type === 'delete' ? 'line-through' : 'none'
+      }">
       <p><b>Title: </b>${upcomingEvent.title}</p>
       <p><b>Date: </b>${date()}</p>
       ${description}
@@ -334,7 +361,8 @@ async function run() {
       }" target="_blank"> preview-iyris.cloud.engramhq.xyz/${
         upcomingEvent.id
       }</a></p>
-      <p><b>Guests: </b>${receiversNames}</p>`,
+      <p><b>Guests: </b>${receiversNames}</p>
+      </div>`,
     });
 
     console.log('Message sent:', info);
