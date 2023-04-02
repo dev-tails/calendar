@@ -47,6 +47,7 @@ export function Modal(props: ModalProps) {
     styles: {
       display: 'block',
       textAlign: 'center',
+      fontWeight: '700',
     },
   });
 
@@ -81,6 +82,7 @@ export function Modal(props: ModalProps) {
       color: basics.silver,
       fontSize: '26px',
       padding: '0px',
+      margin: '10px 12px auto auto',
     },
   });
 
@@ -90,14 +92,14 @@ export function Modal(props: ModalProps) {
     },
     styles: {
       height: '60px',
-      background: colors.mandarine,
       width: '60px',
+      background: colors.mandarine,
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       color: '#fff',
-      margin: '20px auto',
+      margin: '0 auto 20px auto',
       fontSize: '24px',
     },
   });
@@ -108,7 +110,7 @@ export function Modal(props: ModalProps) {
       marginLeft: 'auto',
       display: 'flex',
       justifyContent: 'center',
-      marginTop: '20px',
+      marginTop: '8px',
     },
   });
 

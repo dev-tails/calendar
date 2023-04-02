@@ -65,3 +65,54 @@ input[type='checkbox']:disabled {
 .show {
   display: 'block';
 }
+
+#modal div {
+  animation: drop 0.3s linear;
+}
+
+@keyframes drop {
+  0% {
+    top: -40%;
+  }
+  25% {
+    top: -25%;
+  }
+  50% {
+    top: -5%;
+  }
+  75% {
+    top: 10%;
+  }
+  100% {
+    top: 25%;
+  }
+}
+
+#modal svg {
+  animation: wiggle 3s linear;
+}
+@keyframes wiggle {
+  0%,
+  7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-25deg);
+  }
+  20% {
+    transform: rotateZ(15deg);
+  }
+  25% {
+    transform: rotateZ(-15deg);
+  }
+  30% {
+    transform: rotateZ(10deg);
+  }
+  35% {
+    transform: rotateZ(-6deg);
+  }
+  40%,
+  100% {
+    transform: rotateZ(0);
+  }
+}
