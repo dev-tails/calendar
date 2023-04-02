@@ -32,7 +32,7 @@ export function Modal(props: ModalProps) {
       background: ' white',
       top: '25%',
       position: ' relative',
-      maxWidth: '440px',
+      maxWidth: '500px',
       width: '100%',
       margin: 'auto',
       borderRadius: ' 4px',

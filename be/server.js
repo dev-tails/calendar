@@ -280,7 +280,8 @@ async function run() {
   server.listen(port, () => {
     console.log(`Listening on port ${port}`);
   });
-  //////////
+
+  /* EMAILS */
   const transporter = nodemailer.createTransport({
     host: 'mail.xyzdigital.com',
     port: 465,
@@ -314,9 +315,7 @@ async function run() {
     );
 
     const guests = users.filter((receiver) => receiver.email !== sender.email);
-
-    const receiversEmails = guests.map((guest) => guest.email);
-    const receiversNames = guests.map((guest) => guest.name).join(', ');
+    const emailRecipients = guests.map((guest) => guest.email);
     const allGuestsNames = users.map((user) => user.name).join(', ');
 
     const eventIntro = {
@@ -324,7 +323,13 @@ async function run() {
       edit: `<p>The following event has been edited by ${sender.name}. Find details below:</p>`,
       delete: `<p>The event ${
         upcomingEvent.title
-      } on ${date()} has been cancelled by ${sender.name}:</p>`,
+      } on ${date()} has been cancelled:</p>`,
+    };
+
+    const eventEnding = {
+      create: `<p>You can see event here https://calendar.xyzdigital.com/events/${upcomingEvent.id}</p>`,
+      edit: `<p>You can see event here https://calendar.xyzdigital.com/events/${upcomingEvent.id}</p>`,
+      delete: `<p>Contact ${sender.name} (${sender.email}) for more information.</p>`,
     };
 
     function date() {
@@ -345,7 +350,7 @@ async function run() {
 
     const info = await transporter.sendMail({
       from: `"XYZ Digital" <noreply@xyzdigital.com>`,
-      to: receiversEmails,
+      to: emailRecipients,
       subject: `🗓  ${upcomingEvent.title}`,
       html: `
       ${eventIntro[type]}
@@ -361,7 +366,10 @@ async function run() {
         upcomingEvent.id
       }</a></p>
       <p><b>Guests: </b>${allGuestsNames}</p>
-      </div>`,
+      </br>
+      </div>
+      ${eventEnding[type]}
+      `,
     });
 
     console.log('Message sent:', info);

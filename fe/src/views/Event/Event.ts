@@ -195,7 +195,7 @@ export function Event(event: IEvent) {
         attr: {
           innerHTML: autolinker.link(event.description),
         },
-        styles: { ...styles, whiteSpace: 'pre-line' },
+        styles: { ...styles, display: 'block', whiteSpace: 'pre-line' },
       });
       el.append(description);
     }
