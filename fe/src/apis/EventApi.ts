@@ -49,7 +49,7 @@ export const createEvent = async (
   event: Partial<IEvent>,
   sendEmail?: boolean
 ) => {
-  const res = await fetch(`/api/events?sendEmail=${sendEmail}`, {
+  const res = await fetch(`/api/events${sendEmail ? '?sendEmail=true' : ''}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -65,13 +65,16 @@ export const createEvent = async (
 };
 
 export const editEvent = async (event: IEvent, sendEmail?: boolean) => {
-  const res = await fetch(`/api/events/${event._id}?sendEmail=${sendEmail}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id: event._id, body: event }),
-  });
+  const res = await fetch(
+    `/api/events/${event._id}${sendEmail ? '?sendEmail=true' : ''}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: event._id, body: event }),
+    }
+  );
   if (res.ok) {
     const modifiedEvent = await res.json();
     return modifiedEvent;
@@ -80,17 +83,20 @@ export const editEvent = async (event: IEvent, sendEmail?: boolean) => {
   }
 };
 
-export const deleteEvent = async (eventId?: string) => {
+export const deleteEvent = async (eventId?: string, sendEmail?: boolean) => {
   if (!eventId) {
     throw new Error('Event id must exist.');
   }
 
-  const res = await fetch(`/api/events/${eventId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const res = await fetch(
+    `/api/events/${eventId}${sendEmail ? '?sendEmail=true' : ''}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
   if (res.ok) {
     const response = await res.json();
     return !!response.success;

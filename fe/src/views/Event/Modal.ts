@@ -1,14 +1,22 @@
-import { envelopIcon, times } from '../../public/assets/FontAwesomeIcons';
-import { buttonStyles } from '../../public/css/componentStyles';
-import { byId } from '../utils/DOMutils';
-import { basics, colors } from '../utils/styles';
-import { Button, Div, Label } from './elements';
+import { times } from '../../../public/assets/FontAwesomeIcons';
+import { buttonStyles } from '../../../public/css/componentStyles';
+import { byId } from '../../utils/DOMutils';
+import { basics, colors } from '../../utils/styles';
+import { Button, Div, Label } from '../../components/elements';
 
-export function Modal(onResponse: (response: boolean) => void) {
+type ModalProps = {
+  icon: string;
+  label: string;
+  options: string[];
+  onClick: (response: string) => void;
+};
+
+export function Modal(props: ModalProps) {
   const router = document.getElementById('router');
   if (!router) return;
 
   const el = Div({
+    selectors: { id: 'modal' },
     styles: {
       height: '100vh',
       width: '100vw',
@@ -24,7 +32,7 @@ export function Modal(onResponse: (response: boolean) => void) {
       background: ' white',
       top: '25%',
       position: ' relative',
-      maxWidth: '360px',
+      maxWidth: '440px',
       width: '100%',
       margin: 'auto',
       borderRadius: ' 4px',
@@ -34,7 +42,7 @@ export function Modal(onResponse: (response: boolean) => void) {
 
   const text = Label({
     attr: {
-      innerHTML: 'Notify guests about updates?',
+      innerHTML: props.label,
     },
     styles: {
       display: 'block',
@@ -71,14 +79,14 @@ export function Modal(onResponse: (response: boolean) => void) {
       background: 'none',
       border: 'none',
       color: basics.silver,
-      fontSize: '28px',
+      fontSize: '26px',
       padding: '0px',
     },
   });
 
-  const envelopeIcon = Div({
+  const icon = Div({
     attr: {
-      innerHTML: envelopIcon,
+      innerHTML: props.icon,
     },
     styles: {
       height: '60px',
@@ -107,10 +115,10 @@ export function Modal(onResponse: (response: boolean) => void) {
   const notifyButton = Button({
     selectors: { id: 'notify-btn' },
     attr: {
-      textContent: 'Yes, please.',
+      textContent: props.options[0],
       type: 'submit',
       onclick: () => {
-        onResponse(true);
+        props.onClick(props.options[0]);
       },
       onmouseover: () => {
         const button = byId('notify-btn');
@@ -131,10 +139,10 @@ export function Modal(onResponse: (response: boolean) => void) {
   const continueButton = Button({
     selectors: { id: 'continue-btn' },
     attr: {
-      textContent: "Nah, it's ok.",
+      textContent: props.options[1],
       type: 'button',
       onclick: () => {
-        onResponse(false);
+        props.onClick(props.options[1]);
       },
       onmouseover: () => {
         const button = byId('continue-btn');
@@ -159,7 +167,7 @@ export function Modal(onResponse: (response: boolean) => void) {
   buttons.append(notifyButton);
   buttons.append(continueButton);
   modal.append(cancelButton);
-  modal.append(envelopeIcon);
+  modal.append(icon);
   modal.append(text);
   modal.append(buttons);
   el.append(modal);

@@ -15,12 +15,18 @@ import { basics, colors, flexAlignItemsCenter } from '../../utils/styles';
 import { EventDateSelect } from './EventDateSelect';
 import { createEvent, editEvent } from '../../apis/EventApi';
 import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
-import { link, times } from '../../../public/assets/FontAwesomeIcons';
+import {
+  envelopIcon,
+  link,
+  times,
+} from '../../../public/assets/FontAwesomeIcons';
 import { byId } from '../../utils/DOMutils';
 import { EventGuests } from './EventGuests';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
-import { Modal } from '../../components/Modal';
+import { Modal } from './Modal';
+
+const modalOptions = ['Yes, please.', "Nah, it's ok."];
 
 export function EventForm(event?: IEvent) {
   const form = Form({
@@ -48,8 +54,6 @@ export function EventForm(event?: IEvent) {
     };
 
     const eventState: IEvent = event ? { ...event } : { ...eventTemplate };
-    let sendEmail = true;
-
     const setEventState = (newValue: Partial<IEvent>) => {
       Object.assign(eventState, newValue);
     };
@@ -210,10 +214,6 @@ export function EventForm(event?: IEvent) {
     buttons.appendChild(saveButton);
     form.appendChild(buttons);
 
-    function setSendEmail() {
-      sendEmail = !sendEmail;
-    }
-
     form.onsubmit = (e) => {
       e.preventDefault();
       let start = eventState.start;
@@ -225,13 +225,25 @@ export function EventForm(event?: IEvent) {
         delete eventState.end;
       }
       setEventState({ start });
-      Modal(onModalResponse);
+      const isOnlyOwner =
+        eventState.users?.length === 1 &&
+        eventState.users[0] === eventState.owner;
+
+      isOnlyOwner
+        ? onModalResponse(modalOptions[1])
+        : Modal({
+            icon: envelopIcon,
+            label: eventState._id
+              ? 'Email guests with updated event?'
+              : 'Notify guests by email?',
+            options: modalOptions,
+            onClick: onModalResponse,
+          });
     };
 
-    async function onModalResponse(sendEmail: boolean) {
+    async function onModalResponse(response: string) {
       let eventId = eventState._id;
-      console.log('submitting', eventState);
-
+      const sendEmail = response === modalOptions[0] ? true : false;
       if (eventId) {
         await editEvent(eventState, sendEmail);
       } else {

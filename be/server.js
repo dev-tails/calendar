@@ -180,7 +180,7 @@ async function run() {
 
       const updatedEvent = editEvent.value;
 
-      if (sendEmail) {
+      if (!!sendEmail) {
         sendEventEmail(updatedEvent, 'edit');
       }
 
@@ -227,7 +227,7 @@ async function run() {
       const event = await Event.insertOne(newEvent);
       const { insertedId } = event;
 
-      if (insertedId && sendEmail) {
+      if (!!insertedId && !!sendEmail) {
         sendEventEmail({ ...newEvent, id: insertedId }, 'create');
       }
       return res.json({ data: insertedId });
@@ -292,40 +292,39 @@ async function run() {
   });
 
   async function sendEventEmail(upcomingEvent, type) {
-    let receivers = [];
+    let users = [];
     if (upcomingEvent.users.length) {
       const guestsIds = [...upcomingEvent.users].map((user) =>
         mongodb.ObjectId(user)
       );
 
-      receivers = await User.find(
+      users = await User.find(
         { _id: { $in: guestsIds } },
         { projection: { _id: 1, email: 1, name: 1 } }
       ).toArray();
     } else {
-      receivers = await User.find(
+      users = await User.find(
         {},
         { projection: { _id: 1, email: 1, name: 1 } }
       ).toArray();
     }
 
-    const sender = receivers.find(
+    const sender = users.find(
       (receiver) => String(receiver._id) === String(upcomingEvent.owner)
     );
 
-    const guests = receivers.filter(
-      (receiver) => receiver.email !== sender.email
-    );
+    const guests = users.filter((receiver) => receiver.email !== sender.email);
 
     const receiversEmails = guests.map((guest) => guest.email);
     const receiversNames = guests.map((guest) => guest.name).join(', ');
+    const allGuestsNames = users.map((user) => user.name).join(', ');
 
     const eventIntro = {
       create: `<p>You have been invited to the following event by ${sender.name}:</p>`,
       edit: `<p>The following event has been edited by ${sender.name}. Find details below:</p>`,
-      delete: `<p>Your ${
+      delete: `<p>The event ${
         upcomingEvent.title
-      } event on ${date()} has been cancelled by ${sender.name}:</p>`,
+      } on ${date()} has been cancelled by ${sender.name}:</p>`,
     };
 
     function date() {
@@ -361,7 +360,7 @@ async function run() {
       }" target="_blank"> preview-iyris.cloud.engramhq.xyz/${
         upcomingEvent.id
       }</a></p>
-      <p><b>Guests: </b>${receiversNames}</p>
+      <p><b>Guests: </b>${allGuestsNames}</p>
       </div>`,
     });
 

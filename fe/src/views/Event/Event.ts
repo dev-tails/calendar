@@ -29,6 +29,14 @@ import {
   flexAlignItemsCenter,
   fonts,
 } from '../../utils/styles';
+import { Modal } from './Modal';
+import { byId } from '../../utils/DOMutils';
+
+const ownerModalOptions = ['Yes, delete, adiós!', "No! Don't delete."];
+const notificationModalOptions = [
+  'Yes, delete and notify.',
+  "Delete but don't notify.",
+];
 
 const styles = {
   ...flexAlignItemsCenter,
@@ -121,23 +129,25 @@ export function Event(event: IEvent) {
     visibility.append(visibilityTooltip);
     buttons.append(visibility);
 
+    const isOnlyOwner =
+      event.users?.length === 1 && event.users[0] === event.owner;
+
     if (event.owner === currentUser?._id) {
       const removeBtn = Button({
         attr: {
           innerHTML: trash,
-          onclick: async (e) => {
+          onclick: (e) => {
             e.preventDefault();
-            try {
-              await deleteEvent(event._id);
-              setURL('/');
-            } catch (e) {
-              const temporaryError = Div({
-                attr: {
-                  innerText: 'Could not delete event',
-                },
-              });
-              el.append(temporaryError);
-            }
+            Modal({
+              icon: trash,
+              label: isOnlyOwner
+                ? 'Are you sure you want to delete this event?'
+                : 'You are about to delete this event. Do you want to notify guests by email?',
+              options: isOnlyOwner
+                ? ownerModalOptions
+                : notificationModalOptions,
+              onClick: handleDeleteEvent,
+            });
           },
           onmouseover: () => (removeBtn.style.opacity = '.7'),
           onmouseout: () => (removeBtn.style.opacity = '1'),
@@ -352,6 +362,30 @@ export function Event(event: IEvent) {
     guests.append(guestsList);
 
     el.append(guests);
+
+    async function handleDeleteEvent(response: string) {
+      const cancelDeleteEvent = response === ownerModalOptions[1];
+
+      if (cancelDeleteEvent) {
+        const modal = byId('modal');
+        modal.remove();
+        return;
+      }
+
+      const sendEmail = response === notificationModalOptions[0] ? true : false;
+
+      try {
+        await deleteEvent(event._id, sendEmail);
+        setURL('/');
+      } catch (e) {
+        const temporaryError = Div({
+          attr: {
+            innerText: 'Could not delete event',
+          },
+        });
+        el.append(temporaryError);
+      }
+    }
   }
 
   init();
