@@ -5506,7 +5506,7 @@
     fontWeight: "400",
     fontSize: "14px",
     borderRadius: "4px",
-    padding: "12px 16px",
+    padding: "8px 16px",
     letterSpacing: "1",
     lineHeight: "22px"
   };
