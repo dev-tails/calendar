@@ -47,7 +47,6 @@ export function Modal(props: ModalProps) {
     styles: {
       display: 'block',
       textAlign: 'center',
-      fontWeight: '700',
     },
   });
 

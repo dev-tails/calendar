@@ -5852,8 +5852,7 @@
       },
       styles: {
         display: "block",
-        textAlign: "center",
-        fontWeight: "700"
+        textAlign: "center"
       }
     });
     const cancelButton = Button({
