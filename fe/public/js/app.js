@@ -389,6 +389,14 @@
     const dateWithAddedMin = new Date(newTimeNumber);
     return dateWithAddedMin;
   };
+  var getDateStringFromUrl = () => {
+    const path = window.location.pathname;
+    const splitDate = path.split("/");
+    const fullYear = splitDate[2];
+    const month = splitDate[3];
+    const day = splitDate[4];
+    return `${fullYear}/${month}/${day}`;
+  };
 
   // src/utils/styles.ts
   var basics = {
@@ -5991,10 +5999,14 @@
         if (!currentUser) {
           return;
         }
+        let initialStart = new Date();
+        if (window.location.pathname.includes("/add/")) {
+          initialStart = new Date(getDateStringFromUrl());
+        }
         let eventTemplate = {
           title: "",
           description: "",
-          start: new Date(),
+          start: initialStart,
           allDay: false,
           users: [currentUser == null ? void 0 : currentUser._id],
           visibility: "private",
@@ -6767,7 +6779,11 @@
     function onRightButtonClick() {
       let nextURL = "/";
       if (isHome || isDay || isEvent) {
-        nextURL = "/add";
+        if (window.location.pathname === "/") {
+          nextURL = `/add`;
+        } else {
+          nextURL = `/add/${getDateStringFromUrl()}`;
+        }
       }
       setURL(nextURL);
     }
@@ -6869,7 +6885,7 @@
         }
         const path = window.location.pathname;
         const home2 = path === "/";
-        const addEventPath = path === "/add";
+        const addEventPath = path.includes("add");
         const isDayPath = path.includes("day");
         const eventsPaths = !home2 && !addEventPath && !isDayPath;
         let eventObject;
@@ -6882,19 +6898,15 @@
           }
         }
         let eventsDate = new Date().toDateString();
-        if (isDayPath) {
-          const splitDate = path.split("/");
-          const fullYear = splitDate[2];
-          const month = splitDate[3];
-          const day = splitDate[4];
-          eventsDate = `/day/${fullYear}/${month}/${day}`;
+        if (isDayPath || addEventPath) {
+          eventsDate = getDateStringFromUrl();
         }
         switch (path) {
           case "/":
             router.append(Header("home"));
             router.append(Day());
             break;
-          case eventsDate:
+          case `/day/${eventsDate}`:
             router.append(Header("day"));
             router.append(Day(eventsDate));
             break;
@@ -6914,6 +6926,7 @@
             }
             break;
           case `/add`:
+          case `/add/${eventsDate}`:
             router.append(Header("add"));
             router.append(EventForm());
             break;

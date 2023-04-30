@@ -3,6 +3,7 @@ import { getEventById } from '../apis/EventApi';
 import {
   convertMidnightUTCToLocalDay,
   formatSplitDate,
+  getDateStringFromUrl,
 } from '../utils/dateHelpers';
 import { setURL } from '../utils/HistoryUtils';
 import { Day } from './Day/Day';
@@ -32,7 +33,7 @@ export function Router(authenticated: boolean) {
 
     const path = window.location.pathname;
     const home = path === '/';
-    const addEventPath = path === '/add';
+    const addEventPath = path.includes('add');
     const isDayPath = path.includes('day');
     const eventsPaths = !home && !addEventPath && !isDayPath;
 
@@ -47,12 +48,8 @@ export function Router(authenticated: boolean) {
     }
 
     let eventsDate = new Date().toDateString();
-    if (isDayPath) {
-      const splitDate = path.split('/');
-      const fullYear = splitDate[2];
-      const month = splitDate[3];
-      const day = splitDate[4];
-      eventsDate = `/day/${fullYear}/${month}/${day}`;
+    if (isDayPath || addEventPath) {
+      eventsDate = getDateStringFromUrl();
     }
 
     switch (path) {
@@ -60,7 +57,7 @@ export function Router(authenticated: boolean) {
         router.append(Header('home'));
         router.append(Day());
         break;
-      case eventsDate:
+      case `/day/${eventsDate}`:
         router.append(Header('day'));
         router.append(Day(eventsDate));
         break;
@@ -82,6 +79,7 @@ export function Router(authenticated: boolean) {
         }
         break;
       case `/add`:
+      case `/add/${eventsDate}`:
         router.append(Header('add'));
         router.append(EventForm());
         break;

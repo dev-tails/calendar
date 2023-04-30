@@ -16,6 +16,7 @@ import {
   subscribeUser,
   unsubscribeUser,
 } from '../../services/PushNotificationService';
+import { getDateStringFromUrl } from '../../utils/dateHelpers';
 
 const headerTopLeftButton = {
   home: '',
@@ -188,7 +189,11 @@ export function Header(
   function onRightButtonClick() {
     let nextURL = '/';
     if (isHome || isDay || isEvent) {
-      nextURL = '/add';
+      if (window.location.pathname === '/') {
+        nextURL = `/add`;
+      } else {
+        nextURL = `/add/${getDateStringFromUrl()}`;
+      }
     }
     setURL(nextURL);
   }

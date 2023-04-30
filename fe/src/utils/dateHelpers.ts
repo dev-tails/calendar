@@ -115,3 +115,12 @@ export const addMinutesToDate = (date: Date, minutes: number) => {
   const dateWithAddedMin = new Date(newTimeNumber);
   return dateWithAddedMin;
 };
+
+export const getDateStringFromUrl = () => {
+  const path = window.location.pathname;
+  const splitDate = path.split('/');
+  const fullYear = splitDate[2];
+  const month = splitDate[3];
+  const day = splitDate[4];
+  return `${fullYear}/${month}/${day}`;
+};

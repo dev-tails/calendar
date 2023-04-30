@@ -25,6 +25,7 @@ import { EventGuests } from './EventGuests';
 import { EventPrivacy } from './EventPrivacy';
 import { fetchSelf } from '../../apis/UserApi';
 import { Modal } from './Modal';
+import { getDateStringFromUrl } from '../../utils/dateHelpers';
 
 const modalOptions = ['Yes, please.', "Nah, it's ok."];
 
@@ -43,10 +44,14 @@ export function EventForm(event?: IEvent) {
     if (!currentUser) {
       return;
     }
+    let initialStart = new Date();
+    if (window.location.pathname.includes('/add/')) {
+      initialStart = new Date(getDateStringFromUrl());
+    }
     let eventTemplate: IEvent = {
       title: '',
       description: '',
-      start: new Date(),
+      start: initialStart,
       allDay: false,
       users: [currentUser?._id],
       visibility: 'private',
