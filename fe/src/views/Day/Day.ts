@@ -217,6 +217,16 @@ export function Day(date?: string) {
       });
       el.appendChild(noEventsLabel);
     }
+
+    const button = Button({
+      attr: {
+        innerHTML: 'grid',
+        onclick: () => {
+          setURL('/grid');
+        },
+      },
+    });
+    el.appendChild(button);
   }
 
   function changeActiveDay(e: KeyboardEvent) {

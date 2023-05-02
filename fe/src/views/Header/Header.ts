@@ -75,6 +75,13 @@ export function Header(
       padding: '0 20px',
       ...flexAlignItemsCenter,
       justifyContent: 'flex-end',
+
+      //not sure about this, added it last minute
+      position: 'sticky',
+      background: 'white',
+      width: '100%',
+      zIndex: '1',
+      top: '0',
     },
   });
 

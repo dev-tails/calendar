@@ -11,11 +11,11 @@ import { EventForm } from './Event/EventForm';
 import { Event } from './Event/Event';
 import { Header } from './Header/Header';
 import { LogIn } from './LogIn/LogIn';
+import { DayGrid } from './Day/DayGrid.ts/DayGrid';
 
 export function Router(authenticated: boolean) {
   const router = Div({
     selectors: { id: 'router' },
-    styles: { height: '100%' },
   });
 
   function init() {
@@ -35,7 +35,8 @@ export function Router(authenticated: boolean) {
     const home = path === '/';
     const addEventPath = path.includes('add');
     const isDayPath = path.includes('day');
-    const eventsPaths = !home && !addEventPath && !isDayPath;
+    const isDayGridPath = path.includes('grid');
+    const eventsPaths = !home && !addEventPath && !isDayPath && !isDayGridPath;
 
     let eventObject: IEvent | undefined;
     if (eventsPaths) {
@@ -60,6 +61,10 @@ export function Router(authenticated: boolean) {
       case `/day/${eventsDate}`:
         router.append(Header('day'));
         router.append(Day(eventsDate));
+        break;
+      case `/grid`:
+        router.append(Header('day'));
+        router.append(DayGrid());
         break;
       case `/events/${eventObject?._id}`:
         if (eventObject) {
