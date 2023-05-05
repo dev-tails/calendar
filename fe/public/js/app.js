@@ -6911,7 +6911,7 @@
   function DayGrid() {
     const el = Div({
       styles: {
-        maxWidth: "1000px",
+        // maxWidth: '1000px',
         marginLeft: "auto",
         marginRight: "auto"
       }
@@ -6922,7 +6922,7 @@
         gridContainer.setAttribute(
           "style",
           // 'width: 100%; height: fit-content; display: flex;background-image: linear-gradient(to bottom, #114357, #F29492, #114357);'
-          "width: 100%; height: fit-content; display: flex;background-image: linear-gradient(to bottom, #114357cc, #f29492b0, #114357);"
+          "width: 100%; height: fit-content; display: flex;"
         );
         const eventsGrid = Div();
         eventsGrid.setAttribute(
@@ -6946,7 +6946,7 @@
               height: "1px",
               width: "100%",
               background: basics.whiteColor,
-              opacity: ".5"
+              opacity: ".2"
             }
           });
           timeContainer.append(divider);
@@ -6975,7 +6975,7 @@
               width: "40%",
               right: "0",
               background: basics.whiteColor,
-              opacity: ".5"
+              opacity: ".2"
             }
           });
           const time = Div({
@@ -6984,7 +6984,7 @@
               position: "absolute",
               top: "-10px",
               left: "5px",
-              // background: basics.whiteColor,
+              fontFamily: fonts.montserrat,
               color: basics.whiteColor,
               padding: "0 8px"
             }

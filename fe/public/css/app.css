@@ -1,15 +1,20 @@
 body {
   margin: 0;
   overflow-x: hidden;
-  overflow-x: hidden;
+  height: 100%;
 }
 
 #root {
   display: flex;
   flex-direction: column;
-  height: 100%;
   box-sizing: border-box;
   line-height: 1.5;
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    rgba(61, 82, 168, 0.46) 0%,
+    rgba(77, 159, 176, 0.68) 62.17%
+  );
 }
 
 * {
