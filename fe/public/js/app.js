@@ -3021,6 +3021,7 @@
   var usersIcon = icon2({ prefix: "fas", iconName: "users" }).html[0];
 
   // src/views/Day/Day.ts
+  var bgColours = ["#0B094F46", "#7A8ACF", colors.royalBlueLight];
   var arrowStyles = {
     background: "none",
     border: "none",
@@ -3124,7 +3125,7 @@
           events.sort(
             (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
           );
-          events.forEach((event) => {
+          events.forEach((event, idx) => {
             if (event.allDay) {
               const allDayEventStyles = {
                 borderRadius: "4px",
@@ -3140,14 +3141,14 @@
                 styles: __spreadValues({
                   borderRadius: "4px",
                   margin: "0 20px",
-                  gridGap: "20px"
+                  gridGap: "16px"
                 }, flexAlignItemsCenter)
               });
               const times2 = Div({
                 styles: {
                   display: "flex",
                   marginBottom: "auto",
-                  maxWidth: "180px",
+                  maxWidth: "172px",
                   width: "100%",
                   padding: "8px 12px 8px 0"
                 }
@@ -3174,7 +3175,7 @@
               const eventStyles = {
                 borderRadius: "4px",
                 width: "100%",
-                backgroundColor: colors.royalBlueLight,
+                backgroundColor: bgColours[idx % bgColours.length],
                 color: basics.whiteColor,
                 cursor: "pointer",
                 maxWidth: "980px"
