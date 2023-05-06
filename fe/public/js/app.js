@@ -6311,7 +6311,7 @@
                   onClick: handleDeleteEvent
                 });
               },
-              onmouseover: () => removeBtn.style.opacity = ".7",
+              onmouseover: () => removeBtn.style.opacity = ".8",
               onmouseout: () => removeBtn.style.opacity = "1"
             },
             styles: __spreadProps(__spreadValues({}, buttonStyles), {
@@ -6330,7 +6330,7 @@
                 e.preventDefault();
                 setURL(`/events/edit/${event._id}`);
               }),
-              onmouseover: () => editBtn.style.opacity = ".7",
+              onmouseover: () => editBtn.style.opacity = ".8",
               onmouseout: () => editBtn.style.opacity = "1"
             },
             styles: __spreadProps(__spreadValues({}, buttonStyles), {

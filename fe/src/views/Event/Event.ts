@@ -149,7 +149,7 @@ export function Event(event: IEvent) {
               onClick: handleDeleteEvent,
             });
           },
-          onmouseover: () => (removeBtn.style.opacity = '.7'),
+          onmouseover: () => (removeBtn.style.opacity = '.8'),
           onmouseout: () => (removeBtn.style.opacity = '1'),
         },
         styles: {
@@ -170,7 +170,7 @@ export function Event(event: IEvent) {
             e.preventDefault();
             setURL(`/events/edit/${event._id}`);
           },
-          onmouseover: () => (editBtn.style.opacity = '.7'),
+          onmouseover: () => (editBtn.style.opacity = '.8'),
           onmouseout: () => (editBtn.style.opacity = '1'),
         },
         styles: {
