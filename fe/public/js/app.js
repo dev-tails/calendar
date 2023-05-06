@@ -5895,7 +5895,7 @@
         onmouseover: () => {
           const button = byId("close-modal-btn");
           if (button) {
-            button.style.color = colors.lightOrange;
+            button.style.color = colors.strongRed;
           }
         },
         onmouseout: () => {
