@@ -14,7 +14,7 @@ import {
   fonts,
   fontsWeight,
 } from '../../utils/styles';
-import { Button, Div, Span, H1 } from '../../components/elements';
+import { Button, Div, Span, H1, P } from '../../components/elements';
 import {
   chevronLeft,
   chevronRight,
@@ -23,7 +23,7 @@ import {
 const arrowStyles = {
   background: 'none',
   border: 'none',
-  color: basics.darkCharcoal,
+  color: basics.whiteColor,
   fontSize: '24px',
   padding: '12px',
 };
@@ -41,7 +41,7 @@ export function Day(date?: string) {
     const headerDate = Div({
       styles: {
         ...flexAlignItemsCenter,
-        margin: '12px 20px',
+        margin: '30px 12px 20px',
       },
     });
 
@@ -52,17 +52,14 @@ export function Day(date?: string) {
         ),
       },
       styles: {
-        fontFamily: fonts.garamond,
-        fontWeight: '600',
+        fontFamily: fonts.poppins,
+        fontWeight: '400',
         fontSize: '32px,',
-        color: basics.darkCharcoal,
+        color: basics.whiteColor,
         padding: '12px',
       },
     });
-    setStyle(title, {
-      padding: '12px',
-      margin: '12px 20px',
-    });
+    setStyle(title, { padding: '12px' });
 
     const prevDay = Button({
       selectors: {
@@ -74,8 +71,7 @@ export function Day(date?: string) {
         onmouseover: () => {
           const button = byId('left-chevron');
           if (button) {
-            button.style.color = colors.royalBlueLight;
-            button.style.background = colors.lightOrange;
+            button.style.background = colors.royalBlueLight;
             button.style.borderRadius = '4px';
             button.style.color = basics.whiteColor;
           }
@@ -83,10 +79,9 @@ export function Day(date?: string) {
         onmouseout: () => {
           const button = byId('left-chevron');
           if (button) {
-            button.style.color = basics.darkCharcoal;
+            button.style.color = basics.whiteColor;
             button.style.background = 'none';
             button.style.borderRadius = 'none';
-            button.style.color = basics.darkCharcoal;
           }
         },
       },
@@ -103,8 +98,7 @@ export function Day(date?: string) {
         onmouseover: () => {
           const button = byId('right-chevron');
           if (button) {
-            button.style.color = colors.royalBlueLight;
-            button.style.background = colors.lightOrange;
+            button.style.background = colors.royalBlueLight;
             button.style.borderRadius = '4px';
             button.style.color = basics.whiteColor;
           }
@@ -112,9 +106,8 @@ export function Day(date?: string) {
         onmouseout: () => {
           const button = byId('right-chevron');
           if (button) {
-            button.style.color = basics.darkCharcoal;
+            button.style.color = basics.whiteColor;
             button.style.background = 'none';
-            button.style.color = basics.darkCharcoal;
           }
         },
       },
@@ -128,6 +121,9 @@ export function Day(date?: string) {
     el.appendChild(headerDate);
 
     const eventsList = Div();
+    const allDayEventsContainer = Div({
+      styles: { display: 'flex', gap: '16px', margin: '12px 20px' },
+    });
     const events = await getEventsForDay(dayView);
 
     if (events.length) {
@@ -139,14 +135,13 @@ export function Day(date?: string) {
         if (event.allDay) {
           const allDayEventStyles = {
             borderRadius: '4px',
-            margin: '12px 20px',
-            width: 'auto',
-            backgroundColor: colors.royalBlueLight,
-            color: basics.whiteColor,
+            width: 'fit-content',
+            backgroundColor: basics.whiteColor,
+            color: colors.mandarine,
             cursor: 'pointer',
           };
           const allDayEvents = createEventCard(event, allDayEventStyles);
-          el.appendChild(allDayEvents);
+          allDayEventsContainer.append(allDayEvents);
         } else {
           const eventContainer = Div({
             styles: {
@@ -178,7 +173,7 @@ export function Day(date?: string) {
               styles: {
                 textTransform: 'uppercase',
                 fontFamily: fonts.montserrat,
-                color: basics.darkCharcoal,
+                color: basics.whiteColor,
                 fontWeight: fontsWeight.regular,
                 fontSize: '14px',
                 padding: '12px 0',
@@ -191,7 +186,7 @@ export function Day(date?: string) {
           const eventStyles = {
             borderRadius: '4px',
             width: '100%',
-            backgroundColor: colors.keppel,
+            backgroundColor: colors.royalBlueLight,
             color: basics.whiteColor,
             cursor: 'pointer',
             maxWidth: '980px',
@@ -202,7 +197,7 @@ export function Day(date?: string) {
           eventsList.appendChild(eventContainer);
         }
       });
-
+      el.appendChild(allDayEventsContainer);
       el.appendChild(eventsList);
     } else {
       const noEventsLabel = Div({
@@ -212,7 +207,7 @@ export function Day(date?: string) {
           margin: '12px 20px',
           paddingLeft: '20px',
           fontStyle: 'italic',
-          color: basics.spanishGray,
+          color: basics.slateGray,
         },
       });
       el.appendChild(noEventsLabel);
@@ -245,14 +240,14 @@ export function Day(date?: string) {
 function createEventCard(event: IEvent, styles: Partial<CSSStyleDeclaration>) {
   const eventCard = Div({ styles });
 
-  const title = Div({
+  const title = P({
     attr: {
       innerText: event.title,
       onclick: () => setURL(`/events/${event._id}`),
     },
     styles: {
-      fontFamily: fonts.montserrat,
-      fontWeight: '300',
+      fontFamily: fonts.poppins,
+      fontWeight: '400',
       padding: '12px',
     },
   });

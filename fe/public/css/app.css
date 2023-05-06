@@ -67,6 +67,10 @@ input[type='checkbox']:disabled {
   cursor: not-allowed;
 }
 
+p {
+  margin: 0;
+}
+
 .show {
   display: 'block';
 }

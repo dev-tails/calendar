@@ -194,6 +194,13 @@
     }, props));
   }
 
+  // src/components/elements/P.ts
+  function P(props) {
+    return Element(__spreadValues({
+      tag: "p"
+    }, props));
+  }
+
   // src/components/elements/Span.ts
   function Span(props) {
     return Element(__spreadValues({
@@ -425,7 +432,9 @@
   };
   var fonts = {
     montserrat: "Montserrat, sans-serif",
-    garamond: "EB Garamond, serif"
+    garamond: "EB Garamond, serif",
+    poppins: "Poppins, sans-serif",
+    raleway: "Raleway', sans-serif"
   };
   var fontsWeight = {
     regular: "400"
@@ -3011,7 +3020,7 @@
   var arrowStyles = {
     background: "none",
     border: "none",
-    color: basics.darkCharcoal,
+    color: basics.whiteColor,
     fontSize: "24px",
     padding: "12px"
   };
@@ -3028,7 +3037,7 @@
       return __async(this, null, function* () {
         const headerDate = Div({
           styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-            margin: "12px 20px"
+            margin: "30px 12px 20px"
           })
         });
         const title = H1({
@@ -3038,17 +3047,14 @@
             )
           },
           styles: {
-            fontFamily: fonts.garamond,
-            fontWeight: "600",
+            fontFamily: fonts.poppins,
+            fontWeight: "400",
             fontSize: "32px,",
-            color: basics.darkCharcoal,
+            color: basics.whiteColor,
             padding: "12px"
           }
         });
-        setStyle(title, {
-          padding: "12px",
-          margin: "12px 20px"
-        });
+        setStyle(title, { padding: "12px" });
         const prevDay = Button({
           selectors: {
             id: "left-chevron"
@@ -3059,8 +3065,7 @@
             onmouseover: () => {
               const button2 = byId("left-chevron");
               if (button2) {
-                button2.style.color = colors.royalBlueLight;
-                button2.style.background = colors.lightOrange;
+                button2.style.background = colors.royalBlueLight;
                 button2.style.borderRadius = "4px";
                 button2.style.color = basics.whiteColor;
               }
@@ -3068,10 +3073,9 @@
             onmouseout: () => {
               const button2 = byId("left-chevron");
               if (button2) {
-                button2.style.color = basics.darkCharcoal;
+                button2.style.color = basics.whiteColor;
                 button2.style.background = "none";
                 button2.style.borderRadius = "none";
-                button2.style.color = basics.darkCharcoal;
               }
             }
           },
@@ -3087,8 +3091,7 @@
             onmouseover: () => {
               const button2 = byId("right-chevron");
               if (button2) {
-                button2.style.color = colors.royalBlueLight;
-                button2.style.background = colors.lightOrange;
+                button2.style.background = colors.royalBlueLight;
                 button2.style.borderRadius = "4px";
                 button2.style.color = basics.whiteColor;
               }
@@ -3096,9 +3099,8 @@
             onmouseout: () => {
               const button2 = byId("right-chevron");
               if (button2) {
-                button2.style.color = basics.darkCharcoal;
+                button2.style.color = basics.whiteColor;
                 button2.style.background = "none";
-                button2.style.color = basics.darkCharcoal;
               }
             }
           },
@@ -3109,6 +3111,9 @@
         headerDate.appendChild(title);
         el.appendChild(headerDate);
         const eventsList = Div();
+        const allDayEventsContainer = Div({
+          styles: { display: "flex", gap: "16px", margin: "12px 20px" }
+        });
         const events = yield getEventsForDay(dayView);
         if (events.length) {
           events.sort(
@@ -3118,14 +3123,13 @@
             if (event.allDay) {
               const allDayEventStyles = {
                 borderRadius: "4px",
-                margin: "12px 20px",
-                width: "auto",
-                backgroundColor: colors.royalBlueLight,
-                color: basics.whiteColor,
+                width: "fit-content",
+                backgroundColor: basics.whiteColor,
+                color: colors.mandarine,
                 cursor: "pointer"
               };
               const allDayEvents = createEventCard(event, allDayEventStyles);
-              el.appendChild(allDayEvents);
+              allDayEventsContainer.append(allDayEvents);
             } else {
               const eventContainer = Div({
                 styles: __spreadValues({
@@ -3153,7 +3157,7 @@
                   styles: {
                     textTransform: "uppercase",
                     fontFamily: fonts.montserrat,
-                    color: basics.darkCharcoal,
+                    color: basics.whiteColor,
                     fontWeight: fontsWeight.regular,
                     fontSize: "14px",
                     padding: "12px 0"
@@ -3165,7 +3169,7 @@
               const eventStyles = {
                 borderRadius: "4px",
                 width: "100%",
-                backgroundColor: colors.keppel,
+                backgroundColor: colors.royalBlueLight,
                 color: basics.whiteColor,
                 cursor: "pointer",
                 maxWidth: "980px"
@@ -3175,6 +3179,7 @@
               eventsList.appendChild(eventContainer);
             }
           });
+          el.appendChild(allDayEventsContainer);
           el.appendChild(eventsList);
         } else {
           const noEventsLabel = Div({
@@ -3184,7 +3189,7 @@
               margin: "12px 20px",
               paddingLeft: "20px",
               fontStyle: "italic",
-              color: basics.spanishGray
+              color: basics.slateGray
             }
           });
           el.appendChild(noEventsLabel);
@@ -3214,14 +3219,14 @@
   }
   function createEventCard(event, styles3) {
     const eventCard = Div({ styles: styles3 });
-    const title = Div({
+    const title = P({
       attr: {
         innerText: event.title,
         onclick: () => setURL(`/events/${event._id}`)
       },
       styles: {
-        fontFamily: fonts.montserrat,
-        fontWeight: "300",
+        fontFamily: fonts.poppins,
+        fontWeight: "400",
         padding: "12px"
       }
     });
@@ -6637,20 +6642,6 @@
   }
 
   // src/views/Header/Header.ts
-  var headerTopLeftButton = {
-    home: "",
-    day: "Today",
-    edit: `${chevronLeft} Back`,
-    event: `${chevronLeft} Back`,
-    add: home
-  };
-  var headerTopRightButton = {
-    home: "Add event",
-    day: "Add event",
-    edit: home,
-    event: "Add event",
-    add: home
-  };
   var headerButtonStyles = {
     background: "none",
     border: "none",
@@ -6662,7 +6653,7 @@
   };
   var todayButtonStyles = __spreadProps(__spreadValues({}, headerButtonStyles), {
     borderRadius: "4px",
-    background: colors.royalBlueLight,
+    background: colors.mandarine,
     color: basics.whiteColor,
     padding: "8px 12px"
   });
@@ -6674,7 +6665,6 @@
     const isAddEvent = view === "add";
     const isDay = view === "day";
     const showTopRightButton = !isAddEvent;
-    const showTopLeftButton = !isHome;
     const windowPath = window.location.pathname;
     const pathSplit = windowPath.split("/");
     const eventId = (_a = pathSplit[pathSplit.length - 1]) == null ? void 0 : _a.toString();
@@ -6683,7 +6673,7 @@
         height: "80px",
         backgroundColor: basics.whiteColor,
         boxShadow: "0px 4px 4px rgba(238, 238, 238, 0.25)",
-        padding: "0 20px"
+        padding: "0 28px"
       }, flexAlignItemsCenter), {
         justifyContent: "flex-end",
         //not sure about this, added it last minute
@@ -6694,10 +6684,32 @@
         top: "0"
       })
     });
-    const leftButton = Button({
-      selectors: { id: "left-link" },
+    const logo = Div({
+      styles: {
+        display: "flex",
+        alignItems: "center",
+        marginRight: "auto",
+        cursor: "pointer"
+      },
+      attr: { onclick: () => setURL("/") }
+    });
+    const image = document.createElement("img");
+    image.src = "/assets/Logo.svg";
+    const name = P({
+      attr: { innerHTML: "Zeit" },
+      styles: {
+        marginLeft: "12px",
+        fontFamily: "Poppins",
+        fontSize: "18px"
+      }
+    });
+    logo.append(image);
+    logo.append(name);
+    header.append(logo);
+    const headerCTAButton = Button({
+      selectors: { id: "header-cta-btn" },
       attr: {
-        innerHTML: headerTopLeftButton[view],
+        innerHTML: isHome ? "" : "Today",
         onclick: (e) => {
           e.preventDefault();
           onLeftButtonClick();
@@ -6715,18 +6727,14 @@
           }
         }
       },
-      styles: isDay ? todayButtonStyles : __spreadProps(__spreadValues({}, headerButtonStyles), {
-        marginRight: isAddEvent ? "" : "auto",
-        marginLeft: "none",
-        fontSize: isAddEvent ? "20px" : ""
-      })
+      styles: isHome ? { display: "none" } : todayButtonStyles
     });
-    showTopLeftButton && header.append(leftButton);
+    header.append(headerCTAButton);
     if (showTopRightButton) {
       const rightButton = Button({
         selectors: { id: "right-link" },
         attr: {
-          innerHTML: headerTopRightButton[view],
+          innerHTML: "Add event",
           onclick: (e) => {
             e.preventDefault();
             onRightButtonClick();
@@ -6744,9 +6752,7 @@
             }
           }
         },
-        styles: __spreadProps(__spreadValues({}, headerButtonStyles), {
-          fontSize: isEditEvent || isAddEvent ? "20px" : "14px"
-        })
+        styles: headerButtonStyles
       });
       header.append(rightButton);
     }
@@ -6792,15 +6798,11 @@
       setURL(nextURL);
     }
     function onRightButtonClick() {
-      let nextURL = "/";
-      if (isHome || isDay || isEvent) {
-        if (window.location.pathname === "/") {
-          nextURL = `/add`;
-        } else {
-          nextURL = `/add/${getDateStringFromUrl()}`;
-        }
+      if (window.location.pathname === "/") {
+        setURL(`/add`);
+      } else {
+        setURL(`/add/${getDateStringFromUrl()}`);
       }
-      setURL(nextURL);
     }
     const pushNotificationsButton = Button({
       selectors: { id: "pushButton" },

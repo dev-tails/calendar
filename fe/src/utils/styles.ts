@@ -27,6 +27,8 @@ export const colors = {
 export const fonts = {
   montserrat: 'Montserrat, sans-serif',
   garamond: 'EB Garamond, serif',
+  poppins: 'Poppins, sans-serif',
+  raleway: "Raleway', sans-serif",
 };
 
 export const fontsWeight = {

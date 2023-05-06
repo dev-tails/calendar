@@ -1,4 +1,4 @@
-import { Button, Div } from '../../components/elements';
+import { Button, Div, P } from '../../components/elements';
 import {
   basics,
   colors,
@@ -18,22 +18,6 @@ import {
 } from '../../services/PushNotificationService';
 import { getDateStringFromUrl } from '../../utils/dateHelpers';
 
-const headerTopLeftButton = {
-  home: '',
-  day: 'Today',
-  edit: `${chevronLeft} Back`,
-  event: `${chevronLeft} Back`,
-  add: home,
-};
-
-const headerTopRightButton = {
-  home: 'Add event',
-  day: 'Add event',
-  edit: home,
-  event: 'Add event',
-  add: home,
-};
-
 const headerButtonStyles = {
   background: 'none',
   border: 'none',
@@ -47,7 +31,7 @@ const headerButtonStyles = {
 const todayButtonStyles = {
   ...headerButtonStyles,
   borderRadius: '4px',
-  background: colors.royalBlueLight,
+  background: colors.mandarine,
   color: basics.whiteColor,
   padding: '8px 12px',
 };
@@ -62,7 +46,6 @@ export function Header(
   const isAddEvent = view === 'add';
   const isDay = view === 'day';
   const showTopRightButton = !isAddEvent;
-  const showTopLeftButton = !isHome;
   const windowPath = window.location.pathname;
   const pathSplit = windowPath.split('/');
   const eventId = pathSplit[pathSplit.length - 1]?.toString();
@@ -72,7 +55,7 @@ export function Header(
       height: '80px',
       backgroundColor: basics.whiteColor,
       boxShadow: '0px 4px 4px rgba(238, 238, 238, 0.25)',
-      padding: '0 20px',
+      padding: '0 28px',
       ...flexAlignItemsCenter,
       justifyContent: 'flex-end',
 
@@ -85,10 +68,33 @@ export function Header(
     },
   });
 
-  const leftButton = Button({
-    selectors: { id: 'left-link' },
+  const logo = Div({
+    styles: {
+      display: 'flex',
+      alignItems: 'center',
+      marginRight: 'auto',
+      cursor: 'pointer',
+    },
+    attr: { onclick: () => setURL('/') },
+  });
+  const image = document.createElement('img');
+  image.src = '/assets/Logo.svg';
+  const name = P({
+    attr: { innerHTML: 'Zeit' },
+    styles: {
+      marginLeft: '12px',
+      fontFamily: 'Poppins',
+      fontSize: '18px',
+    },
+  });
+  logo.append(image);
+  logo.append(name);
+  header.append(logo);
+
+  const headerCTAButton = Button({
+    selectors: { id: 'header-cta-btn' },
     attr: {
-      innerHTML: headerTopLeftButton[view],
+      innerHTML: isHome ? '' : 'Today',
       onclick: (e) => {
         e.preventDefault();
         onLeftButtonClick();
@@ -106,22 +112,15 @@ export function Header(
         }
       },
     },
-    styles: isDay
-      ? todayButtonStyles
-      : {
-          ...headerButtonStyles,
-          marginRight: isAddEvent ? '' : 'auto',
-          marginLeft: 'none',
-          fontSize: isAddEvent ? '20px' : '',
-        },
+    styles: isHome ? { display: 'none' } : todayButtonStyles,
   });
-  showTopLeftButton && header.append(leftButton);
+  header.append(headerCTAButton);
 
   if (showTopRightButton) {
     const rightButton = Button({
       selectors: { id: 'right-link' },
       attr: {
-        innerHTML: headerTopRightButton[view],
+        innerHTML: 'Add event',
         onclick: (e) => {
           e.preventDefault();
 
@@ -140,10 +139,7 @@ export function Header(
           }
         },
       },
-      styles: {
-        ...headerButtonStyles,
-        fontSize: isEditEvent || isAddEvent ? '20px' : '14px',
-      },
+      styles: headerButtonStyles,
     });
     header.append(rightButton);
   }
@@ -194,15 +190,11 @@ export function Header(
   }
 
   function onRightButtonClick() {
-    let nextURL = '/';
-    if (isHome || isDay || isEvent) {
-      if (window.location.pathname === '/') {
-        nextURL = `/add`;
-      } else {
-        nextURL = `/add/${getDateStringFromUrl()}`;
-      }
+    if (window.location.pathname === '/') {
+      setURL(`/add`);
+    } else {
+      setURL(`/add/${getDateStringFromUrl()}`);
     }
-    setURL(nextURL);
   }
 
   const pushNotificationsButton = Button({
