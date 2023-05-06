@@ -3026,7 +3026,8 @@
     border: "none",
     color: basics.whiteColor,
     fontSize: "24px",
-    padding: "12px"
+    paddingTop: "12px",
+    paddingBottom: "12px"
   };
   function Day(date) {
     let dayView = date ? new Date(date) : new Date();
@@ -3041,7 +3042,7 @@
       return __async(this, null, function* () {
         const headerDate = Div({
           styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-            margin: "20px 12px"
+            margin: "12px 20px"
           })
         });
         const title = H1({
@@ -3148,7 +3149,7 @@
                   marginBottom: "auto",
                   maxWidth: "180px",
                   width: "100%",
-                  padding: "8px 12px"
+                  padding: "8px 12px 8px 0"
                 }
               });
               if (event.start && event.end) {

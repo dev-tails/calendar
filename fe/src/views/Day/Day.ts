@@ -25,8 +25,10 @@ const arrowStyles = {
   border: 'none',
   color: basics.whiteColor,
   fontSize: '24px',
-  padding: '12px',
+  paddingTop: '12px',
+  paddingBottom: '12px',
 };
+
 export function Day(date?: string) {
   let dayView = date ? new Date(date) : new Date();
   const el = Div({
@@ -41,7 +43,7 @@ export function Day(date?: string) {
     const headerDate = Div({
       styles: {
         ...flexAlignItemsCenter,
-        margin: '20px 12px',
+        margin: '12px 20px',
       },
     });
 
@@ -158,7 +160,7 @@ export function Day(date?: string) {
               marginBottom: 'auto',
               maxWidth: '180px',
               width: '100%',
-              padding: '8px 12px',
+              padding: '8px 12px 8px 0',
             },
           });
           if (event.start && event.end) {
