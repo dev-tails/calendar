@@ -3191,7 +3191,6 @@
             styles: {
               fontFamily: fonts.montserrat,
               margin: "12px 20px",
-              paddingLeft: "20px",
               fontStyle: "italic",
               color: basics.slateGray
             }
