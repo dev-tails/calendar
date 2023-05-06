@@ -88,8 +88,8 @@ export function Header(
   logo.append(name);
   header.append(logo);
 
-  const headerCTAButton = Button({
-    selectors: { id: 'header-cta-btn' },
+  const todayButton = Button({
+    selectors: { id: 'today-btn' },
     attr: {
       innerHTML: isHome ? '' : 'Today',
       onclick: (e) => {
@@ -97,21 +97,21 @@ export function Header(
         onLeftButtonClick();
       },
       onmouseover: () => {
-        const button = byId('left-link');
+        const button = byId('today-btn');
         if (button) {
-          button.style.opacity = isDay ? '.9' : '';
+          button.style.backgroundColor = '#e8856a';
         }
       },
       onmouseout: () => {
-        const button = byId('left-link');
+        const button = byId('today-btn');
         if (button) {
-          button.style.opacity = isDay ? '1' : '';
+          button.style.backgroundColor = colors.mandarine;
         }
       },
     },
     styles: isHome ? { display: 'none' } : todayButtonStyles,
   });
-  header.append(headerCTAButton);
+  header.append(todayButton);
 
   if (showTopRightButton) {
     const rightButton = Button({
@@ -126,13 +126,13 @@ export function Header(
         onmouseover: () => {
           const button = byId('right-link');
           if (button) {
-            button.style.color = '#9da8d2';
+            button.style.color = '#d25635';
           }
         },
         onmouseout: () => {
           const button = byId('right-link');
           if (button) {
-            button.style.color = colors.royalBlueLight;
+            button.style.color = basics.darkCharcoal;
           }
         },
       },
@@ -159,13 +159,13 @@ export function Header(
       onmouseover: () => {
         const button = byId('logout');
         if (button) {
-          button.style.color = '#9da8d2';
+          button.style.color = '#d25635';
         }
       },
       onmouseout: () => {
         const button = byId('logout');
         if (button) {
-          button.style.color = colors.royalBlueLight;
+          button.style.color = basics.darkCharcoal;
         }
       },
     },

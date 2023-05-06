@@ -11,7 +11,12 @@ import {
   Span,
 } from '../../components/elements';
 import { setURL } from '../../utils/HistoryUtils';
-import { basics, colors, flexAlignItemsCenter } from '../../utils/styles';
+import {
+  basics,
+  colors,
+  flexAlignItemsCenter,
+  fontsWeight,
+} from '../../utils/styles';
 import { EventDateSelect } from './EventDateSelect';
 import { createEvent, editEvent } from '../../apis/EventApi';
 import { buttonStyles, inputStyles } from '../../../public/css/componentStyles';
@@ -36,6 +41,8 @@ export function EventForm(event?: IEvent) {
       paddingTop: '24px',
       marginLeft: 'auto',
       marginRight: 'auto',
+      background: '#ffffff12',
+      borderRadius: '4px',
     },
   });
 
@@ -73,6 +80,7 @@ export function EventForm(event?: IEvent) {
 
     const editEventHeader = H3({
       attr: { innerText: `${eventState._id ? 'Edit' : 'Add'} event` },
+      styles: { color: basics.darkCharcoal, fontWeight: fontsWeight.semiBold },
     });
 
     const cancelButton = Button({
@@ -86,20 +94,20 @@ export function EventForm(event?: IEvent) {
         onmouseover: () => {
           const button = byId('cancel-btn');
           if (button) {
-            button.style.color = colors.lightOrange;
+            button.style.color = colors.strongRed;
           }
         },
         onmouseout: () => {
           const button = byId('cancel-btn');
           if (button) {
-            button.style.color = basics.silver;
+            button.style.color = basics.granite;
           }
         },
       },
       styles: {
         background: 'none',
         border: 'none',
-        color: basics.silver,
+        color: basics.granite,
         fontSize: '24px',
         padding: '0',
       },
@@ -158,7 +166,7 @@ export function EventForm(event?: IEvent) {
     const connect = Div({ styles: { padding: '12px' } });
     const connectLabel = Span({
       attr: { innerHTML: link },
-      styles: { color: basics.spanishGray },
+      styles: { color: basics.granite },
     });
 
     const connectLink = Label({
@@ -171,7 +179,7 @@ export function EventForm(event?: IEvent) {
       },
       styles: {
         marginLeft: '8px',
-        color: basics.spanishGray,
+        color: basics.granite,
       },
     });
     connect.appendChild(connectLabel);

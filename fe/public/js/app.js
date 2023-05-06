@@ -412,7 +412,8 @@
     slateGray: "#708090",
     spanishGray: "#999",
     silver: "#cccccc",
-    cultured: "#f5f5f5"
+    cultured: "#f5f5f5",
+    granite: "#676767"
   };
   var colors = {
     mainTurquoise: "#438796",
@@ -424,8 +425,10 @@
     greenSheen: "#73a196",
     mountbattenPink: "#9d8793",
     springWaterTurquoise: "#79b3af",
+    strongRed: "#cc3333",
     opal: "#99b1ad",
     royalBlueLight: "#5770d8",
+    violetGlow: "#6348d7",
     keppel: "#59c0a7",
     mandarine: "#E07A5F",
     lightOrange: "#f4c984"
@@ -437,7 +440,8 @@
     raleway: "Raleway', sans-serif"
   };
   var fontsWeight = {
-    regular: "400"
+    regular: "400",
+    semiBold: "600"
   };
   var flexAlignItemsCenter = {
     display: "flex",
@@ -3037,7 +3041,7 @@
       return __async(this, null, function* () {
         const headerDate = Div({
           styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-            margin: "30px 12px 20px"
+            margin: "20px 12px"
           })
         });
         const title = H1({
@@ -5512,13 +5516,15 @@
 
   // public/css/componentStyles.ts
   var inputStyles = {
-    border: `1px solid ${basics.spanishGray}`,
+    border: "none",
+    background: "none",
     borderRadius: "4px",
     padding: "4px 8px",
     fontSize: "14px",
     outline: "none",
     fontFamily: fonts.montserrat,
-    color: basics.darkCharcoal
+    color: basics.darkCharcoal,
+    backgroundColor: "#ffffff45"
   };
   var buttonStyles = {
     background: colors.royalBlueLight,
@@ -6004,7 +6010,9 @@
         maxWidth: "600px",
         paddingTop: "24px",
         marginLeft: "auto",
-        marginRight: "auto"
+        marginRight: "auto",
+        background: "#ffffff12",
+        borderRadius: "4px"
       }
     });
     function init2() {
@@ -6037,7 +6045,8 @@
           })
         });
         const editEventHeader = H3({
-          attr: { innerText: `${eventState._id ? "Edit" : "Add"} event` }
+          attr: { innerText: `${eventState._id ? "Edit" : "Add"} event` },
+          styles: { color: basics.darkCharcoal, fontWeight: fontsWeight.semiBold }
         });
         const cancelButton = Button({
           selectors: {
@@ -6050,20 +6059,20 @@
             onmouseover: () => {
               const button = byId("cancel-btn");
               if (button) {
-                button.style.color = colors.lightOrange;
+                button.style.color = colors.strongRed;
               }
             },
             onmouseout: () => {
               const button = byId("cancel-btn");
               if (button) {
-                button.style.color = basics.silver;
+                button.style.color = basics.granite;
               }
             }
           },
           styles: {
             background: "none",
             border: "none",
-            color: basics.silver,
+            color: basics.granite,
             fontSize: "24px",
             padding: "0"
           }
@@ -6116,7 +6125,7 @@
         const connect = Div({ styles: { padding: "12px" } });
         const connectLabel = Span({
           attr: { innerHTML: link },
-          styles: { color: basics.spanishGray }
+          styles: { color: basics.granite }
         });
         const connectLink = Label({
           attr: {
@@ -6126,7 +6135,7 @@
           },
           styles: {
             marginLeft: "8px",
-            color: basics.spanishGray
+            color: basics.granite
           }
         });
         connect.appendChild(connectLabel);
@@ -6219,7 +6228,7 @@
   });
   var iconStyles = __spreadProps(__spreadValues({
     marginRight: "8px",
-    color: basics.spanishGray,
+    color: basics.slateGray,
     width: "20px",
     height: "20px"
   }, flexAlignItemsCenter), {
@@ -6239,6 +6248,8 @@
         maxWidth: "600px"
       }
     });
+    const wrapper = Div({ styles: { backgroundColor: "#ffffff12" } });
+    wrapper.append(el);
     function init2() {
       return __async(this, null, function* () {
         var _a, _b, _c;
@@ -6248,20 +6259,19 @@
           styles: {
             display: "flex",
             alignItems: "flex-start",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
+            marginBottom: "16px"
           }
         });
         const title = H3({
-          attr: {
-            innerText: event.title
-          },
-          styles: { padding: "4px 0", marginRight: "16px" }
+          attr: { innerText: event.title },
+          styles: {
+            padding: "4px 0",
+            marginRight: "16px",
+            fontWeight: fontsWeight.semiBold
+          }
         });
-        const buttons = Div({
-          styles: __spreadProps(__spreadValues({}, styles2), {
-            marginTop: "0"
-          })
-        });
+        const buttons = Div({ styles: __spreadProps(__spreadValues({}, styles2), { marginTop: "0" }) });
         const visibilityTooltip = Div({
           attr: {
             innerHTML: event.visibility === "private" ? "Event visible to guests only." : "Event visible to all users."
@@ -6310,7 +6320,7 @@
               padding: "8px",
               marginLeft: "4px",
               background: "none",
-              color: colors.mandarine,
+              color: colors.strongRed,
               opacity: ".9"
             })
           });
@@ -6327,7 +6337,7 @@
             styles: __spreadProps(__spreadValues({}, buttonStyles), {
               fontSize: "17px",
               background: "none",
-              color: colors.royalBlueLight,
+              color: colors.violetGlow,
               padding: "8px"
             })
           });
@@ -6339,9 +6349,7 @@
         el.append(titleContainer);
         if (event.description) {
           const description = Div({
-            attr: {
-              innerHTML: es2015_default.link(event.description)
-            },
+            attr: { innerHTML: es2015_default.link(event.description) },
             styles: __spreadProps(__spreadValues({}, styles2), { display: "block", whiteSpace: "pre-line" })
           });
           el.append(description);
@@ -6351,9 +6359,7 @@
           const dateIcon = icon3(calendarWeek);
           const localDay = convertMidnightUTCToLocalDay(event.start);
           const dayText = Span({
-            attr: {
-              innerHTML: `${formatDateTime(dateOptions, localDay)}`
-            }
+            attr: { innerHTML: `${formatDateTime(dateOptions, localDay)}` }
           });
           day.append(dateIcon);
           day.append(dayText);
@@ -6389,15 +6395,11 @@
           datesContainer.append(dates);
           if (endsSameDay) {
             const times2 = Div({
-              styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), {
-                width: "50%"
-              })
+              styles: __spreadProps(__spreadValues({}, flexAlignItemsCenter), { width: "50%" })
             });
             const timeIcon = icon3(clockIcon);
             const startTime = Span({
-              attr: {
-                innerHTML: `${formatDateTime(timeOptions, event.start)}`
-              }
+              attr: { innerHTML: `${formatDateTime(timeOptions, event.start)}` }
             });
             const toLabel = Label({
               attr: { innerHTML: "-" },
@@ -6493,9 +6495,7 @@
               setURL("/");
             } catch (e) {
               const temporaryError = Div({
-                attr: {
-                  innerText: "Could not delete event"
-                }
+                attr: { innerText: "Could not delete event" }
               });
               el.append(temporaryError);
             }
@@ -6504,7 +6504,7 @@
       });
     }
     init2();
-    return el;
+    return wrapper;
   }
 
   // src/apis/AuthApi.ts
@@ -6703,8 +6703,8 @@
     logo.append(image);
     logo.append(name);
     header.append(logo);
-    const headerCTAButton = Button({
-      selectors: { id: "header-cta-btn" },
+    const todayButton = Button({
+      selectors: { id: "today-btn" },
       attr: {
         innerHTML: isHome ? "" : "Today",
         onclick: (e) => {
@@ -6712,21 +6712,21 @@
           onLeftButtonClick();
         },
         onmouseover: () => {
-          const button = byId("left-link");
+          const button = byId("today-btn");
           if (button) {
-            button.style.opacity = isDay ? ".9" : "";
+            button.style.backgroundColor = "#e8856a";
           }
         },
         onmouseout: () => {
-          const button = byId("left-link");
+          const button = byId("today-btn");
           if (button) {
-            button.style.opacity = isDay ? "1" : "";
+            button.style.backgroundColor = colors.mandarine;
           }
         }
       },
       styles: isHome ? { display: "none" } : todayButtonStyles
     });
-    header.append(headerCTAButton);
+    header.append(todayButton);
     if (showTopRightButton) {
       const rightButton = Button({
         selectors: { id: "right-link" },
@@ -6739,13 +6739,13 @@
           onmouseover: () => {
             const button = byId("right-link");
             if (button) {
-              button.style.color = "#9da8d2";
+              button.style.color = "#d25635";
             }
           },
           onmouseout: () => {
             const button = byId("right-link");
             if (button) {
-              button.style.color = colors.royalBlueLight;
+              button.style.color = basics.darkCharcoal;
             }
           }
         },
@@ -6771,13 +6771,13 @@
         onmouseover: () => {
           const button = byId("logout");
           if (button) {
-            button.style.color = "#9da8d2";
+            button.style.color = "#d25635";
           }
         },
         onmouseout: () => {
           const button = byId("logout");
           if (button) {
-            button.style.color = colors.royalBlueLight;
+            button.style.color = basics.darkCharcoal;
           }
         }
       },

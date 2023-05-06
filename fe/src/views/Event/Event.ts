@@ -28,6 +28,7 @@ import {
   colors,
   flexAlignItemsCenter,
   fonts,
+  fontsWeight,
 } from '../../utils/styles';
 import { Modal } from './Modal';
 import { byId } from '../../utils/DOMutils';
@@ -48,7 +49,7 @@ const styles = {
 
 const iconStyles = {
   marginRight: '8px',
-  color: basics.spanishGray,
+  color: basics.slateGray,
   width: '20px',
   height: '20px',
   ...flexAlignItemsCenter,
@@ -70,6 +71,8 @@ export function Event(event: IEvent) {
       maxWidth: '600px',
     },
   });
+  const wrapper = Div({ styles: { backgroundColor: '#ffffff12' } });
+  wrapper.append(el);
 
   async function init() {
     const users = await getUsers();
@@ -80,22 +83,19 @@ export function Event(event: IEvent) {
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
+        marginBottom: '16px',
       },
     });
     const title = H3({
-      attr: {
-        innerText: event.title,
-      },
-      styles: { padding: '4px 0', marginRight: '16px' },
-    });
-
-    const buttons = Div({
+      attr: { innerText: event.title },
       styles: {
-        ...styles,
-
-        marginTop: '0',
+        padding: '4px 0',
+        marginRight: '16px',
+        fontWeight: fontsWeight.semiBold,
       },
     });
+
+    const buttons = Div({ styles: { ...styles, marginTop: '0' } });
 
     const visibilityTooltip = Div({
       attr: {
@@ -158,7 +158,7 @@ export function Event(event: IEvent) {
           padding: '8px',
           marginLeft: '4px',
           background: 'none',
-          color: colors.mandarine,
+          color: colors.strongRed,
           opacity: '.9',
         },
       });
@@ -177,7 +177,7 @@ export function Event(event: IEvent) {
           ...buttonStyles,
           fontSize: '17px',
           background: 'none',
-          color: colors.royalBlueLight,
+          color: colors.violetGlow,
           padding: '8px',
         },
       });
@@ -192,9 +192,7 @@ export function Event(event: IEvent) {
 
     if (event.description) {
       const description = Div({
-        attr: {
-          innerHTML: autolinker.link(event.description),
-        },
+        attr: { innerHTML: autolinker.link(event.description) },
         styles: { ...styles, display: 'block', whiteSpace: 'pre-line' },
       });
       el.append(description);
@@ -205,9 +203,7 @@ export function Event(event: IEvent) {
       const dateIcon = icon(calendarWeek);
       const localDay = convertMidnightUTCToLocalDay(event.start);
       const dayText = Span({
-        attr: {
-          innerHTML: `${formatDateTime(dateOptions, localDay)}`,
-        },
+        attr: { innerHTML: `${formatDateTime(dateOptions, localDay)}` },
       });
       day.append(dateIcon);
       day.append(dayText);
@@ -255,16 +251,11 @@ export function Event(event: IEvent) {
 
       if (endsSameDay) {
         const times = Div({
-          styles: {
-            ...flexAlignItemsCenter,
-            width: '50%',
-          },
+          styles: { ...flexAlignItemsCenter, width: '50%' },
         });
         const timeIcon = icon(clockIcon);
         const startTime = Span({
-          attr: {
-            innerHTML: `${formatDateTime(timeOptions, event.start)}`,
-          },
+          attr: { innerHTML: `${formatDateTime(timeOptions, event.start)}` },
         });
 
         const toLabel = Label({
@@ -379,9 +370,7 @@ export function Event(event: IEvent) {
         setURL('/');
       } catch (e) {
         const temporaryError = Div({
-          attr: {
-            innerText: 'Could not delete event',
-          },
+          attr: { innerText: 'Could not delete event' },
         });
         el.append(temporaryError);
       }
@@ -389,5 +378,5 @@ export function Event(event: IEvent) {
   }
 
   init();
-  return el;
+  return wrapper;
 }

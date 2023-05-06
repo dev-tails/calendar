@@ -22,7 +22,7 @@ body {
 }
 
 a {
-  color: #5770d8;
+  color: #6348d7;
   text-decoration: none;
 }
 a:hover {
@@ -55,7 +55,7 @@ button {
 
 input::placeholder,
 textarea::placeholder {
-  color: #cccccc;
+  color: #676767;
 }
 
 input[type='checkbox'],

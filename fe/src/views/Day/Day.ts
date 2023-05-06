@@ -41,7 +41,7 @@ export function Day(date?: string) {
     const headerDate = Div({
       styles: {
         ...flexAlignItemsCenter,
-        margin: '30px 12px 20px',
+        margin: '20px 12px',
       },
     });
 

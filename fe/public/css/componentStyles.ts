@@ -1,13 +1,15 @@
 import { basics, colors, fonts } from '../../src/utils/styles';
 
 export const inputStyles = {
-  border: `1px solid ${basics.spanishGray}`,
+  border: 'none',
+  background: 'none',
   borderRadius: '4px',
   padding: '4px 8px',
   fontSize: '14px',
   outline: 'none',
   fontFamily: fonts.montserrat,
   color: basics.darkCharcoal,
+  backgroundColor: '#ffffff45',
 };
 
 export const buttonStyles = {

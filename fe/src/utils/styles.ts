@@ -5,6 +5,7 @@ export const basics = {
   spanishGray: '#999',
   silver: '#cccccc',
   cultured: '#f5f5f5',
+  granite: '#676767',
 };
 
 export const colors = {
@@ -17,8 +18,10 @@ export const colors = {
   greenSheen: '#73a196',
   mountbattenPink: '#9d8793',
   springWaterTurquoise: '#79b3af',
+  strongRed: '#cc3333',
   opal: '#99b1ad',
   royalBlueLight: '#5770d8',
+  violetGlow: '#6348d7',
   keppel: '#59c0a7',
   mandarine: '#E07A5F',
   lightOrange: '#f4c984',
@@ -33,6 +36,7 @@ export const fonts = {
 
 export const fontsWeight = {
   regular: '400',
+  semiBold: '600',
 };
 
 export const flexAlignItemsCenter = {
