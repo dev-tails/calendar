@@ -6645,7 +6645,7 @@
   var headerButtonStyles = {
     background: "none",
     border: "none",
-    color: colors.royalBlueLight,
+    color: basics.darkCharcoal,
     fontFamily: fonts.montserrat,
     fontWeight: "400",
     fontSize: "14px",
@@ -6671,14 +6671,11 @@
     const header = Div({
       styles: __spreadProps(__spreadValues({
         height: "80px",
-        backgroundColor: basics.whiteColor,
-        boxShadow: "0px 4px 4px rgba(238, 238, 238, 0.25)",
         padding: "0 28px"
       }, flexAlignItemsCenter), {
         justifyContent: "flex-end",
         //not sure about this, added it last minute
         position: "sticky",
-        background: "white",
         width: "100%",
         zIndex: "1",
         top: "0"
