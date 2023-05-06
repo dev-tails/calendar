@@ -6692,7 +6692,7 @@
     const image = document.createElement("img");
     image.src = "/assets/Logo.svg";
     const name = P({
-      attr: { innerHTML: "Zava" },
+      attr: { innerHTML: "Trentcrim" },
       styles: {
         marginLeft: "12px",
         fontFamily: "Poppins",
