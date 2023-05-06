@@ -3206,7 +3206,6 @@
             }
           }
         });
-        el.appendChild(button);
       });
     }
     function changeActiveDay(e) {
