@@ -173,7 +173,7 @@ export function Day(date?: string) {
               styles: {
                 textTransform: 'uppercase',
                 fontFamily: fonts.montserrat,
-                color: basics.whiteColor,
+                color: basics.darkCharcoal,
                 fontWeight: fontsWeight.regular,
                 fontSize: '14px',
                 padding: '12px 0',

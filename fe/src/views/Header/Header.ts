@@ -77,7 +77,7 @@ export function Header(
   const image = document.createElement('img');
   image.src = '/assets/Logo.svg';
   const name = P({
-    attr: { innerHTML: 'Zeit' },
+    attr: { innerHTML: 'Jorber' },
     styles: {
       marginLeft: '12px',
       fontFamily: 'Poppins',

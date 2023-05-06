@@ -3161,7 +3161,7 @@
                   styles: {
                     textTransform: "uppercase",
                     fontFamily: fonts.montserrat,
-                    color: basics.whiteColor,
+                    color: basics.darkCharcoal,
                     fontWeight: fontsWeight.regular,
                     fontSize: "14px",
                     padding: "12px 0"
@@ -6692,7 +6692,7 @@
     const image = document.createElement("img");
     image.src = "/assets/Logo.svg";
     const name = P({
-      attr: { innerHTML: "Zeit" },
+      attr: { innerHTML: "Jorber" },
       styles: {
         marginLeft: "12px",
         fontFamily: "Poppins",
