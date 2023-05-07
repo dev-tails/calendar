@@ -136,7 +136,8 @@ export function Day(date?: string) {
       );
 
       events.forEach((event) => {
-        if (event.allDay) {
+        const isMultiDay = event.start.getDate() !== event.end?.getDate();
+        if (event.allDay || isMultiDay) {
           const allDayEventStyles = {
             borderRadius: '4px',
             margin: '12px 20px',

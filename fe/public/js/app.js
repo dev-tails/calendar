@@ -3115,7 +3115,9 @@
             (date1, date2) => date1.start.valueOf() - date2.start.valueOf()
           );
           events.forEach((event) => {
-            if (event.allDay) {
+            var _a;
+            const isMultiDay = event.start.getDate() !== ((_a = event.end) == null ? void 0 : _a.getDate());
+            if (event.allDay || isMultiDay) {
               const allDayEventStyles = {
                 borderRadius: "4px",
                 margin: "12px 20px",

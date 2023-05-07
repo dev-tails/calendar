@@ -113,6 +113,12 @@ async function run() {
             allDay: false,
           },
           {
+            /* Multiday */
+            end: { $gte: start },
+            start: { $lte: end },
+            allDay: false,
+          },
+          {
             start: startAllDayUTC,
             allDay: true,
           },
