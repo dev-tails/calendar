@@ -200,36 +200,36 @@ export function Event(event: IEvent) {
       el.append(description);
     }
 
+    const isMultiDay = event.start.getDate() !== event.end?.getDate();
     if (event.allDay) {
       const day = Div({ styles });
       const dateIcon = icon(calendarWeek);
-      const localDay = convertMidnightUTCToLocalDay(event.start);
-      const dayText = Span({
-        attr: {
-          innerHTML: `${formatDateTime(dateOptions, localDay)}`,
-        },
-      });
+      const localStartDay = convertMidnightUTCToLocalDay(event.start);
+      let datesInfo = formatDateTime(dateOptions, localStartDay);
+      if (isMultiDay && event.end) {
+        const localEndDay = convertMidnightUTCToLocalDay(event.end);
+        datesInfo += ` - ${formatDateTime(dateOptions, localEndDay)}`;
+      }
+      const dayText = Span({ attr: { innerHTML: datesInfo } });
       day.append(dateIcon);
       day.append(dayText);
       el.append(day);
     } else {
       const datesContainer = Div({ styles });
-      const endsSameDay =
-        event.start.toDateString() === event.end?.toDateString();
 
       const dates = Div({
-        styles: endsSameDay
-          ? { ...flexAlignItemsCenter, width: '50%' }
-          : { display: 'flex', alignItems: 'flex-start' },
+        styles: isMultiDay
+          ? { display: 'flex', alignItems: 'flex-start' }
+          : { ...flexAlignItemsCenter, width: '50%' },
       });
-      const datesIcon = icon(endsSameDay ? calendarWeek : hourglassStart);
+      const datesIcon = icon(isMultiDay ? hourglassStart : calendarWeek);
 
       const startDate = Span({
         attr: {
           innerHTML: `${formatDateTime(
-            endsSameDay
-              ? dateOptions
-              : { ...dateTimeOptions, ...addTimeZoneOptions },
+            isMultiDay
+              ? { ...dateTimeOptions, ...addTimeZoneOptions }
+              : dateOptions,
             event.start
           )}`,
         },
@@ -237,7 +237,7 @@ export function Event(event: IEvent) {
       dates.append(datesIcon);
       dates.append(startDate);
 
-      if (!endsSameDay) {
+      if (isMultiDay) {
         const hourglassEndIcon = icon(hourglassEnd);
         hourglassEndIcon.style.justifyContent = 'flex-end';
         const endDateFormat = event.end
@@ -253,18 +253,13 @@ export function Event(event: IEvent) {
 
       datesContainer.append(dates);
 
-      if (endsSameDay) {
+      if (!isMultiDay) {
         const times = Div({
-          styles: {
-            ...flexAlignItemsCenter,
-            width: '50%',
-          },
+          styles: { ...flexAlignItemsCenter, width: '50%' },
         });
         const timeIcon = icon(clockIcon);
         const startTime = Span({
-          attr: {
-            innerHTML: `${formatDateTime(timeOptions, event.start)}`,
-          },
+          attr: { innerHTML: `${formatDateTime(timeOptions, event.start)}` },
         });
 
         const toLabel = Label({

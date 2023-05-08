@@ -142,7 +142,9 @@ export function Day(date?: string) {
             borderRadius: '4px',
             margin: '12px 20px',
             width: 'auto',
-            backgroundColor: colors.royalBlueLight,
+            backgroundColor:
+              // TODO: change this to better show difference between multiday events with time and/or all day
+              isMultiDay && !event.allDay ? '#a25fac' : colors.royalBlueLight,
             color: basics.whiteColor,
             cursor: 'pointer',
           };
