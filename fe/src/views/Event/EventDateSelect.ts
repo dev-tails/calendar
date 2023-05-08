@@ -33,10 +33,11 @@ export function EventDateSelect(
     attr: { innerText: 'to' },
     styles: { marginRight: '8px' },
   });
-  if (!event.allDay) {
-    datesContainer.appendChild(toLabel);
-    datesContainer.appendChild(endTimeDateInputEl());
-  }
+
+  datesContainer.appendChild(toLabel);
+  datesContainer.appendChild(
+    event.allDay ? endDateInputEl() : endTimeDateInputEl()
+  );
 
   const allDayContainer = Div({ styles: { ...flexAlignItemsCenter } });
   const allDayInput = Input({
