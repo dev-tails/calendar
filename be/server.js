@@ -119,7 +119,15 @@ async function run() {
             allDay: false,
           },
           {
+            /* Multiday all day */
+            end: { $gte: startAllDayUTC },
+            start: { $lte: startAllDayUTC },
+            allDay: true,
+          },
+          {
+            /* old events that did not have end date */
             start: startAllDayUTC,
+            end: undefined,
             allDay: true,
           },
         ],

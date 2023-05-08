@@ -44,14 +44,15 @@ export function EventForm(event?: IEvent) {
     if (!currentUser) {
       return;
     }
-    let initialStart = new Date();
+    let initialDate = new Date();
     if (window.location.pathname.includes('/add/')) {
-      initialStart = new Date(getDateStringFromUrl());
+      initialDate = new Date(getDateStringFromUrl());
     }
     let eventTemplate: IEvent = {
       title: '',
       description: '',
-      start: initialStart,
+      start: initialDate,
+      end: initialDate,
       allDay: false,
       users: [currentUser?._id],
       visibility: 'private',
@@ -222,18 +223,20 @@ export function EventForm(event?: IEvent) {
     form.onsubmit = (e) => {
       e.preventDefault();
       let start = eventState.start;
-
+      let end = eventState.end;
       if (eventState.allDay) {
-        const midnightDate = new Date(eventState.start.getTime());
-        midnightDate.setUTCHours(0, 0, 0, 0);
-        start = midnightDate;
-        delete eventState.end;
+        const midnightStartDate = new Date(eventState.start.getTime());
+        midnightStartDate.setUTCHours(0, 0, 0, 0);
+        start = midnightStartDate;
+
+        const midnightEndDate = new Date(eventState.end.getTime());
+        midnightEndDate.setUTCHours(0, 0, 0, 0);
+        end = midnightEndDate;
       }
-      setEventState({ start });
+      setEventState({ start, end });
       const isOnlyOwner =
         eventState.users?.length === 1 &&
         eventState.users[0] === eventState.owner;
-
       isOnlyOwner
         ? onModalResponse(modalOptions[1])
         : Modal({
@@ -254,7 +257,6 @@ export function EventForm(event?: IEvent) {
       } else {
         eventId = await createEvent(eventState, sendEmail);
       }
-
       setURL(`/events/${eventId}`);
     }
   }
